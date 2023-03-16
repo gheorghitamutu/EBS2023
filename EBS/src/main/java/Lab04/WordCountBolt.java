@@ -1,7 +1,7 @@
-package Lab03;
+package Lab04;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -13,24 +13,22 @@ import org.apache.storm.tuple.Values;
 
 public class WordCountBolt extends BaseRichBolt {
 	
-	private static final long serialVersionUID = 3;
-	
 	private OutputCollector collector;
 	private HashMap<String, Integer> count;
 	private String task;
 
-	// remove template type qualifiers from conf declaration for Storm v1
+	@Override
 	public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {
-		
+		// TODO Auto-generated method stub
 		this.collector = collector;
-		this.count = new HashMap<>();
+		this.count = new HashMap<String, Integer>();
 		this.task = context.getThisComponentId()+" "+context.getThisTaskId();
 		System.out.println("----- Started task: "+this.task);
-
 	}
 
+	@Override
 	public void execute(Tuple input) {
-		
+		// TODO Auto-generated method stub
 		String word = input.getStringByField("word"); 
 		Integer wordcount = this.count.get(word);
 		
@@ -43,14 +41,19 @@ public class WordCountBolt extends BaseRichBolt {
 		}
 		wordcount++;
 		this.count.put(word, wordcount);
-		this.collector.emit(new Values(word,wordcount));
-
+		
+		// normal emit example
+		//this.collector.emit(new Values(word,wordcount));
+		
+		// anchored version example - fault tolerant
+		this.collector.emit(input, new Values(word,wordcount));
+		this.collector.ack(input);
 	}
 
+	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		
+		// TODO Auto-generated method stub
 		declarer.declare(new Fields("word","count"));
-
 	}
 
 }
