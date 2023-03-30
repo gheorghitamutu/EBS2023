@@ -35,12 +35,10 @@ def generate_simple_subscription():
     return subscription
 
 
-def generate_subscriptions():
-    subscriptions = []
+def generate_subscription():
+    subscription = Subscription()
 
-    for i in range(SUBSCRIPTIONS_COUNT):
-
-        subscription = Subscription()
+    while True:
         for field in FieldsType:
 
             probability_to_use_the_filter = frequency_weights[field]
@@ -48,9 +46,17 @@ def generate_subscriptions():
                 subscription.set_filter(field)
 
         if subscription.is_valid():
-            subscriptions.append(subscription)
-        else:
-            subscription.set_filter(random.choice(FieldsType))
+            return subscription
+
+        subscription = Subscription()
+
+
+def generate_simple_subscriptions():
+    subscriptions = []
+
+    for i in range(SUBSCRIPTIONS_COUNT):
+        subscription = generate_subscription()
+        subscriptions.append(subscription)
 
     for s in [str(s) for s in subscriptions]:
         print(s)
@@ -59,9 +65,5 @@ def generate_subscriptions():
         f.writelines([str(s) for s in subscriptions])
 
 
-def start():
-    generate_subscriptions()
-
-
 if __name__ == "__main__":
-    generate_subscriptions()
+    generate_simple_subscriptions()
