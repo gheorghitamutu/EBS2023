@@ -48,13 +48,13 @@ class FilterValueType(enum.Enum):
     STRING = 2
 
 
-STATION_ID_FIELD_NAME = "stationId"
+STATION_ID_FIELD_NAME = "station_id"
 CITY_FIELD_NAME = "city"
-TEMPERATURE_FIELD_NAME = "temp"
-AVERAGE_TEMPERATURE_FIELD_NAME = "avg_temp"
+TEMPERATURE_FIELD_NAME = "temperature"
+AVERAGE_TEMPERATURE_FIELD_NAME = "average_temperature"
 RAIN_FIELD_NAME = "rain"
-AVERAGE_RAIN_FIELD_NAME = "avg_rain"
+AVERAGE_RAIN_FIELD_NAME = "average_rain"
 WIND_FIELD_NAME = "wind"
-AVERAGE_WIND_FIELD_NAME = "avg_wind"
+AVERAGE_WIND_FIELD_NAME = "average_wind"
 DIRECTION_FIELD_NAME = "direction"
 DATE_FIELD_NAME = "date"
