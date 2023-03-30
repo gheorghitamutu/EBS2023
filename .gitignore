@@ -23,3 +23,9 @@
 hs_err_pid*
 
 /*/.idea/*
+
+.idea
+config/__pycache__
+models/__pycache__
+util/__pycache__
+generators/__pycache__
