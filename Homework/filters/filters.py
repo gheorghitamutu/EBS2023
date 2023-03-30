@@ -1,3 +1,4 @@
+from constants import constants
 from constants.constants import *
 from config.config import FREQUENCY_OF_EQUALS_OPERATION_PER_CITIES_SUBSCRIPTIONS
 from numpy import random  # binomial
@@ -40,7 +41,7 @@ class String(Field):
 class StationId(Numeric):
     def __init__(self):
         super(StationId, self).__init__(STATION_ID_FIELD_NAME)
-        self.value = STATION_IDS[random.randint(0, len(STATION_IDS))]
+        self.value = STATION_IDS[random.randint(0, len(constants.STATION_IDS))]
 
 
 class City(String):
@@ -103,5 +104,5 @@ class Date(Numeric):
         delta_date = END_DATE - START_DATE
         delta_days = delta_date.days
         days_number = random.randint(0, delta_days)
-        date = START_DATE + days_number
+        date = START_DATE + timedelta(days=days_number)
         self.value = date

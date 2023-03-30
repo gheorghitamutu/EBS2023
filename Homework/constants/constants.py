@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 SUBSCRIPTIONS_FILEPATH = "./output/subscriptions_file.txt"
 PUBLICATIONS_FILEPATH = "./output/publications_file.txt"
 
-STATION_IDS = (i for i in range(1, 9))
+STATION_IDS = [i for i in range(1, 9)]
 CITIES = ("Arad", "Timisoara", "Bucuresti", "Sibiu", "Brasov")
 WIND_DIRECTIONS = ("N", "S", "W", "E", "NW", "NE", "SW", "SE")
 NUMERIC_OPERATORS = (">", "<=", "<", "<=", "=")
