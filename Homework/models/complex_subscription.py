@@ -1,4 +1,4 @@
-from subfilters.subfilters import *
+from filters.filters import *
 
 
 class ComplexSubscription:
