@@ -8,7 +8,7 @@ FREQUENCY_OF_EQUALS_OPERATION_PER_CITIES_SUBSCRIPTIONS = 0.7
 frequency_weights = {
     FieldsType.STATION_ID: 0.7,
     FieldsType.CITY: 0.9,
-    FieldsType.TEMP: 0.3,
+    FieldsType.TEMPERATURE: 0.3,
     FieldsType.RAIN: 0.4,
     FieldsType.WIND: 0.5,
     FieldsType.DIRECTION: 0.6,

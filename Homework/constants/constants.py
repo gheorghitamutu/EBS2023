@@ -29,7 +29,7 @@ MAXIMUM_RAIN = 100.0
 class FieldsType(enum.Enum):
     STATION_ID = 1
     CITY = 2
-    TEMP = 3
+    TEMPERATURE = 3
     RAIN = 4
     WIND = 5
     DIRECTION = 6
@@ -46,3 +46,15 @@ class ComplexPublication(enum.Enum):
 class FilterValueType(enum.Enum):
     NUMERIC = 1
     STRING = 2
+
+
+STATION_ID_FIELD_NAME = "stationId"
+CITY_FIELD_NAME = "city"
+TEMPERATURE_FIELD_NAME = "temp"
+AVERAGE_TEMPERATURE_FIELD_NAME = "avg_temp"
+RAIN_FIELD_NAME = "rain"
+AVERAGE_RAIN_FIELD_NAME = "avg_rain"
+WIND_FIELD_NAME = "wind"
+AVERAGE_WIND_FIELD_NAME = "avg_wind"
+DIRECTION_FIELD_NAME = "direction"
+DATE_FIELD_NAME = "date"
