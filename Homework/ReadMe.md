@@ -11,6 +11,7 @@
     - [output](#output)
     - [main](#main)
 - [Tests](#tests)
+  - [Environment (Processor)](#environment-processor)
   - [Iterative](#iterative)
   - [Simple Multithreading](#simple-multithreading)
     - [2 workers](#2-workers)
@@ -177,6 +178,28 @@ There are 2 main files:
 - one for mqtt testing
 
 # Tests
+
+## Environment (Processor)
+
+    OS Name:                   Microsoft Windows 11 Pro
+    OS Version:                10.0.22621 N/A Build 22621
+    OS Manufacturer:           Microsoft Corporation
+    OS Configuration:          Member Workstation
+    OS Build Type:             Multiprocessor Free
+    
+    Manufacturer              : GenuineIntel
+    Name                      : Intel(R) Core(TM) i7-10850H CPU @ 2.70GHz
+    NumberOfCores             : 6
+    NumberOfEnabledCore       : 6
+    NumberOfLogicalProcessors : 12
+    
+    Total Physical Memory:     48,754 MB
+    Available Physical Memory: 12,927 MB
+    Virtual Memory: Max Size:  97,906 MB
+    Virtual Memory: Available: 42,178 MB
+    Virtual Memory: In Use:    55,728 MB
+
+
 ## Iterative
 Execution time generating 500000 publications: 3.895294189453125 seconds.
 
