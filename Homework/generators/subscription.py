@@ -35,35 +35,34 @@ def generate_simple_subscription():
     return subscription
 
 
-def generate_subscription():
-    subscription = Subscription()
-
-    while True:
-        for field in FieldsType:
-
-            probability_to_use_the_filter = frequency_weights[field]
-            if random.binomial(1, probability_to_use_the_filter, size=None):
-                subscription.set_filter(field)
-
-        if subscription.is_valid():
-            return subscription
-
-        subscription = Subscription()
-
-
 def generate_simple_subscriptions():
     subscriptions = []
 
     for i in range(SUBSCRIPTIONS_COUNT):
-        subscription = generate_subscription()
+        subscription = generate_simple_subscription()
         subscriptions.append(subscription)
 
-    for s in [str(s) for s in subscriptions]:
-        print(s)
+    # for s in [str(s) for s in subscriptions]:
+    #     print(s)
 
-    with open(SUBSCRIPTIONS_FILEPATH, "w") as f:
+    with open(SIMPLE_SUBSCRIPTIONS_FILEPATH, "w") as f:
+        f.writelines([str(s) for s in subscriptions])
+
+
+def generate_complex_subscriptions():
+    subscriptions = []
+
+    for i in range(SUBSCRIPTIONS_COUNT):
+        subscription = generate_complex_subscription()
+        subscriptions.append(subscription)
+
+    # for s in [str(s) for s in subscriptions]:
+    #     print(s)
+
+    with open(COMPLEX_SUBSCRIPTIONS_FILEPATH, "w") as f:
         f.writelines([str(s) for s in subscriptions])
 
 
 if __name__ == "__main__":
     generate_simple_subscriptions()
+    generate_complex_subscriptions()

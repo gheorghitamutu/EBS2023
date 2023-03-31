@@ -28,6 +28,10 @@ def get_random_data():
     return start_date + timedelta(days=days_count)
 
 
+def generate_publications():
+    return [generate_publication(i) for i in range(0, PUBLICATIONS_COUNT)]
+
+
 def start():
     with open(PUBLICATIONS_FILEPATH, "w") as f:
         f.writelines([str(generate_publication(i)) for i in range(0, PUBLICATIONS_COUNT)])

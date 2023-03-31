@@ -1,11 +1,155 @@
-# Homework
+# EBS Homework
+
+- [EBS Homework](#ebs-homework)
+- [System description](#system-description)
+  - [Project Structure](#project-structure)
+    - [config](#config)
+    - [filters](#filters)
+    - [generators](#generators)
+    - [models](#models)
+    - [output](#output)
+    - [main](#main)
+- [Tests](#tests)
+  - [Iterative](#iterative)
+  - [Simple Multithreading](#simple-multithreading)
+    - [2 workers](#2-workers)
+    - [4 workers](#4-workers)
+    - [6 workers](#6-workers)
+    - [Conclusion](#conclusion)
+  - [MQTT (6 workers: 3 publishers/3 subscribers)](#mqtt-6-workers-3-publishers3-subscribers)
+    - [Latency subscriber \<=\> publisher (using Mosquitto on WSL)](#latency-subscriber--publisher-using-mosquitto-on-wsl)
+
+
+# System description
+
+Python language was used.
+
+## Project Structure
+### config
+Keeps all the configuration in place (number of subscriptions/publications, weights,
+field names, etc).
+
+    SUBSCRIPTIONS_COUNT = 500000
+    PUBLICATIONS_COUNT = 500000
+    
+    FREQUENCY_OF_EQUALS_OPERATION_PER_CITIES_SUBSCRIPTIONS = 0.7
+    
+    frequency_weights = {
+        FieldsType.STATION_ID: 0.7,
+        FieldsType.CITY: 0.9,
+        FieldsType.TEMPERATURE: 0.3,
+        FieldsType.RAIN: 0.4,
+        FieldsType.WIND: 0.5,
+        FieldsType.DIRECTION: 0.6,
+        FieldsType.DATE: 0.7
+    }
+    
+    complex_subscriptions_frequency = {
+        ComplexPublication.CITY: 1,
+        ComplexPublication.AVERAGE_TEMPERATURE: 0.9,
+        ComplexPublication.AVERAGE_RAIN: 0.1,
+        ComplexPublication.AVERAGE_WIND: 0.2
+    }
+
+### filters
+
+All the filters that based on the corresponding weigths applied to
+subscriptions & publications.
+    
+    # example:
+
+    class City(String):
+        def __init__(self):
+            super(City, self).__init__(CITY_FIELD_NAME)
+            chance = random.binomial(1,     FREQUENCY_OF_EQUALS_OPERATION_PER_CITIES_SUBSCRIPTIONS,     size=None)
+            if chance:
+                self.operator = "="
+            self.value = CITIES[random.randint(0, len(CITIES))]
+
+### generators
+Generaters of publications, simple subscriptions and complex subscriptions.
+
+    # example:
+    
+    def generate_publication(counter):
+        return Publication(
+            counter,
+            random.sample(CITIES, 1)[0],
+            random.randint(MINIMUM_TEMPERATURE, MAXIMUM_TEMPERATURE),
+            random.uniform(MINIMUM_RAIN, MAXIMUM_RAIN),
+            random.randint(MINIMUM_WIND_SPEED_IN_KMS,     MAXIMUM_WIND_SPEED_IN_KMS),
+            random.sample(WIND_DIRECTIONS, 1)[0],
+            get_random_data()
+        )
+
+### models
+
+Models for publication, simple subscription and complex subscription along with their string serialization:
+
+    # example:
+
+    class Publication:
+        def __init__(self, station_id, city, temp, rain, wind, direction,     date):
+            self.station_id = station_id
+            self.city = city
+            self.temp = temp
+            self.rain = rain
+            self.wind = wind
+            self.direction = direction
+            self.date = date
+    
+        def __str__(self):
+            return f'{{({STATION_ID_FIELD_NAME},{self.station_id}),    ({CITY_FIELD_NAME},\"{self.city}\"),' \
+                   f'({TEMPERATURE_FIELD_NAME},{self.temp}),    ({RAIN_FIELD_NAME},{self.rain}),' \
+                   f'({WIND_FIELD_NAME},{self.wind}),    ({DIRECTION_FIELD_NAME},\"{self.direction}\"),' \
+                   f'({DATE_FIELD_NAME},{self.date})}}'
+
+### output
+Output folder if you want to serialize the data in files.
+
+### main
+There are 2 main files:
+- one for iterative and multithreaded testing
+- one for mqtt testing
 
 # Tests
 ## Iterative
+Execution time generating 500000 publications: 3.895294189453125 seconds.
 
+Execution time generating 500000 simple subscriptions: 39.1939582824707 seconds.
+
+Execution time generating 500000 complex subscriptions: 23.60188055038452 seconds.
 
 ## Simple Multithreading
 
+### 2 workers
+Execution time generating 500000 publications: 4.480447053909302 seconds.
+
+Execution time generating 500000 simple subscriptions: 35.587207078933716 seconds.
+
+Execution time generating 500000 complex subscriptions: 22.07077670097351 seconds.
+
+### 4 workers
+Execution time generating 500000 publications: 4.574521064758301 seconds.
+
+Execution time generating 500000 simple subscriptions: 35.93336081504822 seconds.
+
+Execution time generating 500000 complex subscriptions: 21.578312397003174 seconds.
+
+
+### 6 workers
+Execution time generating 500000 publications: 4.2702858448028564 seconds.
+
+Execution time generating 500000 simple subscriptions: 36.258774757385254 seconds.
+
+Execution time generating 500000 complex subscriptions: 21.566722631454468 seconds.
+
+### Conclusion
+The Python Global Interpreter Lock or GIL, in simple words, is a mutex (or a lock) 
+that allows only one thread to hold the control of the Python interpreter.
+
+Thus, doing this task multithreading while also having a lock on the final list doesn't
+really help us with anything.
 
 ## MQTT (6 workers: 3 publishers/3 subscribers)
 ### Latency subscriber <=> publisher (using Mosquitto on WSL)

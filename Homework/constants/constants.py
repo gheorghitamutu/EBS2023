@@ -1,7 +1,8 @@
 import enum
 from datetime import datetime, timedelta
 
-SUBSCRIPTIONS_FILEPATH = "./output/subscriptions_file.txt"
+SIMPLE_SUBSCRIPTIONS_FILEPATH = "./output/simple_subscriptions_file.txt"
+COMPLEX_SUBSCRIPTIONS_FILEPATH = "./output/complex_subscriptions_file.txt"
 PUBLICATIONS_FILEPATH = "./output/publications_file.txt"
 
 STATION_IDS = [i for i in range(1, 9)]
