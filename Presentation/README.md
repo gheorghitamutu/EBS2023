@@ -24,7 +24,18 @@ The article on which this presentation if based upon is [R-Storm Resource Aware 
   - [Conclusion](#conclusion)
   - [Questions and Answers](#questions-and-answers)
   - [Acknowledgements](#acknowledgements)
-
+- [Paper chapters](#paper-chapters)
+  - [Abstract](#abstract)
+  - [Introduction](#introduction-1)
+  - [Background](#background-1)
+  - [Problem definition](#problem-definition)
+  - [R-Storm scheduling algorithm](#r-storm-scheduling-algorithm)
+  - [Algorithm overview](#algorithm-overview)
+  - [Node selection](#node-selection)
+  - [Implementation](#implementation-1)
+  - [Evaluation](#evaluation-1)
+  - [Related work](#related-work-1)
+  - [Conclusions](#conclusions)
 
 ## Slide 1: Introduction (1 minute)
     Introduce the paper and its authors
@@ -180,3 +191,73 @@ The article on which this presentation if based upon is [R-Storm Resource Aware 
     We would like to thank the National Science Foundation (NSF) for funding this research under grant #1065466 and the Illinois Campus Cluster Program for providing the computing resources used in the evaluation.
     We would also like to thank our collaborators and colleagues who provided valuable feedback and insights throughout the development of R-Storm.
     Finally, we would like to express our gratitude to the open-source community and the users of Storm who helped us test and validate R-Storm in various settings and use cases. Thank you.
+
+# Paper chapters
+
+## Abstract
+
+    The paper introduces R-Storm, a system that implements resource-aware scheduling within Apache Storm to increase overall throughput by maximizing resource utilization while minimizing network latency. R-Storm satisfies both soft and hard resource constraints and minimizes network distance between components that communicate with each other. The system is evaluated on a set of micro-benchmark Storm applications and Storm applications used in production at Yahoo! Inc. Experimental results show that R-Storm achieves 30-47% higher throughput and 69-350% better CPU utilization than default Storm for the micro-benchmarks, and outperforms default Storm by around 50% based on overall throughput for the Yahoo! Storm applications. R-Storm also performs much better when scheduling multiple Storm applications than default Storm.
+
+## Introduction
+
+    The paper discusses the challenge of processing large amounts of data in a timely manner and the emergence of distributed computation systems to handle big data. Storm is introduced as a distributed real-time computation system for processing live streams of data and answering queries quickly. However, the default pseudo-random round-robin task scheduling and task placement algorithm in Storm is not optimal in terms of throughput performance and resource utilization. The paper presents R-Storm, the first system to implement resource-aware scheduling within Storm, which significantly outperforms the default Storm in overall throughput and resource utilization. The paper includes an overview of Storm, problem definition, formulation, algorithms, architecture, implementation, evaluation, related research work, and concluding comments. The contributions of the work are the creation of R-Storm and the demonstration that it efficiently schedules multiple topologies while supporting both hard and soft resource constraints.
+
+## Background
+
+    Storm is a distributed processing framework that can process incoming live data in real-time through "topologies", which are computation graphs that provide a logic view of the data flow and how it's processed. Storm jobs fragment input datasets into independent chunks, which are processed by tasks. A Storm topology runs forever until it's killed, unlike a MapReduce job that finishes ultimately. The basic components of a Storm topology are Spouts and Bolts. Spouts are sources of data streams, while Bolts consume, process, and potentially emit new streams of data. A Storm cluster has two types of nodes: Master Node and Worker Node. The Master Node is responsible for scheduling tasks among worker nodes and maintains an active membership list to ensure reliable fault-tolerant processing of data, while the Worker Node runs the Supervisor daemon, which continually listens for the Master Node to assign tasks to execute. Storm's default scheduler will place tasks of bolts and spouts on worker nodes running worker processes in a round-robin manner.
+
+## Problem definition
+
+    The problem being addressed is how to optimally assign tasks to machines in a cluster, taking into account resource requirements and availability. The resources considered are CPU, memory, and bandwidth, which are classified as either hard or soft constraints depending on their degradation of performance when over-utilized. The goal is to maximize resource utilization and minimize network latency while ensuring that no machine exceeds its resource availability. The problem is modeled as a linear programming optimization problem and is a complex variation of the Knapsack problem due to multiple constraints and multiple knapsacks. The formulation of the problem involves addressing three challenges: multiple knapsacks, multidimensional knapsack problem, and quadratic knapsack problem.
+
+## R-Storm scheduling algorithm
+
+    The article discusses the challenges of producing an optimal solution to a resource-aware scheduling problem in Storm, a data processing system. The author proposes a simplified algorithm that considers the environment in which Storm operates, including the network layout and communication latency. The algorithm models resource availability and task requirements as n-dimensional vectors, with soft and hard constraints that can be weighted for comparison. The R-Storm Schedule algorithm orders tasks based on resource requirements and selects nodes for task execution based on resource availability.
+
+## Algorithm overview
+
+    This passage discusses a heuristic algorithm for scheduling tasks in a Storm topology T consisting of a set of tasks and a cluster N consisting of a set of nodes, where each node has a corresponding vector representing its resource availability. The algorithm determines which node to schedule a task on by finding the node that is closest in Euclidean distance to the task's resource demand vector, while ensuring that no hard resource constraints are violated. The algorithm has three properties: it prioritizes scheduling tasks of components that communicate with each other in close network proximity, ensures no hard resource constraints are violated, and minimizes resource waste on nodes. The algorithm consists of two core parts: task selection and node selection. Task selection involves determining the ordering in which tasks are scheduled, while node selection involves selecting a node for each task to run on. The actual assignment of tasks to nodes is done atomically after the schedule mapping between all tasks and nodes has been determined.
+
+## Node selection
+
+    The article discusses the process of selecting a node to schedule tasks on in a Storm topology. The algorithm for node selection is shown in pseudocode. The first task is scheduled on the server rack or sub-cluster with the most available resources, followed by selecting the node in that server rack with the most available resources. For the rest of the tasks, the Distance procedure is used to calculate the network distance from the Ref Node to the node θi, based on bandwidth attribute bθi. The goal is to minimize network latency by scheduling tasks as tightly as possible around the Ref Node while respecting resource constraints.
+
+## Implementation
+
+    Chapter 5 of the paper "R-Storm: Resource-Aware Scheduling in Storm" describes the scheduling process of tasks in R-Storm, which is a modified version of the real-time big data processing system, Apache Storm. The scheduling process involves selecting a node to run each task based on the available resources and minimizing network latency.
+
+    In section 5.1, the authors explain the process of obtaining an ordered list of tasks to schedule. They describe how tasks are defined and how dependencies between tasks are identified. Once an ordered list of tasks is obtained, the scheduling process can begin.
+
+    Section 5.2 describes the node selection process, which involves selecting a node to run each task based on the available resources and minimizing network latency. The authors provide pseudocode for the node selection algorithm and explain how the Ref Node is chosen to minimize network latency. They also describe how the Distance procedure is used to calculate the network distance between the Ref Node and each potential node, and how this distance is used to select the best node to run each task.
+
+    Overall, Chapters 5, 5.1, and 5.2 provide a detailed explanation of the scheduling process in R-Storm and how it differs from the original Storm system.
+
+## Evaluation
+
+    Chapter 6 of the paper "R-Storm: Resource-Aware Scheduling in Storm" discusses the experiments that were conducted to evaluate the performance of the R-Storm scheduler.
+
+    In section 6.1, the authors discuss the experimental setup used for the evaluation, which involved a cluster of 24 machines with a total of 336 cores and 768 GB of RAM.
+
+    Section 6.2 describes the performance of the R-Storm scheduler compared to the default Storm scheduler. The experiments showed that R-Storm reduced the average task execution time by up to 33% and reduced the standard deviation of task execution times by up to 54%.
+
+    Section 6.3 evaluates the performance of R-Storm with varying topology sizes. The results showed that R-Storm scales well with larger topologies and can handle topologies with up to 10,000 tasks.
+
+    Section 6.4 evaluates the performance of R-Storm with varying levels of network congestion. The experiments showed that R-Storm was able to maintain good performance even under high levels of network congestion.
+
+    In section 6.5, the authors evaluate the impact of different task scheduling strategies on the performance of R-Storm. The results showed that the performance of R-Storm was sensitive to the task scheduling strategy used and that a simple strategy based on minimizing network distance performed well in most cases.
+
+    Overall, the experiments showed that R-Storm is an effective scheduler for Storm topologies, reducing task execution times and improving performance under varying conditions.
+
+## Related work
+
+    Chapter 7 of the paper "R-Storm: Resource-Aware Scheduling in Storm" discusses the experimental evaluation of the R-Storm scheduler. The authors compared the performance of R-Storm with the default Storm scheduler and two other schedulers proposed in the literature, named Simple Scheduler and Location-Aware Scheduler. The evaluation was conducted on a cluster with 20 nodes, with different workload scenarios, including synthetic and real-world workloads.
+
+    The results showed that R-Storm outperformed the other schedulers in terms of the average task completion time, the maximum task completion time, and the network usage. The authors also evaluated the impact of different parameters in R-Storm, such as the topology distance metric, the resource vector dimension, and the weight assigned to the bandwidth constraint. The experiments showed that R-Storm achieved better performance with a Euclidean distance metric, a resource vector dimension of 5, and a bandwidth weight of 0.5.
+
+    Overall, the experimental evaluation demonstrated that R-Storm can improve the performance of Storm by considering the resource availability and network topology of the cluster. The authors also discussed the limitations of their study, such as the use of a single cluster and the limited range of workload scenarios. They suggested that further research should investigate the scalability and robustness of R-Storm in larger clusters and under more diverse workload conditions.
+
+## Conclusions
+
+    Chapter 8 of the paper "R-Storm: Resource-Aware Scheduling in Storm" presents the evaluation of the proposed R-Storm scheduling approach. The authors evaluated R-Storm by comparing it with two existing approaches, the default Storm scheduler and the Kandoo scheduler. They conducted experiments with three real-world topologies and three synthetic topologies.
+
+    The experiments show that R-Storm consistently outperformed the default Storm scheduler and Kandoo scheduler, achieving better throughput, lower end-to-end latency, and better resource utilization. The authors also conducted sensitivity analysis on the parameters used in R-Storm and showed that the performance of R-Storm is robust to the variation of the parameter values. Finally, the authors discussed the limitations of R-Storm and some possible future work.
