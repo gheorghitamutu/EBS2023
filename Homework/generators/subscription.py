@@ -46,7 +46,7 @@ def generate_simple_subscriptions():
     #     print(s)
 
     with open(SIMPLE_SUBSCRIPTIONS_FILEPATH, "w") as f:
-        f.writelines([str(s) for s in subscriptions])
+        f.writelines([f'{str(s)}\n' for s in subscriptions])
 
 
 def generate_complex_subscriptions():
@@ -60,7 +60,7 @@ def generate_complex_subscriptions():
     #     print(s)
 
     with open(COMPLEX_SUBSCRIPTIONS_FILEPATH, "w") as f:
-        f.writelines([str(s) for s in subscriptions])
+        f.writelines([f'{str(s)}\n' for s in subscriptions])
 
 
 if __name__ == "__main__":

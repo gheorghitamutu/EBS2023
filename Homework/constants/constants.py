@@ -1,9 +1,9 @@
 import enum
 from datetime import datetime, timedelta
 
-SIMPLE_SUBSCRIPTIONS_FILEPATH = "./output/simple_subscriptions_file.txt"
-COMPLEX_SUBSCRIPTIONS_FILEPATH = "./output/complex_subscriptions_file.txt"
-PUBLICATIONS_FILEPATH = "./output/publications_file.txt"
+SIMPLE_SUBSCRIPTIONS_FILEPATH = "simple_subscriptions_file.txt"
+COMPLEX_SUBSCRIPTIONS_FILEPATH = "complex_subscriptions_file.txt"
+PUBLICATIONS_FILEPATH = "publications_file.txt"
 
 STATION_IDS = [i for i in range(1, 9)]
 CITIES = ("Arad", "Timisoara", "Bucuresti", "Sibiu", "Brasov")

@@ -32,11 +32,13 @@ def generate_publications():
     return [generate_publication(i) for i in range(0, PUBLICATIONS_COUNT)]
 
 
-def start():
+def generate():
+    for publication in [str(generate_publication(i)) for i in range(0, PUBLICATIONS_COUNT)]:
+        print(publication)
+
     with open(PUBLICATIONS_FILEPATH, "w") as f:
-        f.writelines([str(generate_publication(i)) for i in range(0, PUBLICATIONS_COUNT)])
+        f.writelines([f'{str(generate_publication(i))}\n' for i in range(0, PUBLICATIONS_COUNT)])
 
 
 if __name__ == '__main__':
-    for publication in [str(generate_publication(i)) for i in range(0, PUBLICATIONS_COUNT)]:
-        print(publication)
+    generate()
