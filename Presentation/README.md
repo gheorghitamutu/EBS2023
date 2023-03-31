@@ -1,5 +1,7 @@
 # Presentation
 
+The article on which this presentation if based upon is [R-Storm Resource Aware Scheduling in Storm](https://assured-cloud-computing.illinois.edu/files/2014/03/R-Storm-Resource-Aware-Scheduling-in-Storm.pdf).
+
 - [Presentation](#presentation)
   - [Slide 1: Introduction (1 minute)](#slide-1-introduction-1-minute)
   - [Slide 2: Background (2 minutes)](#slide-2-background-2-minutes)
