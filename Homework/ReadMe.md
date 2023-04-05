@@ -207,7 +207,7 @@ Execution time generating 500000 simple subscriptions: 39.1939582824707 seconds.
 
 Execution time generating 500000 complex subscriptions: 23.60188055038452 seconds.
 
-## Simple Multithreading
+## Multithreading
 
 ### 2 workers
 Execution time generating 500000 publications: 4.480447053909302 seconds.
@@ -230,6 +230,31 @@ Execution time generating 500000 publications: 4.2702858448028564 seconds.
 Execution time generating 500000 simple subscriptions: 36.258774757385254 seconds.
 
 Execution time generating 500000 complex subscriptions: 21.566722631454468 seconds.
+
+
+## Multiprocessing
+
+### 2 workers
+Execution time generating 500000 publications: 6.548830986022949 seconds.
+
+Execution time generating 500000 simple subscriptions: 22.56121325492859 seconds.
+
+Execution time generating 500000 complex subscriptions: 13.315525531768799 seconds.
+
+### 4 workers
+Execution time generating 500000 publications: 6.008245468139648 seconds.
+
+Execution time generating 500000 simple subscriptions: 16.962265014648438 seconds.
+
+Execution time generating 500000 complex subscriptions: 14.301104307174683 seconds.
+
+
+### 6 workers
+Execution time generating 500000 publications: 4.428233861923218 seconds.
+
+Execution time generating 500000 simple subscriptions: 20.45097017288208 seconds.
+
+Execution time generating 500000 complex subscriptions: 8.90018892288208 seconds.
 
 ### Conclusion
 The Python Global Interpreter Lock or GIL, in simple words, is a mutex (or a lock) 
