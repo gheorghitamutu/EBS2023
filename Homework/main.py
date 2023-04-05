@@ -1,5 +1,6 @@
 import threading
 import time
+from pathos.multiprocessing import ProcessingPool as Pool
 
 from generators.publication import generate_publication, generate_publications
 from generators.subscription import generate_simple_subscription, generate_complex_subscription, \
@@ -133,7 +134,80 @@ def do_multi_threaded_tests():
     print(f'Execution time generating {SUBSCRIPTIONS_COUNT} complex subscriptions: {elapsed_time} seconds.')
 
 
+class ProcessManager(object):
+    def __init__(self, jobs_count):
+        self.map = Pool().map
+        self.jobs_count = jobs_count
+        self.result = None
+
+    def start(self):
+
+        st = time.time()
+        self.result = self.map(self.generate_publications, range(self.jobs_count))
+        et = time.time()
+        elapsed_time = et - st
+        print(f'Execution time generating {PUBLICATIONS_COUNT} publications: {elapsed_time} seconds.')
+
+        st = time.time()
+        self.result = self.map(self.generate_simple_subscriptions, range(self.jobs_count))
+        et = time.time()
+        elapsed_time = et - st
+        print(f'Execution time generating {SUBSCRIPTIONS_COUNT} simple subscriptions: {elapsed_time} seconds.')
+
+        st = time.time()
+        self.result = self.map(self.generate_complex_subscriptions, range(self.jobs_count))
+        et = time.time()
+        elapsed_time = et - st
+        print(f'Execution time generating {SUBSCRIPTIONS_COUNT} complex subscriptions: {elapsed_time} seconds.')
+
+        return self.result
+
+    @staticmethod
+    def generate_complex_subscriptions(self):
+        count = SUBSCRIPTIONS_COUNT // WORKERS_NO
+        data = list()
+
+        item_count = 0
+        while item_count < count:
+            s = generate_complex_subscription()
+            data.append(str(s))
+            # data.append(s)
+            item_count = item_count + 1
+
+        return data
+
+    @staticmethod
+    def generate_simple_subscriptions(self):
+        count = SUBSCRIPTIONS_COUNT // WORKERS_NO
+        data = list()
+
+        item_count = 0
+        while item_count < count:
+            s = generate_simple_subscription()
+            data.append(str(s))
+            # data.append(s)
+            item_count = item_count + 1
+
+        return data
+
+    @staticmethod
+    def generate_publications(self):
+        count = PUBLICATIONS_COUNT // WORKERS_NO
+        data = list()
+
+        item_count = 0
+        while item_count < count:
+            s = generate_publication(item_count)
+            data.append(str(s))
+            # data.append(s)
+            item_count = item_count + 1
+
+        return data
+
+
 if __name__ == '__main__':
 
     # do_iterative_tests()
-    do_multi_threaded_tests()
+    # do_multi_threaded_tests()
+    manager = ProcessManager(WORKERS_NO)
+    manager.start()

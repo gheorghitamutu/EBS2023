@@ -34,8 +34,8 @@ class Subscription:
         self.entities[entity_type] = self.filters[entity_type]
 
     def is_valid(self) -> bool:
-        return not self.entities[FieldsType.STATION_ID] or not self.entities[FieldsType.CITY] or \
-            not self.entities[FieldsType.TEMPERATURE] or not self.entities[FieldsType.RAIN] or \
-            not self.entities[FieldsType.WIND] or not self.entities[FieldsType.DIRECTION] or \
-            not self.entities[FieldsType.DATE]
+        return bool(self.entities[FieldsType.STATION_ID]) or bool(self.entities[FieldsType.CITY]) or \
+            bool(self.entities[FieldsType.TEMPERATURE]) or bool(self.entities[FieldsType.RAIN]) or \
+            bool(self.entities[FieldsType.WIND]) or bool(self.entities[FieldsType.DIRECTION]) or \
+            bool(self.entities[FieldsType.DATE])
 
