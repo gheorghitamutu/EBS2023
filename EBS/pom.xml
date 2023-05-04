@@ -15,6 +15,13 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>7.10.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
@@ -26,6 +33,7 @@
             <artifactId>protobuf-java</artifactId>
             <version>3.22.2</version>
         </dependency>
+
     </dependencies>
 
 </project>
