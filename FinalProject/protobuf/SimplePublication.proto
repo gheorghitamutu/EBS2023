@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message SimplePublication {
+  string station_id = 1;
+  Location location = 2;
+  string city = 3;
+  double temperature = 4;
+  double rain = 5;
+  double wind = 6;
+  string direction = 7;
+  string date = 8;
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}

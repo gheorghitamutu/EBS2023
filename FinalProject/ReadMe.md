@@ -1,9 +1,12 @@
-TOC
-
+Table of Contents
 - [Proiect (short-description)](#proiect-short-description)
   - [Tasks](#tasks)
   - [Bonus](#bonus)
   - [Note](#note)
+- [Implementation](#implementation)
+  - [Protobuf](#protobuf)
+  - [Simple publication](#simple-publication)
+  - [Complex Publication](#complex-publication)
 
 
 # Proiect (short-description)
@@ -47,3 +50,64 @@ Implementati o arhitectura de sistem publish/subscribe, content-based, care sa f
 - Proiectul poate fi realizat in echipe de pana la 3 studenti si va fi prezentat la o data ce va fi stabilita in perioada de sesiune.
 - Proiectul poate fi implementat utilizand orice limbaj sau platforma. In cazul in care se va folosi Apache Kafka in implementare, utilizarea acestei platforme va fi limitata doar pentru livrarea mesajelor, asigurandu-se conectarea cu implementarea ce va folosi o alta solutie pentru partea efectiva de serviciu de procesare a datelor (filtrarea bazata pe continut, stocare subscriptii, etc).
 - Nodurile distincte (publisher, subscribers, brokers) pot fi simulate de exemplu prin procese separate rulate pe acelasi sistem.
+
+# Implementation
+
+## Protobuf
+
+We are using the protoc command:
+
+    protoc --java_out=<path> <filename.proto>
+And this generates the required .java files that we'll be using in our project.
+
+
+## Simple publication
+    syntax = "proto3";
+
+    message SimplePublication {
+        string station_id = 1;
+        Location location = 2;
+        string city = 3;
+        double temperature = 4;
+        double rain = 5;
+        double wind = 6;
+        string direction = 7;
+        string date = 9;
+    }
+
+    message Location {
+        double latitude = 1;
+        double longitude = 2;
+    }
+
+- station_id: A string field for the unique identifier of the weather station.
+- location - A message field containing latitude and longitude of the station.
+- city: A string field for the city where the weather station is located.
+- temperature: A double field for the current temperature reading in Celsius.
+- rain: A double field for the current rain reading in millimeters.
+- wind: A double field for the current wind speed reading in kilometers per hour.
+- direction: A string field for the current wind direction reading.
+- date: A string field for the date and time of the weather reading in ISO 8601 format.
+
+## Complex Publication
+
+    syntax = "proto3";
+
+    message ComplexPublication {
+        string city = 1;
+        Location location = 2;
+        double avg_temperature = 3;
+        double avg_rain = 4;
+        double avg_wind = 5;
+    }
+
+    message Location {
+        double latitude = 1;
+        double longitude = 2;
+    }
+
+- city: This field is a string that represents the name of the city where the weather station is located.
+- location: This field is a message type that contains the latitude and longitude coordinates of the weather station's location. It is defined by the Location message, which has two double fields named latitude and longitude.
+- avg_temperature: This field is a double that represents the average temperature recorded by the weather station over a period of time, such as a day or a month.
+- avg_rain: This field is a double that represents the average amount of rainfall recorded by the weather station over a period of time, such as a day or a month.
+- avg_wind: This field is a double that represents the average wind speed recorded by the weather station over a period of time, such as a day or a month.

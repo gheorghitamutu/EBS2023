@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message ComplexPublication {
+  string city = 1;
+  Location location = 2;
+  double avg_temperature = 3;
+  double avg_rain = 4;
+  double avg_wind = 5;
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}
