@@ -1,5 +1,13 @@
-# Proiect
-Implementati o arhitectura de sistem publish/subscribe, content-based, care sa fie capabila sa proceseze si secvente de publicatii grupate in ferestre, structurata in felul urmator:
+TOC
+
+- [Proiect (short-description)](#proiect-short-description)
+  - [Tasks](#tasks)
+  - [Bonus](#bonus)
+  - [Note](#note)
+
+
+# Proiect (short-description)
+Implementati o arhitectura de sistem publish/subscribe, content-based, care sa fie capabila sa proceseze si secvente de publicatii grupate in ferestre, structurata in felul descris in Tasks.
 
 ## Tasks
 - (5p) Generati un flux de publicatii care sa fie emis de un nod publisher. Publicatiile pot fi generate cu valori aleatoare pentru campuri folosind generatorul de date din tema practica.
