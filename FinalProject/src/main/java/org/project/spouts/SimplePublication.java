@@ -8,12 +8,15 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.project.models.ProtoSimplePublication;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.*;
 
 public class SimplePublication extends BaseRichSpout {
 
     private SpoutOutputCollector collector;
+    private String taskName;
+    private Map<String, ProtoSimplePublication.SimplePublication> unconfirmed;
     private int simplePublicationCount;
 
     public static final String ID = SimplePublication.class.toString();
@@ -23,6 +26,8 @@ public class SimplePublication extends BaseRichSpout {
     public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector collector) {
         this.collector = collector;
         this.simplePublicationCount = 0;
+        this.taskName = MessageFormat.format("<{0} <-> {0}>", topologyContext.getThisComponentId(), topologyContext.getThisTaskId());
+        this.unconfirmed = new HashMap<>();
     }
 
     @Override
@@ -33,6 +38,7 @@ public class SimplePublication extends BaseRichSpout {
         simplePublicationCount++;
 
         var sp = SimplePublicationGenerator.generateSamplePublication();
+        unconfirmed.put(sp.getUuid(), sp);
 
         // System.out.println(sp);
         // var buffer = sp.toByteArray();
@@ -49,7 +55,7 @@ public class SimplePublication extends BaseRichSpout {
                         sp.getDate()));
          */
 
-        this.collector.emit(new Values(sp));
+        this.collector.emit(new Values(sp), sp.getUuid());
     }
 
     @Override
@@ -67,6 +73,20 @@ public class SimplePublication extends BaseRichSpout {
                         "direction",
                         "date"));
          */
+    }
+
+    @Override
+    public void ack(Object id) {
+        var uuid = (String)id;
+        System.out.println(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, uuid));
+        this.unconfirmed.remove(uuid);
+    }
+
+    @Override
+    public void fail(Object id) {
+        var uuid = (String)id;
+        System.out.println(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
+        this.collector.emit(new Values(this.unconfirmed.get(uuid)), uuid);
     }
 
     public static class SimplePublicationGenerator {
@@ -108,6 +128,7 @@ public class SimplePublication extends BaseRichSpout {
             Date date = Date.from(new Date(System.currentTimeMillis()).toInstant().plus(Duration.ofDays(RANDOM.nextInt(30) + 1)));
 
             return ProtoSimplePublication.SimplePublication.newBuilder()
+                    .setUuid(UUID.randomUUID().toString())
                     .setStationId(stationId)
                     .setCity(city)
                     .setTemperature(temperature)

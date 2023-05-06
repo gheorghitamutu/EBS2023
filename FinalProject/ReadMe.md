@@ -68,13 +68,14 @@ And this generates the required .java files that we'll be using in our project.
     option java_outer_classname = "ProtoSimplePublication";
 
     message SimplePublication {
-        string station_id = 1;
-        Location location = 2;
-        string city = 3;
-        double temperature = 4;
-        double rain = 5;
-        double wind = 6;
-        string direction = 7;
+        string uuid = 1;
+        string station_id = 2;
+        Location location = 3;
+        string city = 4;
+        double temperature = 5;
+        double rain = 6;
+        double wind = 7;
+        string direction = 8;
         string date = 9;
     }
 
@@ -83,6 +84,7 @@ And this generates the required .java files that we'll be using in our project.
         double longitude = 2;
     }
 
+- uuid: Unique identifier of the data.
 - station_id: A string field for the unique identifier of the weather station.
 - location - A message field containing latitude and longitude of the station.
 - city: A string field for the city where the weather station is located.
@@ -100,11 +102,12 @@ And this generates the required .java files that we'll be using in our project.
     option java_outer_classname = "ProtoComplexPublication";
 
     message ComplexPublication {
-        string city = 1;
-        Location location = 2;
-        double avg_temperature = 3;
-        double avg_rain = 4;
-        double avg_wind = 5;
+        string uuid = 1;
+        string city = 2;
+        Location location = 3;
+        double avg_temperature = 4;
+        double avg_rain = 5;
+        double avg_wind = 6;
     }
 
     message Location {
@@ -112,6 +115,7 @@ And this generates the required .java files that we'll be using in our project.
         double longitude = 2;
     }
 
+- uuid: Unique identifier of the data.
 - city: This field is a string that represents the name of the city where the weather station is located.
 - location: This field is a message type that contains the latitude and longitude coordinates of the weather station's location. It is defined by the Location message, which has two double fields named latitude and longitude.
 - avg_temperature: This field is a double that represents the average temperature recorded by the weather station over a period of time, such as a day or a month.

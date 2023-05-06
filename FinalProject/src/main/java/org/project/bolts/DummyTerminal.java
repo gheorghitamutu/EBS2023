@@ -15,11 +15,13 @@ public class DummyTerminal extends BaseRichBolt {
     public static final String ID = DummyTerminal.class.toString();
 
     private int eventsReceived;
+    private OutputCollector collector;
 
     @Override
-    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
+    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector collector) {
         System.out.println("prepare");
         this.eventsReceived = 0;
+        this.collector = collector;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class DummyTerminal extends BaseRichBolt {
             System.out.println(MessageFormat.format("Input Field: <{0}>\n{1}", f, sp));
             eventsReceived++;
         });
-
+        this.collector.ack(input);
     }
 
     @Override

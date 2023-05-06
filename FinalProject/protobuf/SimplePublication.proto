@@ -4,14 +4,15 @@ option java_package = "org.project.models";
 option java_outer_classname = "ProtoSimplePublication";
 
 message SimplePublication {
-  string station_id = 1;
-  Location location = 2;
-  string city = 3;
-  double temperature = 4;
-  double rain = 5;
-  double wind = 6;
-  string direction = 7;
-  string date = 8;
+  string uuid = 1;
+  string station_id = 2;
+  Location location = 3;
+  string city = 4;
+  double temperature = 5;
+  double rain = 6;
+  double wind = 7;
+  string direction = 8;
+  string date = 9;
 }
 
 message Location {

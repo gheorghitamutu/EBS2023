@@ -4,11 +4,12 @@ option java_package = "org.project.models";
 option java_outer_classname = "ProtoComplexPublication";
 
 message ComplexPublication {
-  string city = 1;
-  Location location = 2;
-  double avg_temperature = 3;
-  double avg_rain = 4;
-  double avg_wind = 5;
+  string uuid = 1;
+  string city = 2;
+  Location location = 3;
+  double avg_temperature = 4;
+  double avg_rain = 5;
+  double avg_wind = 6;
 }
 
 message Location {
