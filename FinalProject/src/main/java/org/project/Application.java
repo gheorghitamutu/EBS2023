@@ -7,6 +7,8 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.project.bolts.DummyTerminal;
 import org.project.spouts.SimplePublication;
 
+import java.time.Duration;
+
 public class Application {
 
     private static final String TOPOLOGY_NAME = "project_topology";
@@ -31,9 +33,8 @@ public class Application {
             cluster.submitTopology(TOPOLOGY_NAME, config, topology);
 
             try {
-                Thread.sleep(20000);
+                Thread.sleep(Duration.ofSeconds(20));
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
