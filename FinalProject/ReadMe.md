@@ -1,5 +1,5 @@
 Table of Contents
-- [Proiect (short-description)](#proiect-short-description)
+- [Project (short-description)](#proiect-short-description)
   - [Tasks](#tasks)
   - [Bonus](#bonus)
   - [Note](#note)
@@ -64,6 +64,9 @@ And this generates the required .java files that we'll be using in our project.
 ## Simple publication
     syntax = "proto3";
 
+    option java_package = "org.project.models";
+    option java_outer_classname = "ProtoSimplePublication";
+
     message SimplePublication {
         string station_id = 1;
         Location location = 2;
@@ -92,6 +95,9 @@ And this generates the required .java files that we'll be using in our project.
 ## Complex Publication
 
     syntax = "proto3";
+
+    option java_package = "org.project.models";
+    option java_outer_classname = "ProtoComplexPublication";
 
     message ComplexPublication {
         string city = 1;
