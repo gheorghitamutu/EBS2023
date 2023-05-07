@@ -1,5 +1,6 @@
 package org.project.spouts;
 
+import org.apache.log4j.Logger;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -12,15 +13,16 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.*;
 
-public class SimplePublication extends BaseRichSpout {
+public class SimplePublicationSpout extends BaseRichSpout {
 
     private SpoutOutputCollector collector;
     private String taskName;
     private Map<String, ProtoSimplePublication.SimplePublication> unconfirmed;
     private int simplePublicationCount;
 
-    public static final String ID = SimplePublication.class.toString();
-    private static final int MAX_SIMPLE_PUBLICATION_COUNT = 1000;
+    private static final Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
+    public static final String ID = SimplePublicationSpout.class.toString();
+    private static final int MAX_SIMPLE_PUBLICATION_COUNT = 100000;
 
     @Override
     public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector collector) {
@@ -40,52 +42,25 @@ public class SimplePublication extends BaseRichSpout {
         var sp = SimplePublicationGenerator.generateSamplePublication();
         unconfirmed.put(sp.getUuid(), sp);
 
-        // System.out.println(sp);
-        // var buffer = sp.toByteArray();
-
-        /*
-        this.collector.emit(
-                new Values(
-                        sp.getStationId(),
-                        sp.getCity(),
-                        sp.getTemperature(),
-                        sp.getRain(),
-                        sp.getWind(),
-                        sp.getDirection(),
-                        sp.getDate()));
-         */
-
         this.collector.emit(new Values(sp), sp.getUuid());
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("SimplePublication"));
-
-        /*
-        declarer.declare(
-                new Fields(
-                        "station_id",
-                        "city",
-                        "temperature",
-                        "rain",
-                        "wind",
-                        "direction",
-                        "date"));
-         */
     }
 
     @Override
     public void ack(Object id) {
         var uuid = (String)id;
-        System.out.println(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, uuid));
+        LOG.info(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, uuid));
         this.unconfirmed.remove(uuid);
     }
 
     @Override
     public void fail(Object id) {
         var uuid = (String)id;
-        System.out.println(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
+        LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
         this.collector.emit(new Values(this.unconfirmed.get(uuid)), uuid);
     }
 
@@ -125,7 +100,10 @@ public class SimplePublication extends BaseRichSpout {
             double rain = RANDOM.nextDouble() * 0.5;
             double wind = RANDOM.nextDouble() * 30;
             String direction = DIRECTIONS[RANDOM.nextInt(DIRECTIONS.length)];
-            Date date = Date.from(new Date(System.currentTimeMillis()).toInstant().plus(Duration.ofDays(RANDOM.nextInt(30) + 1)));
+            Date date = Date.from(
+                    new Date(System.currentTimeMillis()).toInstant()
+                            .plus(Duration.ofDays(RANDOM.nextInt(30) + 1))
+                            .plus(Duration.ofMinutes(RANDOM.nextInt(720) + 1)));
 
             return ProtoSimplePublication.SimplePublication.newBuilder()
                     .setUuid(UUID.randomUUID().toString())
