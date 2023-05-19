@@ -15,7 +15,7 @@ Table of Contents
   - [Protobuf](#protobuf)
   - [Simple publication](#simple-publication)
   - [Complex Publication](#complex-publication)
-    - [References](#references)
+  - [References](#references)
 
 
 # Project (short-description)
@@ -289,5 +289,11 @@ And this generates the required .java files that we'll be using in our project.
 - avg_wind: This field is a double that represents the average wind speed recorded by the weather station over a period of time, such as a day or a month.
 
 
-### References
+## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
+
+https://storm.apache.org/releases/2.4.0/Windowing.html
+
+https://hub.docker.com/_/storm
+
+https://github.com/apache/storm/blob/master/examples/storm-starter/src/jvm/org/apache/storm/starter/WordCountTopology.java
