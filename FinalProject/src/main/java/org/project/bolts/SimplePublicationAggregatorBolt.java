@@ -36,7 +36,7 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
             tuple.getFields().forEach((f) -> {
                 eventsReceived++;
                 var sp = (ProtoSimplePublication.SimplePublication)(tuple.getValueByField(f));
-                LOG.info(MessageFormat.format("Input Field: <{0}> Event received: #{1}\n{2}", f, eventsReceived, sp));
+                // LOG.info(MessageFormat.format("Input Field: <{0}> Event received: #{1}\n{2}", f, eventsReceived, sp));
 
                 try {
                     // TODO: this needs to construct a complex publication
@@ -55,7 +55,7 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
 
             this.collector.ack(tuple);
         }
-        LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
+        // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
     }
 
     @Override

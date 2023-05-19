@@ -31,10 +31,10 @@ public class SimplePublicationBolt extends BaseRichBolt {
         input.getFields().forEach((f) -> {
             eventsReceived++;
             var sp = (ProtoSimplePublication.SimplePublication)(input.getValueByField(f));
-            LOG.info(MessageFormat.format("Input Field: <{0}> Event received: #{1}\n{2}", f, eventsReceived, sp));
+            // LOG.info(MessageFormat.format("Input Field: <{0}> Event received: #{1}\n{2}", f, eventsReceived, sp));
         });
         this.collector.ack(input);
-        LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
+        // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
     }
 
     @Override
