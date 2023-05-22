@@ -22,7 +22,10 @@ public class SimplePublicationSpout extends BaseRichSpout {
 
     private static final Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
     public static final String ID = SimplePublicationSpout.class.toString();
-    private static final int MAX_SIMPLE_PUBLICATION_COUNT = 100000;
+    private static final int MAX_SIMPLE_PUBLICATION_COUNT = 1000000;
+
+    private static final long MAX_TIME = 10 * 60 * 1000; // 10 minutes
+    private static final long START_TIME = System.currentTimeMillis();
 
     @Override
     public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector collector) {
@@ -34,9 +37,14 @@ public class SimplePublicationSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        if (simplePublicationCount >= MAX_SIMPLE_PUBLICATION_COUNT) {
+        if (System.currentTimeMillis() - START_TIME > MAX_TIME) {
             return;
         }
+
+        // if (simplePublicationCount >= MAX_SIMPLE_PUBLICATION_COUNT) {
+        //    return;
+        // }
+
         simplePublicationCount++;
 
         var sp = SimplePublicationGenerator.generateSamplePublication();
@@ -96,7 +104,10 @@ public class SimplePublicationSpout extends BaseRichSpout {
         public static ProtoSimplePublication.SimplePublication generateSamplePublication() {
             String city = CITIES[RANDOM.nextInt(CITIES.length)];
             String stationId = STATION_IDS.get(city).get(RANDOM.nextInt(STATION_IDS.get(city).size()));
-            double temperature = RANDOM.nextDouble() * 50 + 50;
+            double temperature = RANDOM.nextDouble() * 50;
+            if (RANDOM.nextDouble() > 0.5) {
+                temperature *= -1;
+            }
             double rain = RANDOM.nextDouble() * 0.5;
             double wind = RANDOM.nextDouble() * 30;
             String direction = DIRECTIONS[RANDOM.nextInt(DIRECTIONS.length)];

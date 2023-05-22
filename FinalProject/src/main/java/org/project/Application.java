@@ -6,6 +6,8 @@ import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
+import org.project.bolts.AnomalySimpleBolt;
+import org.project.bolts.ComplexPublicationBolt;
 import org.project.bolts.SimplePublicationBolt;
 import org.project.bolts.SimplePublicationAggregatorBolt;
 import org.project.spouts.SimplePublicationSpout;
@@ -14,6 +16,8 @@ public class Application extends ConfigurableTopology {
 
     private static final String TOPOLOGY_NAME = "project_topology";
     private static final int LOCAL_CLUSTER_RUN_TIME = 10 * 60 * 100;
+    private static final int WINDOW_LENGTH = 30;
+    private static final int SLIDING_INTERVAL = 10;
 
     public static void main(String[] args) throws Exception {
 
@@ -53,9 +57,11 @@ public class Application extends ConfigurableTopology {
         var simplePublicationAggregatorBolt =
                 new SimplePublicationAggregatorBolt()
                         .withWindow(
-                                new BaseWindowedBolt.Count(30),
-                                new BaseWindowedBolt.Count(10));
+                                new BaseWindowedBolt.Count(WINDOW_LENGTH),
+                                new BaseWindowedBolt.Count(SLIDING_INTERVAL));
+        var complexPublicationBolt = new ComplexPublicationBolt();
         var simplePublicationBolt = new SimplePublicationBolt();
+        var anomalySimpleBolt = new AnomalySimpleBolt();
 
         builder.setSpout(
                 SimplePublicationSpout.ID,
@@ -65,26 +71,38 @@ public class Application extends ConfigurableTopology {
         builder.setBolt(
                         SimplePublicationAggregatorBolt.ID,
                         simplePublicationAggregatorBolt,
-                        1)
+                        2)
                 .shuffleGrouping(SimplePublicationSpout.ID);
+
+        builder.setBolt(
+                        ComplexPublicationBolt.ID,
+                        complexPublicationBolt,
+                        2)
+                .shuffleGrouping(SimplePublicationAggregatorBolt.ID);
 
         builder.setBolt(
                         SimplePublicationBolt.ID,
                         simplePublicationBolt,
-                        1)
+                        2)
                 .shuffleGrouping(SimplePublicationSpout.ID);
+
+        builder.setBolt(
+                AnomalySimpleBolt.ID,
+                anomalySimpleBolt,
+                1)
+                .shuffleGrouping(SimplePublicationBolt.ID);
 
         return builder;
     }
 
     static void setConfig(Config config) {
         // fine tuning => https://storm.apache.org/releases/2.4.0/Performance.html
-        config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 1024);
-        config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 10);
-        config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 10);
+        config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 2048);
+        config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 100);
+        config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 100);
         config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.001);
 
-        config.setDebug(true);
+        config.setDebug(false);
         config.setNumWorkers(1);
     }
 
