@@ -13,13 +13,41 @@ import org.project.spouts.SimplePublicationSpout;
 public class Application extends ConfigurableTopology {
 
     private static final String TOPOLOGY_NAME = "project_topology";
+    private static final int LOCAL_CLUSTER_RUN_TIME = 10 * 60 * 100;
 
     public static void main(String[] args) throws Exception {
+
+        if (args.length == 1 && args[0].equals("--local_cluster")) {
+            runLocalCluster();
+            return;
+        }
+
         ConfigurableTopology.start(new Application(), args);
     }
 
-    @Override
-    protected int run(String[] args) throws Exception {
+    static void runLocalCluster() throws Exception {
+        var builder = buildTopology();
+
+        try (LocalCluster cluster = new LocalCluster()) {
+            StormTopology topology = builder.createTopology();
+
+            Config config = new Config();
+            setConfig(config);
+
+            cluster.submitTopology(TOPOLOGY_NAME, config, topology);
+
+            try {
+                Thread.sleep(LOCAL_CLUSTER_RUN_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            cluster.killTopology(TOPOLOGY_NAME);
+            cluster.shutdown();
+        }
+    }
+
+    static TopologyBuilder buildTopology() {
         var builder = new TopologyBuilder();
         var source = new SimplePublicationSpout();
         var simplePublicationAggregatorBolt =
@@ -35,53 +63,35 @@ public class Application extends ConfigurableTopology {
                 1);
 
         builder.setBolt(
-                SimplePublicationAggregatorBolt.ID,
-                simplePublicationAggregatorBolt,
-                1)
+                        SimplePublicationAggregatorBolt.ID,
+                        simplePublicationAggregatorBolt,
+                        1)
                 .shuffleGrouping(SimplePublicationSpout.ID);
 
         builder.setBolt(
-                SimplePublicationBolt.ID,
-                simplePublicationBolt,
-                1)
+                        SimplePublicationBolt.ID,
+                        simplePublicationBolt,
+                        1)
                 .shuffleGrouping(SimplePublicationSpout.ID);
 
+        return builder;
+    }
+
+    static void setConfig(Config config) {
         // fine tuning => https://storm.apache.org/releases/2.4.0/Performance.html
-        conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 1024);
-        conf.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 10);
-        conf.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 10);
-        conf.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.001);
+        config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 1024);
+        config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 10);
+        config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 10);
+        config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.001);
 
-        conf.setDebug(true);
-        conf.setNumWorkers(1);
+        config.setDebug(true);
+        config.setNumWorkers(1);
+    }
 
-        /*
-        Config config = new Config();
-        try (LocalCluster cluster = new LocalCluster()) {
-            StormTopology topology = builder.createTopology();
-
-            // fine tuning => https://storm.apache.org/releases/2.4.0/Performance.html
-            config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 1024);
-            config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 10);
-            config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 10);
-            config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.001);
-
-            config.setDebug(true);
-            config.setNumWorkers(1);
-
-            cluster.submitTopology(TOPOLOGY_NAME, config, topology);
-
-            try {
-                Thread.sleep(10 * 60 * 100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            cluster.killTopology(TOPOLOGY_NAME);
-            cluster.shutdown();
-        }
-        */
-
+    @Override
+    protected int run(String[] args) {
+        var builder = buildTopology();
+        setConfig(conf);
         return submit(TOPOLOGY_NAME, conf, builder);
     }
 }
