@@ -1,11 +1,20 @@
 package org.project.filters;
 
+import com.google.common.collect.Maps;
 import org.project.models.ProtoSimplePublication;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class SimplePublicationFilter {
+
+    final List<Predicate<ProtoSimplePublication.SimplePublication>> predicates;
+
+    public SimplePublicationFilter(Maps.EntryTransformer<Operator.Type, String, Predicate<ProtoSimplePublication.SimplePublication>> predicates) {
+
+        Maps.EntryTransformer<Operator.Type, String, Predicate<ProtoSimplePublication.SimplePublication>> filterByCity = (type, city) -> type != null ? filterByCity(type, city) : null;
+        this.predicates = predicates;
+    }
 
     public static Predicate<ProtoSimplePublication.SimplePublication> filterByStationId(Operator.Type type, String stationId) {
         switch (type) {

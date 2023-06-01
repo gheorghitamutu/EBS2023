@@ -1,16 +1,18 @@
 package org.project;
 
+import com.esotericsoftware.kryo.Kryo;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
-import org.project.bolts.AnomalySimpleBolt;
-import org.project.bolts.ComplexPublicationBolt;
-import org.project.bolts.SimplePublicationBolt;
-import org.project.bolts.SimplePublicationAggregatorBolt;
+import org.project.bolts.*;
+import org.project.filters.Operator;
+import org.project.filters.SimplePublicationFilter;
 import org.project.spouts.SimplePublicationSpout;
+
+import java.util.List;
 
 public class Application extends ConfigurableTopology {
 
@@ -63,6 +65,14 @@ public class Application extends ConfigurableTopology {
         var simplePublicationBolt = new SimplePublicationBolt();
         var anomalySimpleBolt = new AnomalySimpleBolt();
 
+        var filterSimpleAnomalyBolt = new FilterSimpleAnomalyBolt(
+                SimplePublicationFilter.composedFilter(
+                        List.of(
+                                SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco")
+                        )
+                )
+        );
+
         builder.setSpout(
                 SimplePublicationSpout.ID,
                 source,
@@ -73,6 +83,12 @@ public class Application extends ConfigurableTopology {
                         simplePublicationAggregatorBolt,
                         2)
                 .shuffleGrouping(SimplePublicationSpout.ID);
+
+        builder.setBolt(
+                FilterSimpleAnomalyBolt.ID,
+                filterSimpleAnomalyBolt,
+                1
+        ).shuffleGrouping(SimplePublicationSpout.ID);
 
         builder.setBolt(
                         ComplexPublicationBolt.ID,
@@ -87,9 +103,9 @@ public class Application extends ConfigurableTopology {
                 .shuffleGrouping(SimplePublicationSpout.ID);
 
         builder.setBolt(
-                AnomalySimpleBolt.ID,
-                anomalySimpleBolt,
-                1)
+                        AnomalySimpleBolt.ID,
+                        anomalySimpleBolt,
+                        1)
                 .shuffleGrouping(SimplePublicationBolt.ID);
 
         return builder;
