@@ -7,6 +7,7 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
+import org.project.data.City;
 import org.project.models.ProtoSimplePublication;
 
 import java.text.MessageFormat;
@@ -74,7 +75,14 @@ public class SimplePublicationSpout extends BaseRichSpout {
 
     public static class SimplePublicationGenerator {
 
-        private static final String[] CITIES = { "San Francisco", "New York", "London", "Paris", "Tokyo" };
+        static List<City> cityList = List.of(
+                new City(City.Name.SAN_FRANCISCO),
+                new City(City.Name.NEW_YORK),
+                new City(City.Name.LONDON),
+                new City(City.Name.PARIS),
+                new City(City.Name.TOKYO)
+        );
+        private static final String[] CITIES = cityList.stream().map(City::ToString).toArray(String[]::new);
         private static final Map<String, List<String>> STATION_IDS = new HashMap<>() {{
             put(CITIES[0], new ArrayList<>() {{
                 add("0");

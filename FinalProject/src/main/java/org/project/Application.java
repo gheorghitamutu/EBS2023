@@ -1,7 +1,5 @@
 package org.project;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.google.common.collect.Maps;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
@@ -9,6 +7,7 @@ import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.project.bolts.*;
+import org.project.data.AnomalySimplePublication;
 import org.project.filters.Operator;
 import org.project.filters.SimplePublicationFilter;
 import org.project.models.ProtoSimplePublication;
@@ -16,7 +15,6 @@ import org.project.spouts.SimplePublicationSpout;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Application extends ConfigurableTopology {
@@ -74,9 +72,17 @@ public class Application extends ConfigurableTopology {
                 new FilterSimpleAnomalyBolt(
                         List.of(
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
-                                        SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco").test(n),
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_TEMPERATURE))).test(n),
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
-                                        SimplePublicationFilter.filterByTemperature(Operator.Type.GREATER_THAN, 20).test(n)
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.LOWER_THAN, AnomalySimplePublication.MIN_TEMPERATURE))).test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByWind(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_WIND))).test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByRain(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_RAIN))).test(n)
                         ));
 
         builder.setSpout(
@@ -91,12 +97,6 @@ public class Application extends ConfigurableTopology {
                 .shuffleGrouping(SimplePublicationSpout.ID);
 
         builder.setBolt(
-                FilterSimpleAnomalyBolt.ID,
-                filterSimpleAnomalyBolt,
-                1
-        ).shuffleGrouping(SimplePublicationSpout.ID);
-
-        builder.setBolt(
                         ComplexPublicationBolt.ID,
                         complexPublicationBolt,
                         2)
@@ -109,10 +109,16 @@ public class Application extends ConfigurableTopology {
                 .shuffleGrouping(SimplePublicationSpout.ID);
 
         builder.setBolt(
+                FilterSimpleAnomalyBolt.ID,
+                filterSimpleAnomalyBolt,
+                1
+        ).shuffleGrouping(SimplePublicationBolt.ID);
+
+        builder.setBolt(
                         AnomalySimpleBolt.ID,
                         anomalySimpleBolt,
                         1)
-                .shuffleGrouping(SimplePublicationBolt.ID);
+                .shuffleGrouping(FilterSimpleAnomalyBolt.ID);
 
         return builder;
     }

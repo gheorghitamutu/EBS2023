@@ -1,5 +1,6 @@
 package org.project.filters;
 
+import org.project.data.City;
 import org.project.models.ProtoSimplePublication;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class SimplePublicationFilter {
         }
     }
 
-    public static Predicate<ProtoSimplePublication.SimplePublication> filterByCity(Operator.Type type, String city) {
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByCity(Operator.Type type, City city) {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by city with HIGHER/LOWER operator!");
             case EQUAL:
-                return (sp) -> sp.getCity().equals(city);
+                return (sp) -> sp.getCity().equals(city.ToString());
             default:
                 throw new IllegalArgumentException("Unknown operator!");
         }

@@ -319,12 +319,31 @@ With a function example as it follows:
         }
     }
 
-This gets passed to a Bolt. But it needs a serializable form in order to be serialized by [Kryo](https://github.com/EsotericSoftware/kryo):
+This gets passed to a Bolt. But it needs a serializable form in order to be serialized by [Kryo](https://github.com/EsotericSoftware/kryo) so I'm using lambda with a Serializable interface that call a static function from filter class:
 
     (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
                                         SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco").test(n)
                                 
-Everything is then put into a list and the passed to a Bolt. The bolt then uses a map reduce operation on the aforementioned list:
+Everything is then put into a list and then passed to a Bolt:
+
+    var filterSimpleAnomalyBolt =
+                new FilterSimpleAnomalyBolt(
+                        List.of(
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_TEMPERATURE))).test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.LOWER_THAN, AnomalySimplePublication.MIN_TEMPERATURE))).test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByWind(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_WIND))).test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.composedFilter(
+                                            List.of(SimplePublicationFilter.filterByRain(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_RAIN))).test(n)
+                        ));     
+
+The bolt then uses a map reduce operation on the aforementioned list with the condition that if any of the combined filters (list of predicates where all must be true) tested is true then it emits the anomaly/filtered publication:
 
     @Override
     public void execute(Tuple input) {
@@ -332,8 +351,9 @@ Everything is then put into a list and the passed to a Bolt. The bolt then uses 
             var value = input.getValueByField(f);
             if (f.equals("SimplePublication")) {
                 var sp = (ProtoSimplePublication.SimplePublication) (value);
-                if (this.predicates.stream().map(p -> p.test(sp)).reduce(true, (a, b) -> a && b)) {
-                    this.collector.emit(input, new Values(sp));
+                if (this.predicates.stream().map(p -> p.test(sp)).reduce(false, (a, b) -> a || b)) {
+                    var anomalyType = AnomalySimplePublication.ToString(AnomalySimplePublication.isAnomaly(sp));
+                    this.collector.emit(input, new Values(anomalyType, sp));
                 } else {
                     LOG.info("Field <" + f + "> Value <" + sp + "> (Filtered!)");
                 }

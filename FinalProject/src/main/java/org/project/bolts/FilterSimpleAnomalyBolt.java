@@ -8,6 +8,7 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.project.data.AnomalySimplePublication;
 import org.project.models.ProtoSimplePublication;
 
 import java.util.List;
@@ -40,8 +41,9 @@ public class FilterSimpleAnomalyBolt extends BaseRichBolt {
             var value = input.getValueByField(f);
             if (f.equals("SimplePublication")) {
                 var sp = (ProtoSimplePublication.SimplePublication) (value);
-                if (this.predicates.stream().map(p -> p.test(sp)).reduce(true, (a, b) -> a && b)) {
-                    this.collector.emit(input, new Values(sp));
+                if (this.predicates.stream().map(p -> p.test(sp)).reduce(false, (a, b) -> a || b)) {
+                    var anomalyType = AnomalySimplePublication.ToString(AnomalySimplePublication.isAnomaly(sp));
+                    this.collector.emit(input, new Values(anomalyType, sp));
                 } else {
                     LOG.info("Field <" + f + "> Value <" + sp + "> (Filtered!)");
                 }
@@ -60,6 +62,6 @@ public class FilterSimpleAnomalyBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("SimplePublication"));
+        declarer.declare(new Fields("AnomalyType", "SimplePublication"));
     }
 }
