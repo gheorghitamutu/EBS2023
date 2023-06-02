@@ -7,9 +7,12 @@ import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.project.bolts.*;
+import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
+import org.project.filters.ComplexPublicationFilter;
 import org.project.filters.Operator;
 import org.project.filters.SimplePublicationFilter;
+import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoSimplePublication;
 import org.project.spouts.SimplePublicationSpout;
 
@@ -66,7 +69,6 @@ public class Application extends ConfigurableTopology {
                                 new BaseWindowedBolt.Count(SLIDING_INTERVAL));
         var complexPublicationBolt = new ComplexPublicationBolt();
         var simplePublicationBolt = new SimplePublicationBolt();
-        var anomalySimpleBolt = new AnomalySimpleBolt();
 
         var filterSimpleAnomalyBolt =
                 new FilterSimpleAnomalyBolt(
@@ -84,6 +86,26 @@ public class Application extends ConfigurableTopology {
                                         SimplePublicationFilter.composedFilter(
                                             List.of(SimplePublicationFilter.filterByRain(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_RAIN))).test(n)
                         ));
+
+        var filterComplexAnomalyBolt =
+                new FilterComplexAnomalyBolt(
+                        List.of(
+                                (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
+                                        ComplexPublicationFilter.composedFilter(
+                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_TEMPERATURE))).test(n),
+                                (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
+                                        ComplexPublicationFilter.composedFilter(
+                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(Operator.Type.LOWER_THAN, AnomalyComplexPublication.MIN_AVG_TEMPERATURE))).test(n),
+                                (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
+                                        ComplexPublicationFilter.composedFilter(
+                                            List.of(ComplexPublicationFilter.filterByAvgWind(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_WIND))).test(n),
+                                (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
+                                        ComplexPublicationFilter.composedFilter(
+                                            List.of(ComplexPublicationFilter.filterByAvgRain(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_RAIN))).test(n)
+                        ));
+
+        var anomalySimpleBolt = new AnomalySimpleBolt();
+        var anomalyComplexBolt = new AnomalyComplexBolt();
 
         builder.setSpout(
                 SimplePublicationSpout.ID,
@@ -119,6 +141,18 @@ public class Application extends ConfigurableTopology {
                         anomalySimpleBolt,
                         1)
                 .shuffleGrouping(FilterSimpleAnomalyBolt.ID);
+
+        builder.setBolt(
+                FilterComplexAnomalyBolt.ID,
+                filterComplexAnomalyBolt,
+                1
+        ).shuffleGrouping(ComplexPublicationBolt.ID);
+
+        builder.setBolt(
+                        AnomalyComplexBolt.ID,
+                        anomalyComplexBolt,
+                        1)
+                .shuffleGrouping(FilterComplexAnomalyBolt.ID);
 
         return builder;
     }
