@@ -162,8 +162,8 @@ public class Application extends ConfigurableTopology {
                 anomalyTerminalBolt,
                 1
                 )
-                .fieldsGrouping(AnomalySimpleBolt.ID, "simple_anomaly_stream", new Fields("AnomalyType", "SimplePublication"))
-                .fieldsGrouping(AnomalyComplexBolt.ID, "complex_anomaly_stream", new Fields("AnomalyType", "ComplexPublication"));
+                .fieldsGrouping(AnomalySimpleBolt.ID,  new Fields("AnomalyType", "SimplePublication"))
+                .fieldsGrouping(AnomalyComplexBolt.ID,  new Fields("AnomalyType", "ComplexPublication"));
 
         return builder;
     }

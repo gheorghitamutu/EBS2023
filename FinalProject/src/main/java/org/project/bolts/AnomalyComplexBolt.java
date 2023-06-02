@@ -31,7 +31,7 @@ public class AnomalyComplexBolt  extends BaseRichBolt {
 
         var anomalyType = input.getStringByField("AnomalyType");
         var cp = (ProtoComplexPublication.ComplexPublication)(input.getValueByField("ComplexPublication"));
-        this.collector.emit("complex_anomaly_stream", input, new Values(anomalyType, cp));
+        this.collector.emit(input, new Values(anomalyType, cp));
 
         LOG.info(MessageFormat.format("Processed anomaly <{0}>!", input));
         this.collector.ack(input);
@@ -40,7 +40,7 @@ public class AnomalyComplexBolt  extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("complex_anomaly_stream", new Fields("AnomalyType", "ComplexPublication"));
+        declarer.declare(new Fields("AnomalyType", "ComplexPublication"));
     }
 
     @Override
