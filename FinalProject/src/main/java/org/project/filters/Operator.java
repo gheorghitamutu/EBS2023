@@ -4,8 +4,8 @@ public class Operator {
 
     public
     static enum Type {
-        LOWER,
+        LOWER_THAN,
         EQUAL,
-        HIGHER
+        GREATER_THAN
     }
 }

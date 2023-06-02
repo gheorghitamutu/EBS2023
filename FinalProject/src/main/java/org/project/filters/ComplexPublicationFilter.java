@@ -1,7 +1,6 @@
 package org.project.filters;
 
 import org.project.models.ProtoComplexPublication;
-import org.project.models.ProtoSimplePublication;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -9,8 +8,8 @@ import java.util.function.Predicate;
 public class ComplexPublicationFilter {
     public static Predicate<ProtoComplexPublication.ComplexPublication> filterByUUID(Operator.Type type, String uuid) {
         switch (type) {
-            case LOWER:
-            case HIGHER:
+            case LOWER_THAN:
+            case GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by UUID with HIGHER/LOWER operator!");
             case EQUAL:
                 return (cp) -> cp.getUuid().equals(uuid);
@@ -21,8 +20,8 @@ public class ComplexPublicationFilter {
 
     public static Predicate<ProtoComplexPublication.ComplexPublication> filterByCity(Operator.Type type, String city) {
         switch (type) {
-            case LOWER:
-            case HIGHER:
+            case LOWER_THAN:
+            case GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by city with HIGHER/LOWER operator!");
             case EQUAL:
                 return (cp) -> cp.getCity().equals(city);
@@ -33,11 +32,11 @@ public class ComplexPublicationFilter {
 
     public static Predicate<ProtoComplexPublication.ComplexPublication> filterByAvgTemperature(Operator.Type type, double avgTemperature) {
         switch (type) {
-            case LOWER:
+            case LOWER_THAN:
                 return (cp) -> cp.getAvgTemperature() < avgTemperature;
             case EQUAL:
                 return (cp) -> cp.getAvgTemperature() == avgTemperature;
-            case HIGHER:
+            case GREATER_THAN:
                 return (cp) -> cp.getAvgTemperature() > avgTemperature;
             default:
                 throw new IllegalArgumentException("Unknown operator!");
@@ -46,11 +45,11 @@ public class ComplexPublicationFilter {
 
     public static Predicate<ProtoComplexPublication.ComplexPublication> filterByAvgRain(Operator.Type type, double avgRain) {
         switch (type) {
-            case LOWER:
+            case LOWER_THAN:
                 return (cp) -> cp.getAvgRain() < avgRain;
             case EQUAL:
                 return (cp) -> cp.getAvgRain() == avgRain;
-            case HIGHER:
+            case GREATER_THAN:
                 return (cp) -> cp.getAvgRain() > avgRain;
             default:
                 throw new IllegalArgumentException("Unknown operator!");
@@ -59,11 +58,11 @@ public class ComplexPublicationFilter {
 
     public static Predicate<ProtoComplexPublication.ComplexPublication> filterByAvgWind(Operator.Type type, double avgWind) {
         switch (type) {
-            case LOWER:
+            case LOWER_THAN:
                 return (cp) -> cp.getAvgWind() < avgWind;
             case EQUAL:
                 return (cp) -> cp.getAvgWind() == avgWind;
-            case HIGHER:
+            case GREATER_THAN:
                 return (cp) -> cp.getAvgWind() > avgWind;
             default:
                 throw new IllegalArgumentException("Unknown operator!");

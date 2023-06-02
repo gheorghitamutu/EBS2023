@@ -1,6 +1,7 @@
 package org.project;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.google.common.collect.Maps;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
@@ -10,9 +11,13 @@ import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.project.bolts.*;
 import org.project.filters.Operator;
 import org.project.filters.SimplePublicationFilter;
+import org.project.models.ProtoSimplePublication;
 import org.project.spouts.SimplePublicationSpout;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Application extends ConfigurableTopology {
 
@@ -65,13 +70,14 @@ public class Application extends ConfigurableTopology {
         var simplePublicationBolt = new SimplePublicationBolt();
         var anomalySimpleBolt = new AnomalySimpleBolt();
 
-        var filterSimpleAnomalyBolt = new FilterSimpleAnomalyBolt(
-                SimplePublicationFilter.composedFilter(
+        var filterSimpleAnomalyBolt =
+                new FilterSimpleAnomalyBolt(
                         List.of(
-                                SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco")
-                        )
-                )
-        );
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco").test(n),
+                                (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.filterByTemperature(Operator.Type.GREATER_THAN, 20).test(n)
+                        ));
 
         builder.setSpout(
                 SimplePublicationSpout.ID,
