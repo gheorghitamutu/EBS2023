@@ -25,15 +25,8 @@ public class ComplexPublicationBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        input.getFields().forEach((f) -> {
-            var value = input.getValueByField(f);
-            if (f.equals("ComplexPublication")) {
-                LOG.info(MessageFormat.format("Complex Publication Field <{0}> Value <{1}>", f, value));
-            }
-            else {
-                LOG.info(MessageFormat.format("Complex Publication Field (Unknown!) <{0}> Value (Unknown!) <{1}>", f, value));
-            }
-        });
+
+        this.collector.emit(input, new Values(input.getValueByField("ComplexPublication")));
         this.collector.ack(input);
         eventsReceived++;
     }

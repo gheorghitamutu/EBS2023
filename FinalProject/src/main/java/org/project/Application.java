@@ -6,6 +6,7 @@ import org.apache.storm.generated.StormTopology;
 import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
+import org.apache.storm.tuple.Fields;
 import org.project.bolts.*;
 import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
@@ -18,6 +19,7 @@ import org.project.spouts.SimplePublicationSpout;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 public class Application extends ConfigurableTopology {
@@ -106,6 +108,7 @@ public class Application extends ConfigurableTopology {
 
         var anomalySimpleBolt = new AnomalySimpleBolt();
         var anomalyComplexBolt = new AnomalyComplexBolt();
+        var anomalyTerminalBolt = new AnomalyTerminalBolt();
 
         builder.setSpout(
                 SimplePublicationSpout.ID,
@@ -139,7 +142,7 @@ public class Application extends ConfigurableTopology {
         builder.setBolt(
                         AnomalySimpleBolt.ID,
                         anomalySimpleBolt,
-                        1)
+                        2)
                 .shuffleGrouping(FilterSimpleAnomalyBolt.ID);
 
         builder.setBolt(
@@ -153,6 +156,14 @@ public class Application extends ConfigurableTopology {
                         anomalyComplexBolt,
                         1)
                 .shuffleGrouping(FilterComplexAnomalyBolt.ID);
+
+        builder.setBolt(
+                AnomalyTerminalBolt.ID,
+                anomalyTerminalBolt,
+                1
+                )
+                .fieldsGrouping(AnomalySimpleBolt.ID, "simple_anomaly_stream", new Fields("AnomalyType", "SimplePublication"))
+                .fieldsGrouping(AnomalyComplexBolt.ID, "complex_anomaly_stream", new Fields("AnomalyType", "ComplexPublication"));
 
         return builder;
     }

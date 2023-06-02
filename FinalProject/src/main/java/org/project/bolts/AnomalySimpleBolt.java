@@ -5,7 +5,9 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 import org.project.models.ProtoSimplePublication;
 
 import java.text.MessageFormat;
@@ -26,19 +28,11 @@ public class AnomalySimpleBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        input.getFields().forEach((f) -> {
-            var value = input.getValueByField(f);
-            if (f.equals("AnomalyType")) {
-                LOG.info(MessageFormat.format("Anomaly Field <{0}> Value <{1}>", f, value));
-            }
-            else if (f.equals("SimplePublication")){
-                var sp = (ProtoSimplePublication.SimplePublication)(value);
-                LOG.info(MessageFormat.format("Anomaly Field <{0}> Value <{1}>", f, sp));
-            }
-            else {
-                LOG.info(MessageFormat.format("Anomaly Field (Unknown!) <{0}> Value (Unknown!) <{1}>", f, value));
-            }
-        });
+
+        var anomalyType = input.getStringByField("AnomalyType");
+        var sp = (ProtoSimplePublication.SimplePublication)(input.getValueByField("SimplePublication"));
+        this.collector.emit("simple_anomaly_stream", input, new Values(anomalyType, sp));
+
         LOG.info(MessageFormat.format("Processed anomaly <{0}>!", input));
         this.collector.ack(input);
         eventsReceived++;
@@ -46,7 +40,7 @@ public class AnomalySimpleBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // TODO: nothing?
+        declarer.declareStream("simple_anomaly_stream", new Fields("AnomalyType", "SimplePublication"));
     }
 
     @Override
