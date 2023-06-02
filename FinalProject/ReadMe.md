@@ -16,6 +16,7 @@ Table of Contents
   - [Simple publication](#simple-publication)
   - [Complex Publication](#complex-publication)
   - [Filters](#filters)
+  - [Topology Diagram](#topology-diagram)
   - [References](#references)
 
 
@@ -364,6 +365,9 @@ The bolt then uses a map reduce operation on the aforementioned list with the co
 
         this.collector.ack(input);
     }
+
+## Topology Diagram
+![Topology](./docs/topology.png)
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
