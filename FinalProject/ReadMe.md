@@ -15,6 +15,7 @@ Table of Contents
   - [Protobuf](#protobuf)
   - [Simple publication](#simple-publication)
   - [Complex Publication](#complex-publication)
+  - [Filters](#filters)
   - [References](#references)
 
 
@@ -288,6 +289,61 @@ And this generates the required .java files that we'll be using in our project.
 - avg_rain: This field is a double that represents the average amount of rainfall recorded by the weather station over a period of time, such as a day or a month.
 - avg_wind: This field is a double that represents the average wind speed recorded by the weather station over a period of time, such as a day or a month.
 
+## Filters
+Filter implementation is made via bolts that filters out the unwanted publications.
+
+First, a class that implements all the filters on the respective fields and operators is created:
+
+    public class Operator {
+    
+        public
+        static enum Type {
+            LOWER_THAN,
+            EQUAL,
+            GREATER_THAN
+        }
+    }
+
+With a function example as it follows:
+
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByTemperature(Operator.Type type, double temperature) {
+        switch (type) {
+            case LOWER_THAN:
+                return (sp) -> sp.getTemperature() < temperature;
+            case EQUAL:
+                return (sp) -> sp.getTemperature() == temperature;
+            case GREATER_THAN:
+                return (sp) -> sp.getTemperature() > temperature;
+            default:
+                throw new IllegalArgumentException("Unknown operator!");
+        }
+    }
+
+This gets passed to a Bolt. But it needs a serializable form in order to be serialized by [Kryo](https://github.com/EsotericSoftware/kryo):
+
+    (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
+                                        SimplePublicationFilter.filterByCity(Operator.Type.EQUAL, "San Francisco").test(n)
+                                
+Everything is then put into a list and the passed to a Bolt. The bolt then uses a map reduce operation on the aforementioned list:
+
+    @Override
+    public void execute(Tuple input) {
+        input.getFields().forEach((f) -> {
+            var value = input.getValueByField(f);
+            if (f.equals("SimplePublication")) {
+                var sp = (ProtoSimplePublication.SimplePublication) (value);
+                if (this.predicates.stream().map(p -> p.test(sp)).reduce(true, (a, b) -> a && b)) {
+                    this.collector.emit(input, new Values(sp));
+                } else {
+                    LOG.info("Field <" + f + "> Value <" + sp + "> (Filtered!)");
+                }
+            } else {
+                LOG.info("Field (Unknown!) <" + f + "> Value (Unknown!) <" + value + ">");
+            }
+        });
+
+        this.collector.ack(input);
+    }
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
@@ -297,3 +353,5 @@ https://storm.apache.org/releases/2.4.0/Windowing.html
 https://hub.docker.com/_/storm
 
 https://github.com/apache/storm/blob/master/examples/storm-starter/src/jvm/org/apache/storm/starter/WordCountTopology.java
+
+https://github.com/EsotericSoftware/kryo
