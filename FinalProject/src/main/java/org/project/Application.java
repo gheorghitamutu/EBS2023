@@ -17,7 +17,9 @@ import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
+import org.project.spouts.ComplexSubscriptionSpout;
 import org.project.spouts.SimplePublicationSpout;
+import org.project.spouts.SimpleSubscriptionSpout;
 
 import java.io.Serializable;
 import java.util.List;
@@ -69,6 +71,8 @@ public class Application extends ConfigurableTopology {
                                 new BaseWindowedBolt.Count(SLIDING_INTERVAL));
         var complexPublicationBolt = new ComplexPublicationBolt();
         var simplePublicationBolt = new SimplePublicationBolt();
+
+        // handle anomalies
 
         var filterSimpleAnomalyBolt =
                 new FilterSimpleAnomalyBolt(
@@ -162,6 +166,37 @@ public class Application extends ConfigurableTopology {
                 )
                 .fieldsGrouping(AnomalySimpleBolt.ID,  new Fields("AnomalyType", "SimplePublication"))
                 .fieldsGrouping(AnomalyComplexBolt.ID,  new Fields("AnomalyType", "ComplexPublication"));
+
+        // handle subscribers
+
+        var simpleSubscriptionSpout = new SimpleSubscriptionSpout();
+        var complexSubscriptionSpout = new ComplexSubscriptionSpout();
+
+        builder.setSpout(
+                SimpleSubscriptionSpout.ID,
+                simpleSubscriptionSpout,
+                1);
+        builder.setSpout(
+                ComplexSubscriptionSpout.ID,
+                complexSubscriptionSpout,
+                1);
+
+        var filterSimpleSubscriptionBolt = new FilterSimpleSubscriptionBolt();
+        var filterComplexSubscriptionBolt = new FilterComplexSubscriptionBolt();
+
+        builder.setBolt(
+                FilterSimpleSubscriptionBolt.ID,
+                filterSimpleSubscriptionBolt,
+                1)
+                .fieldsGrouping(SimplePublicationSpout.ID,  new Fields("SimplePublication"))
+                .fieldsGrouping(SimpleSubscriptionSpout.ID, new Fields("SimpleSubscription"));
+
+        builder.setBolt(
+                FilterComplexSubscriptionBolt.ID,
+                filterComplexSubscriptionBolt,
+                1)
+                .fieldsGrouping(ComplexPublicationBolt.ID,  new Fields("ComplexPublication"))
+                .fieldsGrouping(ComplexSubscriptionSpout.ID, new Fields("ComplexSubscription"));
 
         return builder;
     }
