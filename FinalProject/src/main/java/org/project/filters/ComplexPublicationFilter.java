@@ -34,8 +34,12 @@ public class ComplexPublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (cp) -> cp.getAvgTemperature() < avgTemperature;
+            case EQUAL_OR_LOWER_THAN:
+                return (cp) -> cp.getAvgTemperature() <= avgTemperature;
             case EQUAL:
                 return (cp) -> cp.getAvgTemperature() == avgTemperature;
+            case EQUAL_OR_GREATER_THAN:
+                return (cp) -> cp.getAvgTemperature() >= avgTemperature;
             case GREATER_THAN:
                 return (cp) -> cp.getAvgTemperature() > avgTemperature;
             default:
@@ -47,8 +51,12 @@ public class ComplexPublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (cp) -> cp.getAvgRain() < avgRain;
+            case EQUAL_OR_LOWER_THAN:
+                return (cp) -> cp.getAvgRain() <= avgRain;
             case EQUAL:
                 return (cp) -> cp.getAvgRain() == avgRain;
+            case EQUAL_OR_GREATER_THAN:
+                return (cp) -> cp.getAvgRain() >= avgRain;
             case GREATER_THAN:
                 return (cp) -> cp.getAvgRain() > avgRain;
             default:
@@ -60,8 +68,12 @@ public class ComplexPublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (cp) -> cp.getAvgWind() < avgWind;
+            case EQUAL_OR_LOWER_THAN:
+                return (cp) -> cp.getAvgWind() <= avgWind;
             case EQUAL:
                 return (cp) -> cp.getAvgWind() == avgWind;
+            case EQUAL_OR_GREATER_THAN:
+                return (cp) -> cp.getAvgWind() >= avgWind;
             case GREATER_THAN:
                 return (cp) -> cp.getAvgWind() > avgWind;
             default:

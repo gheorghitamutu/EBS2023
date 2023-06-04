@@ -12,6 +12,8 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
+            case EQUAL_OR_LOWER_THAN:
+            case EQUAL_OR_GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by stationId with HIGHER/LOWER operator!");
             case EQUAL:
                 return (sp) -> sp.getStationId().equals(stationId);
@@ -24,6 +26,8 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
+            case EQUAL_OR_LOWER_THAN:
+            case EQUAL_OR_GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by city with HIGHER/LOWER operator!");
             case EQUAL:
                 return (sp) -> sp.getCity().equals(city.ToString());
@@ -36,8 +40,12 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (sp) -> sp.getTemperature() < temperature;
+            case EQUAL_OR_LOWER_THAN:
+                return (sp) -> sp.getTemperature() <= temperature;
             case EQUAL:
                 return (sp) -> sp.getTemperature() == temperature;
+            case EQUAL_OR_GREATER_THAN:
+                return (sp) -> sp.getTemperature() >= temperature;
             case GREATER_THAN:
                 return (sp) -> sp.getTemperature() > temperature;
             default:
@@ -49,8 +57,12 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (sp) -> sp.getRain() < rain;
+            case EQUAL_OR_LOWER_THAN:
+                return (sp) -> sp.getRain() <= rain;
             case EQUAL:
                 return (sp) -> sp.getRain() == rain;
+            case EQUAL_OR_GREATER_THAN:
+                return (sp) -> sp.getRain() >= rain;
             case GREATER_THAN:
                 return (sp) -> sp.getRain() > rain;
             default:
@@ -62,8 +74,12 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
                 return (sp) -> sp.getWind() < wind;
+            case EQUAL_OR_LOWER_THAN:
+                return (sp) -> sp.getWind() <= wind;
             case EQUAL:
                 return (sp) -> sp.getWind() == wind;
+            case EQUAL_OR_GREATER_THAN:
+                return (sp) -> sp.getWind() >= wind;
             case GREATER_THAN:
                 return (sp) -> sp.getWind() > wind;
             default:
@@ -75,6 +91,8 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
+            case EQUAL_OR_LOWER_THAN:
+            case EQUAL_OR_GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by direction with HIGHER/LOWER operator!");
             case EQUAL:
                 return (sp) -> sp.getDirection().equals(direction);
@@ -87,6 +105,8 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
+            case EQUAL_OR_LOWER_THAN:
+            case EQUAL_OR_GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by date with HIGHER/LOWER operator!");
             case EQUAL:
                 return (sp) -> sp.getDate().equals(date);
@@ -99,6 +119,8 @@ public class SimplePublicationFilter {
         switch (type) {
             case LOWER_THAN:
             case GREATER_THAN:
+            case EQUAL_OR_LOWER_THAN:
+            case EQUAL_OR_GREATER_THAN:
                 throw new IllegalArgumentException("Cannot filter by uuid with HIGHER/LOWER operator!");
             case EQUAL:
                 return (sp) -> sp.getUuid().equals(uuid);
