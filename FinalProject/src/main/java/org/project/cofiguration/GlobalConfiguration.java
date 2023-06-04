@@ -18,4 +18,6 @@ public class GlobalConfiguration {
     public static final int SIMPLE_PUBLICATION_TIME_INTERVAL = 3; // in minutes
     public static final double SIMPLE_PUBLICATION_INTERVAL = (SIMPLE_PUBLICATION_TIME_INTERVAL * 60.0) / SIMPLE_PUBLICATION_COUNT;
     public static final long MAX_TIME = 10 * 60 * 1000; // 10 minutes
+    public static final int SIMPLE_SUBSCRIPTION_COUNT = 10000;
+    public static final int COMPLEX_SUBSCRIPTION_COUNT = 10000;
 }

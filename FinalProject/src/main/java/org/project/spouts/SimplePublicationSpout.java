@@ -28,10 +28,10 @@ public class SimplePublicationSpout extends BaseRichSpout {
     private static final long START_TIME = System.currentTimeMillis();
 
     @Override
-    public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector collector) {
+    public void open(Map<String, Object> map, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;
         this.simplePublicationCount = 0;
-        this.taskName = MessageFormat.format("<{0} <-> {0}>", topologyContext.getThisComponentId(), topologyContext.getThisTaskId());
+        this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
         this.unconfirmed = new HashMap<>();
     }
 

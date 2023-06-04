@@ -15,6 +15,8 @@ Table of Contents
   - [Protobuf](#protobuf)
   - [Simple publication](#simple-publication)
   - [Complex Publication](#complex-publication)
+  - [Simple Subscription](#simple-subscription)
+  - [Complex Subscription](#complex-subscription)
   - [Filters](#filters)
   - [Topology Diagram](#topology-diagram)
   - [References](#references)
@@ -289,6 +291,81 @@ And this generates the required .java files that we'll be using in our project.
 - avg_temperature: This field is a double that represents the average temperature recorded by the weather station over a period of time, such as a day or a month.
 - avg_rain: This field is a double that represents the average amount of rainfall recorded by the weather station over a period of time, such as a day or a month.
 - avg_wind: This field is a double that represents the average wind speed recorded by the weather station over a period of time, such as a day or a month.
+
+## Simple Subscription
+
+    syntax = "proto3";
+
+    option java_package = "org.project.models";
+    option java_outer_classname = "ProtoSimpleSubscription";
+
+    enum Operator {
+        LOWER_THAN = 0;
+        EQUAL_OR_LOWER_THAN = 1;
+        EQUAL = 2;
+        EQUAL_OR_GREATER_THAN = 3;
+        GREATER_THAN = 4;
+    }
+
+    message ConditionDouble {
+        Operator operator = 1;
+        double value = 2;
+    }
+
+    message ConditionString {
+        Operator operator = 1;
+        string value = 2;
+    }
+
+    message SimplePublicationCondition {
+        ConditionString city = 1;
+        ConditionDouble temperature = 2;
+        ConditionDouble rain = 3;
+        ConditionDouble wind = 4;
+    }
+
+    message SimpleSubscription {
+        string subscriptionId = 1;
+        SimplePublicationCondition conditions = 2;
+    }
+
+
+## Complex Subscription
+
+    syntax = "proto3";
+
+    option java_package = "org.project.models";
+    option java_outer_classname = "ProtoComplexSubscription";
+
+    enum Operator {
+        LOWER_THAN = 0;
+        EQUAL_OR_LOWER_THAN = 1;
+        EQUAL = 2;
+        EQUAL_OR_GREATER_THAN = 3;
+        GREATER_THAN = 4;
+    }
+
+    message ConditionDouble {
+        Operator operator = 1;
+        double value = 2;
+    }
+
+    message ConditionString {
+        Operator operator = 1;
+        string value = 2;
+    }
+
+    message ComplexPublicationCondition {
+        ConditionString city = 1;
+        ConditionDouble averageTemperature = 2;
+        ConditionDouble averageRain = 3;
+        ConditionDouble averageWind = 4;
+    }
+
+    message ComplexSubscription {
+        string subscriptionId = 1;
+        ComplexPublicationCondition conditions = 2;
+    }
 
 ## Filters
 Filter implementation is made via bolts that filters out the unwanted publications.
