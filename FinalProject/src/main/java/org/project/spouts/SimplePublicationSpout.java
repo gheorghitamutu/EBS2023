@@ -14,18 +14,17 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.*;
 
+import static org.project.cofiguration.GlobalConfiguration.MAX_TIME;
+
 public class SimplePublicationSpout extends BaseRichSpout {
 
     private SpoutOutputCollector collector;
     private String taskName;
     private Map<String, ProtoSimplePublication.SimplePublication> unconfirmed;
     private int simplePublicationCount;
-
     private static final Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
-    public static final String ID = SimplePublicationSpout.class.toString();
-    private static final int MAX_SIMPLE_PUBLICATION_COUNT = 1000000;
 
-    private static final long MAX_TIME = 10 * 60 * 1000; // 10 minutes
+    public static final String ID = SimplePublicationSpout.class.toString();
     private static final long START_TIME = System.currentTimeMillis();
 
     @Override
@@ -41,10 +40,6 @@ public class SimplePublicationSpout extends BaseRichSpout {
         if (System.currentTimeMillis() - START_TIME > MAX_TIME) {
             return;
         }
-
-        // if (simplePublicationCount >= MAX_SIMPLE_PUBLICATION_COUNT) {
-        //    return;
-        // }
 
         simplePublicationCount++;
 
@@ -135,5 +130,10 @@ public class SimplePublicationSpout extends BaseRichSpout {
                     .setDate(date.toString())
                     .build();
         }
+    }
+
+    @Override
+    public void close() {
+        LOG.info(MessageFormat.format("SimplePublicationSpout {0} has generated {1} SimplePublications", this.taskName, this.simplePublicationCount));
     }
 }

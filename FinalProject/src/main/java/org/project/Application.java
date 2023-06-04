@@ -8,6 +8,7 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
 import org.project.bolts.*;
+import org.project.cofiguration.GlobalConfiguration;
 import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
 import org.project.filters.ComplexPublicationFilter;
@@ -19,19 +20,15 @@ import org.project.spouts.SimplePublicationSpout;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+
+import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class Application extends ConfigurableTopology {
 
-    private static final String TOPOLOGY_NAME = "project_topology";
-    private static final int LOCAL_CLUSTER_RUN_TIME = 10 * 60 * 100;
-    private static final int WINDOW_LENGTH = 30;
-    private static final int SLIDING_INTERVAL = 10;
-
     public static void main(String[] args) throws Exception {
 
-        if (args.length == 1 && args[0].equals("--local_cluster")) {
+        if (args.length == 1 && args[0].equals(LOCAL_CLUSTER_ARGUMENT)) {
             runLocalCluster();
             return;
         }
@@ -170,13 +167,13 @@ public class Application extends ConfigurableTopology {
 
     static void setConfig(Config config) {
         // fine tuning => https://storm.apache.org/releases/2.4.0/Performance.html
-        config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 2048);
-        config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, 100);
-        config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, 100);
-        config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, 0.001);
+        config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, GlobalConfiguration.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE);
+        config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, GlobalConfiguration.TOPOLOGY_TRANSFER_BATCH_SIZE);
+        config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, GlobalConfiguration.TOPOLOGY_PRODUCER_BATCH_SIZE);
+        config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, GlobalConfiguration.TOPOLOGY_STATS_SAMPLE_RATE);
 
-        config.setDebug(false);
-        config.setNumWorkers(1);
+        config.setDebug(TOPOLOGY_DEBUG);
+        config.setNumWorkers(TOPOLOGY_WORKERS);
     }
 
     @Override
