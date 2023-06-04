@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_package = "org.project.models";
+option java_outer_classname = "ProtoSimpleSubscription";
+
+enum Operator {
+  LOWER_THAN = 0;
+  EQUAL_OR_LOWER_THAN = 1;
+  EQUAL = 2;
+  EQUAL_OR_GREATER_THAN = 3;
+  GREATER_THAN = 4;
+}
+
+message ConditionDouble {
+  Operator operator = 1;
+  double value = 2;
+}
+
+message ConditionString {
+  Operator operator = 1;
+  string value = 2;
+}
+
+message SimplePublicationCondition {
+  ConditionString city = 1;
+  ConditionDouble temperature = 2;
+  ConditionDouble rain = 3;
+  ConditionDouble wind = 4;
+}
+
+message SimpleSubscription {
+  string subscriptionId = 1;
+  SimplePublicationCondition conditions = 2;
+}
