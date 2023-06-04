@@ -20,48 +20,56 @@ public final class ProtoSimpleSubscription {
   public enum Operator
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>LOWER_THAN = 0;</code>
+     * <code>NONE = 0;</code>
      */
-    LOWER_THAN(0),
+    NONE(0),
     /**
-     * <code>EQUAL_OR_LOWER_THAN = 1;</code>
+     * <code>LOWER_THAN = 1;</code>
      */
-    EQUAL_OR_LOWER_THAN(1),
+    LOWER_THAN(1),
     /**
-     * <code>EQUAL = 2;</code>
+     * <code>EQUAL_OR_LOWER_THAN = 2;</code>
      */
-    EQUAL(2),
+    EQUAL_OR_LOWER_THAN(2),
     /**
-     * <code>EQUAL_OR_GREATER_THAN = 3;</code>
+     * <code>EQUAL = 3;</code>
      */
-    EQUAL_OR_GREATER_THAN(3),
+    EQUAL(3),
     /**
-     * <code>GREATER_THAN = 4;</code>
+     * <code>EQUAL_OR_GREATER_THAN = 4;</code>
      */
-    GREATER_THAN(4),
+    EQUAL_OR_GREATER_THAN(4),
+    /**
+     * <code>GREATER_THAN = 5;</code>
+     */
+    GREATER_THAN(5),
     UNRECOGNIZED(-1),
     ;
 
     /**
-     * <code>LOWER_THAN = 0;</code>
+     * <code>NONE = 0;</code>
      */
-    public static final int LOWER_THAN_VALUE = 0;
+    public static final int NONE_VALUE = 0;
     /**
-     * <code>EQUAL_OR_LOWER_THAN = 1;</code>
+     * <code>LOWER_THAN = 1;</code>
      */
-    public static final int EQUAL_OR_LOWER_THAN_VALUE = 1;
+    public static final int LOWER_THAN_VALUE = 1;
     /**
-     * <code>EQUAL = 2;</code>
+     * <code>EQUAL_OR_LOWER_THAN = 2;</code>
      */
-    public static final int EQUAL_VALUE = 2;
+    public static final int EQUAL_OR_LOWER_THAN_VALUE = 2;
     /**
-     * <code>EQUAL_OR_GREATER_THAN = 3;</code>
+     * <code>EQUAL = 3;</code>
      */
-    public static final int EQUAL_OR_GREATER_THAN_VALUE = 3;
+    public static final int EQUAL_VALUE = 3;
     /**
-     * <code>GREATER_THAN = 4;</code>
+     * <code>EQUAL_OR_GREATER_THAN = 4;</code>
      */
-    public static final int GREATER_THAN_VALUE = 4;
+    public static final int EQUAL_OR_GREATER_THAN_VALUE = 4;
+    /**
+     * <code>GREATER_THAN = 5;</code>
+     */
+    public static final int GREATER_THAN_VALUE = 5;
 
 
     public final int getNumber() {
@@ -88,11 +96,12 @@ public final class ProtoSimpleSubscription {
      */
     public static Operator forNumber(int value) {
       switch (value) {
-        case 0: return LOWER_THAN;
-        case 1: return EQUAL_OR_LOWER_THAN;
-        case 2: return EQUAL;
-        case 3: return EQUAL_OR_GREATER_THAN;
-        case 4: return GREATER_THAN;
+        case 0: return NONE;
+        case 1: return LOWER_THAN;
+        case 2: return EQUAL_OR_LOWER_THAN;
+        case 3: return EQUAL;
+        case 4: return EQUAL_OR_GREATER_THAN;
+        case 5: return GREATER_THAN;
         default: return null;
       }
     }
@@ -254,7 +263,7 @@ public final class ProtoSimpleSubscription {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.LOWER_THAN.getNumber()) {
+      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.NONE.getNumber()) {
         output.writeEnum(1, operator_);
       }
       if (java.lang.Double.doubleToRawLongBits(value_) != 0) {
@@ -269,7 +278,7 @@ public final class ProtoSimpleSubscription {
       if (size != -1) return size;
 
       size = 0;
-      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.LOWER_THAN.getNumber()) {
+      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.NONE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, operator_);
       }
@@ -875,7 +884,7 @@ public final class ProtoSimpleSubscription {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.LOWER_THAN.getNumber()) {
+      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.NONE.getNumber()) {
         output.writeEnum(1, operator_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
@@ -890,7 +899,7 @@ public final class ProtoSimpleSubscription {
       if (size != -1) return size;
 
       size = 0;
-      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.LOWER_THAN.getNumber()) {
+      if (operator_ != org.project.models.ProtoSimpleSubscription.Operator.NONE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, operator_);
       }
@@ -3376,11 +3385,11 @@ public final class ProtoSimpleSubscription {
       "Double\022\036\n\004wind\030\004 \001(\0132\020.ConditionDouble\"]" +
       "\n\022SimpleSubscription\022\026\n\016subscriptionId\030\001" +
       " \001(\t\022/\n\nconditions\030\002 \001(\0132\033.SimplePublica" +
-      "tionCondition*k\n\010Operator\022\016\n\nLOWER_THAN\020" +
-      "\000\022\027\n\023EQUAL_OR_LOWER_THAN\020\001\022\t\n\005EQUAL\020\002\022\031\n" +
-      "\025EQUAL_OR_GREATER_THAN\020\003\022\020\n\014GREATER_THAN" +
-      "\020\004B-\n\022org.project.modelsB\027ProtoSimpleSub" +
-      "scriptionb\006proto3"
+      "tionCondition*u\n\010Operator\022\010\n\004NONE\020\000\022\016\n\nL" +
+      "OWER_THAN\020\001\022\027\n\023EQUAL_OR_LOWER_THAN\020\002\022\t\n\005" +
+      "EQUAL\020\003\022\031\n\025EQUAL_OR_GREATER_THAN\020\004\022\020\n\014GR" +
+      "EATER_THAN\020\005B-\n\022org.project.modelsB\027Prot" +
+      "oSimpleSubscriptionb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

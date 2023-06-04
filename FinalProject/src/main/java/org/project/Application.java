@@ -12,10 +12,11 @@ import org.project.cofiguration.GlobalConfiguration;
 import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
 import org.project.filters.ComplexPublicationFilter;
-import org.project.filters.Operator;
 import org.project.filters.SimplePublicationFilter;
 import org.project.models.ProtoComplexPublication;
+import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
+import org.project.models.ProtoSimpleSubscription;
 import org.project.spouts.SimplePublicationSpout;
 
 import java.io.Serializable;
@@ -74,16 +75,16 @@ public class Application extends ConfigurableTopology {
                         List.of(
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
                                         SimplePublicationFilter.composedFilter(
-                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_TEMPERATURE))).test(n),
+                                            List.of(SimplePublicationFilter.filterByTemperature(ProtoSimpleSubscription.Operator.GREATER_THAN, AnomalySimplePublication.MAX_TEMPERATURE))).test(n),
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
                                         SimplePublicationFilter.composedFilter(
-                                            List.of(SimplePublicationFilter.filterByTemperature(Operator.Type.LOWER_THAN, AnomalySimplePublication.MIN_TEMPERATURE))).test(n),
+                                            List.of(SimplePublicationFilter.filterByTemperature(ProtoSimpleSubscription.Operator.LOWER_THAN, AnomalySimplePublication.MIN_TEMPERATURE))).test(n),
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
                                         SimplePublicationFilter.composedFilter(
-                                            List.of(SimplePublicationFilter.filterByWind(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_WIND))).test(n),
+                                            List.of(SimplePublicationFilter.filterByWind(ProtoSimpleSubscription.Operator.GREATER_THAN, AnomalySimplePublication.MAX_WIND))).test(n),
                                 (Predicate<ProtoSimplePublication.SimplePublication> & Serializable) (n) ->
                                         SimplePublicationFilter.composedFilter(
-                                            List.of(SimplePublicationFilter.filterByRain(Operator.Type.GREATER_THAN, AnomalySimplePublication.MAX_RAIN))).test(n)
+                                            List.of(SimplePublicationFilter.filterByRain(ProtoSimpleSubscription.Operator.GREATER_THAN, AnomalySimplePublication.MAX_RAIN))).test(n)
                         ));
 
         var filterComplexAnomalyBolt =
@@ -91,16 +92,16 @@ public class Application extends ConfigurableTopology {
                         List.of(
                                 (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
                                         ComplexPublicationFilter.composedFilter(
-                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_TEMPERATURE))).test(n),
+                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(ProtoComplexSubscription.Operator.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_TEMPERATURE))).test(n),
                                 (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
                                         ComplexPublicationFilter.composedFilter(
-                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(Operator.Type.LOWER_THAN, AnomalyComplexPublication.MIN_AVG_TEMPERATURE))).test(n),
+                                            List.of(ComplexPublicationFilter.filterByAvgTemperature(ProtoComplexSubscription.Operator.LOWER_THAN, AnomalyComplexPublication.MIN_AVG_TEMPERATURE))).test(n),
                                 (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
                                         ComplexPublicationFilter.composedFilter(
-                                            List.of(ComplexPublicationFilter.filterByAvgWind(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_WIND))).test(n),
+                                            List.of(ComplexPublicationFilter.filterByAvgWind(ProtoComplexSubscription.Operator.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_WIND))).test(n),
                                 (Predicate<ProtoComplexPublication.ComplexPublication> & Serializable) (n) ->
                                         ComplexPublicationFilter.composedFilter(
-                                            List.of(ComplexPublicationFilter.filterByAvgRain(Operator.Type.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_RAIN))).test(n)
+                                            List.of(ComplexPublicationFilter.filterByAvgRain(ProtoComplexSubscription.Operator.GREATER_THAN, AnomalyComplexPublication.MAX_AVG_RAIN))).test(n)
                         ));
 
         var anomalySimpleBolt = new AnomalySimpleBolt();

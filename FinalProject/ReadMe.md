@@ -186,7 +186,7 @@ First run of a topology:
     Error: LinkageError occurred while loading main class org.project.Application
 	    java.lang.UnsupportedClassVersionError: org/project/Application has been compiled by a more recent version of the Java Runtime (class file version 63.0), this version of the Java Runtime only recognizes class file versions up to 55.0
 
-Second run, building only the runtime artifacts:\
+Second run, building only the runtime artifacts:
 
     ╰─ docker run --link some-nimbus:nimbus -it --rm -v $(pwd)/topology.jar:/topology.jar storm storm jar /topology.jar org.project.Application                                                                                                                                ─╯
     Running: /opt/java/openjdk/bin/java -client -Ddaemon.name= -Dstorm.options= -Dstorm.home=/apache-storm-2.4.0 -Dstorm.log.dir=/logs -Djava.library.path=/usr/local/lib:/opt/local/lib:/usr/lib:/usr/lib64 -Dstorm.conf.file= -cp /apache-storm-2.4.0/*:/apache-storm-2.4.0/lib-worker/*:/apache-storm-2.4.0/extlib/*:/topology.jar:/conf:/apache-storm-2.4.0/bin: -Dstorm.jar=/topology.jar -Dstorm.dependency.jars= -Dstorm.dependency.artifacts={} org.project.Application
@@ -300,11 +300,12 @@ And this generates the required .java files that we'll be using in our project.
     option java_outer_classname = "ProtoSimpleSubscription";
 
     enum Operator {
-        LOWER_THAN = 0;
-        EQUAL_OR_LOWER_THAN = 1;
-        EQUAL = 2;
-        EQUAL_OR_GREATER_THAN = 3;
-        GREATER_THAN = 4;
+        NONE = 0;
+        LOWER_THAN = 1;
+        EQUAL_OR_LOWER_THAN = 2;
+        EQUAL = 3;
+        EQUAL_OR_GREATER_THAN = 4;
+        GREATER_THAN = 5;
     }
 
     message ConditionDouble {
@@ -338,11 +339,12 @@ And this generates the required .java files that we'll be using in our project.
     option java_outer_classname = "ProtoComplexSubscription";
 
     enum Operator {
-        LOWER_THAN = 0;
-        EQUAL_OR_LOWER_THAN = 1;
-        EQUAL = 2;
-        EQUAL_OR_GREATER_THAN = 3;
-        GREATER_THAN = 4;
+        NONE = 0;
+        LOWER_THAN = 1;
+        EQUAL_OR_LOWER_THAN = 2;
+        EQUAL = 3;
+        EQUAL_OR_GREATER_THAN = 4;
+        GREATER_THAN = 5;
     }
 
     message ConditionDouble {
@@ -370,16 +372,15 @@ And this generates the required .java files that we'll be using in our project.
 ## Filters
 Filter implementation is made via bolts that filters out the unwanted publications.
 
-First, a class that implements all the filters on the respective fields and operators is created:
+First, a class that implements all the filters on the respective fields and operators is created (protobuf in simple & complex subscriptions):
 
-    public class Operator {
-    
-        public
-        static enum Type {
-            LOWER_THAN,
-            EQUAL,
-            GREATER_THAN
-        }
+    enum Operator {
+        NONE = 0;
+        LOWER_THAN = 1;
+        EQUAL_OR_LOWER_THAN = 2;
+        EQUAL = 3;
+        EQUAL_OR_GREATER_THAN = 4;
+        GREATER_THAN = 5;
     }
 
 With a function example as it follows:

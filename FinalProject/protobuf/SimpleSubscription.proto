@@ -4,11 +4,12 @@ option java_package = "org.project.models";
 option java_outer_classname = "ProtoSimpleSubscription";
 
 enum Operator {
-  LOWER_THAN = 0;
-  EQUAL_OR_LOWER_THAN = 1;
-  EQUAL = 2;
-  EQUAL_OR_GREATER_THAN = 3;
-  GREATER_THAN = 4;
+  NONE = 0;
+  LOWER_THAN = 1;
+  EQUAL_OR_LOWER_THAN = 2;
+  EQUAL = 3;
+  EQUAL_OR_GREATER_THAN = 4;
+  GREATER_THAN = 5;
 }
 
 message ConditionDouble {

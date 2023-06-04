@@ -7,6 +7,7 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
+import org.project.data.City;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimpleSubscription;
 
@@ -14,8 +15,8 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.UUID.randomUUID;
 import static org.project.cofiguration.GlobalConfiguration.COMPLEX_SUBSCRIPTION_COUNT;
-import static org.project.cofiguration.GlobalConfiguration.SIMPLE_SUBSCRIPTION_COUNT;
 
 public class ComplexSubscriptionSpout extends BaseRichSpout {
 
@@ -65,6 +66,17 @@ public class ComplexSubscriptionSpout extends BaseRichSpout {
     public static class ComplexSubscriptionGenerator {
         public static ProtoComplexSubscription.ComplexSubscription generateComplexSubscription() {
             return ProtoComplexSubscription.ComplexSubscription.newBuilder()
+                    .setSubscriptionId(randomUUID().toString())
+                    .setConditions(
+                            ProtoComplexSubscription.ComplexPublicationCondition.newBuilder()
+                                    .setCity(
+                                            ProtoComplexSubscription.ConditionString.newBuilder()
+                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.EQUAL_VALUE)
+                                                    .setValue(new City(City.Name.SAN_FRANCISCO).ToString())
+                                                    .build()
+                                    )
+                                    .build()
+                    )
                     .build();
         }
     }
