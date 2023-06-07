@@ -17,6 +17,7 @@ import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
+import org.project.spouts.AMQPSpout;
 import org.project.spouts.ComplexSubscriptionSpout;
 import org.project.spouts.SimplePublicationSpout;
 import org.project.spouts.SimpleSubscriptionSpout;
@@ -197,6 +198,8 @@ public class Application extends ConfigurableTopology {
                 1)
                 .fieldsGrouping(ComplexPublicationBolt.ID,  new Fields("ComplexPublication"))
                 .fieldsGrouping(ComplexSubscriptionSpout.ID, new Fields("ComplexSubscription"));
+
+        builder.setSpout("spout", new AMQPSpout("localhost", 5672, "guest", "guest", "/", true, false), 1);
 
         return builder;
     }

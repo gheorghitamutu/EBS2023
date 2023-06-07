@@ -18,6 +18,8 @@ Table of Contents
   - [Simple Subscription](#simple-subscription)
   - [Complex Subscription](#complex-subscription)
   - [Filters](#filters)
+  - [Brokers](#brokers)
+    - [RabbitMQ](#rabbitmq)
   - [Topology Diagram](#topology-diagram)
   - [References](#references)
 
@@ -385,12 +387,18 @@ First, a class that implements all the filters on the respective fields and oper
 
 With a function example as it follows:
 
-    public static Predicate<ProtoSimplePublication.SimplePublication> filterByTemperature(Operator.Type type, double temperature) {
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByTemperature(ProtoSimpleSubscription.Operator type, double temperature) {
         switch (type) {
+            case NONE:
+                return (sp) -> true;
             case LOWER_THAN:
                 return (sp) -> sp.getTemperature() < temperature;
+            case EQUAL_OR_LOWER_THAN:
+                return (sp) -> sp.getTemperature() <= temperature;
             case EQUAL:
                 return (sp) -> sp.getTemperature() == temperature;
+            case EQUAL_OR_GREATER_THAN:
+                return (sp) -> sp.getTemperature() >= temperature;
             case GREATER_THAN:
                 return (sp) -> sp.getTemperature() > temperature;
             default:
@@ -444,6 +452,22 @@ The bolt then uses a map reduce operation on the aforementioned list with the co
         this.collector.ack(input);
     }
 
+## Brokers
+
+### RabbitMQ
+
+[RabbitMQ](https://hub.docker.com/_/rabbitmq) is open source message broker software (sometimes called message-oriented middleware) that implements the Advanced Message Queuing Protocol (AMQP). The RabbitMQ server is written in the Erlang programming language and is built on the Open Telecom Platform framework for clustering and failover. Client libraries to interface with the broker are available for all major programming languages.
+
+    docker pull rabbitmq
+    docker run -d --hostname my-rabbit --name some-rabbit -p 9080:15672 -p 5672:5672 rabbitmq:3-management
+
+Careful not to collide with port 8080 used by Apache Storm UI.
+
+Careful to expose port 5672 in order to be able to connect via AMQP.
+
+This is a second set of tags provided with the [management plugin](https://www.rabbitmq.com/management.html) installed and enabled by default, which is available on the standard management port of 15672, with the default username and password of guest / guest.
+
+
 ## Topology Diagram
 ![Topology](./docs/topology.png)
 
@@ -457,3 +481,15 @@ https://hub.docker.com/_/storm
 https://github.com/apache/storm/blob/master/examples/storm-starter/src/jvm/org/apache/storm/starter/WordCountTopology.java
 
 https://github.com/EsotericSoftware/kryo
+
+https://hub.docker.com/_/rabbitmq
+
+https://www.michael-noll.com/blog/2013/06/21/understanding-storm-internal-message-buffers
+
+Initial code for the AMQP Spout has been taken from the book:
+
+    Practical Real-time Data Processing and Analytics:
+    Distributed Computing and Event Processing using Apache Spark, Flink, Storm, and Kafka
+    by Shilpi Saxena, Saurabh Gupta
+
+The code has been modified to suit the needs of this project. The book can be found [here](https://subscription.packtpub.com/book/data/9781787281202/6).
