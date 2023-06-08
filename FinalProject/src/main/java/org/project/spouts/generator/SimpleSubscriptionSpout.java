@@ -1,4 +1,4 @@
-package org.project.spouts;
+package org.project.spouts.generator;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.spout.SpoutOutputCollector;

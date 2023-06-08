@@ -1,4 +1,4 @@
-package org.project.bolts;
+package org.project.bolts.middle;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -45,10 +45,10 @@ public class FilterComplexAnomalyBolt extends BaseRichBolt {
                     var anomalyType = AnomalyComplexPublication.ToString(AnomalyComplexPublication.isAnomaly(cp));
                     this.collector.emit(input, new Values(anomalyType, cp));
                 } else {
-                    LOG.info("Field <" + f + "> Value <" + cp + "> (Filtered!)");
+                    // LOG.info("Field <" + f + "> Value <" + cp + "> (Filtered!)");
                 }
             } else {
-                LOG.info("Field (Unknown!) <" + f + "> Value (Unknown!) <" + value + ">");
+                // LOG.info("Field (Unknown!) <" + f + "> Value (Unknown!) <" + value + ">");
             }
         });
 

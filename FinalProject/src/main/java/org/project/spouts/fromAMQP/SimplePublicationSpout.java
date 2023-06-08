@@ -7,7 +7,7 @@
     The code has been modified to suit the needs of this project.
  */
 
-package org.project.spouts;
+package org.project.spouts.fromAMQP;
 
 import com.rabbitmq.client.*;
 import org.apache.log4j.Logger;
@@ -24,17 +24,11 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-public class AMQPSpout implements IRichSpout {
-    private static final long serialVersionUID = 1L;
-    private static final org.apache.log4j.Logger LOG = Logger.getLogger(AMQPSpout.class);
-    public static final String ID = AMQPSpout.class.toString();
-    private static final long CONFIG_PREFETCH_COUNT = 0;
-    private static final long DEFAULT_PREFETCH_COUNT = 0;
-    private static final long WAIT_AFTER_SHUTDOWN_SIGNAL = 0;
-    private static final long WAIT_FOR_NEXT_MESSAGE = 1L;
+import static org.project.cofiguration.GlobalConfiguration.*;
 
-    private static final String EXCHANGE_NAME = "MYExchange";
-    private static final String QUEUE_NAME = "MYQueue";
+public class SimplePublicationSpout implements IRichSpout {
+    private static final org.apache.log4j.Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
+    public static final String ID = SimplePublicationSpout.class.toString();
     private final String amqpHost;
     private final int amqpPort;
     private final String amqpUsername;
@@ -42,11 +36,8 @@ public class AMQPSpout implements IRichSpout {
     private final String amqpVhost;
     private final boolean requeueOnFail;
     private final boolean autoAck;
-
     private int prefetchCount;
-
     private SpoutOutputCollector collector;
-
     private Connection amqpConnection;
     private Channel amqpChannel;
     private QueueingConsumer amqpConsumer;
@@ -54,7 +45,7 @@ public class AMQPSpout implements IRichSpout {
     private boolean spoutActive;
 
     // The constructor where we set initialize all properties
-    public AMQPSpout(String host, int port, String username, String password, String vhost, boolean requeueOnFail, boolean autoAck) {
+    public SimplePublicationSpout(String host, int port, String username, String password, String vhost, boolean requeueOnFail, boolean autoAck) {
         this.amqpHost = host;
         this.amqpPort = port;
         this.amqpUsername = username;
@@ -134,19 +125,17 @@ public class AMQPSpout implements IRichSpout {
         connectionFactory.setVirtualHost(amqpVhost);
         this.amqpConnection = connectionFactory.newConnection();
         this.amqpChannel = amqpConnection.createChannel();
-        LOG.info("Setting basic.qos prefetch-count to " + prefetchCount);
-        amqpChannel.basicQos(prefetchCount);
-        amqpChannel.exchangeDeclare(EXCHANGE_NAME, "direct");
-        amqpChannel.queueDeclare(QUEUE_NAME, true, false, false, null);
-        amqpChannel.queueBind(QUEUE_NAME, EXCHANGE_NAME, "");
+        this.amqpChannel.basicQos(prefetchCount);
+        this.amqpChannel.exchangeDeclare(SIMPLE_PUBLICATION_EXCHANGE_NAME, "direct");
+        this.amqpChannel.queueDeclare(SIMPLE_PUBLICATION_QUEUE_NAME, true, false, false, null);
+        this.amqpChannel.queueBind(SIMPLE_PUBLICATION_QUEUE_NAME, SIMPLE_PUBLICATION_EXCHANGE_NAME, "");
         this.amqpConsumer = new QueueingConsumer(amqpChannel);
-        this.amqpConsumerTag = amqpChannel.basicConsume(QUEUE_NAME, this.autoAck, amqpConsumer);
-        System.out.println("***************");
+        this.amqpConsumerTag = amqpChannel.basicConsume(SIMPLE_PUBLICATION_QUEUE_NAME, this.autoAck, amqpConsumer);
     }
 
     /*
-    * Cancels the queue subscription, and disconnects from the AMQP
-    broker. */
+     * Cancels the queue subscription, and disconnects from the AMQP broker.
+     */
     public void close() {
         try {
             if (amqpChannel != null) {
@@ -156,7 +145,7 @@ public class AMQPSpout implements IRichSpout {
                 amqpChannel.close();
             }
         } catch (IOException e) {
-            LOG.warn("Error closing AMQP channel", e);
+            LOG.warn("Error closing AMQP channel: ", e);
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
@@ -165,7 +154,7 @@ public class AMQPSpout implements IRichSpout {
                 amqpConnection.close();
             }
         } catch (IOException e) {
-            LOG.warn("Error closing AMQP connection", e);
+            LOG.warn("Error closing AMQP connection: ", e);
         }
     }
 

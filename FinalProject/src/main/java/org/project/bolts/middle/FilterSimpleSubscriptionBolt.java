@@ -1,4 +1,4 @@
-package org.project.bolts;
+package org.project.bolts.middle;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -28,6 +28,6 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
+        // TODO: nothing to declare
     }
 }

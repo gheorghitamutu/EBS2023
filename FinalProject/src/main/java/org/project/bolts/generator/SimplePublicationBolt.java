@@ -1,4 +1,4 @@
-package org.project.bolts;
+package org.project.bolts.generator;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;

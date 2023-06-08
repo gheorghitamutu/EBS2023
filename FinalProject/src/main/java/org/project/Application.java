@@ -7,7 +7,10 @@ import org.apache.storm.topology.ConfigurableTopology;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
-import org.project.bolts.*;
+import org.project.bolts.generator.*;
+import org.project.bolts.middle.*;
+import org.project.bolts.toAMQP.AnomalyBolt;
+import org.project.bolts.toAMQP.SimplePublicationBolt;
 import org.project.cofiguration.GlobalConfiguration;
 import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
@@ -17,10 +20,9 @@ import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
-import org.project.spouts.AMQPSpout;
-import org.project.spouts.ComplexSubscriptionSpout;
-import org.project.spouts.SimplePublicationSpout;
-import org.project.spouts.SimpleSubscriptionSpout;
+import org.project.spouts.fromAMQP.SimplePublicationSpout;
+import org.project.spouts.generator.ComplexSubscriptionSpout;
+import org.project.spouts.generator.SimpleSubscriptionSpout;
 
 import java.io.Serializable;
 import java.util.List;
@@ -64,14 +66,14 @@ public class Application extends ConfigurableTopology {
 
     static TopologyBuilder buildTopology() {
         var builder = new TopologyBuilder();
-        var source = new SimplePublicationSpout();
+        var source = new org.project.spouts.generator.SimplePublicationSpout();
         var simplePublicationAggregatorBolt =
                 new SimplePublicationAggregatorBolt()
                         .withWindow(
                                 new BaseWindowedBolt.Count(WINDOW_LENGTH),
                                 new BaseWindowedBolt.Count(SLIDING_INTERVAL));
         var complexPublicationBolt = new ComplexPublicationBolt();
-        var simplePublicationBolt = new SimplePublicationBolt();
+        var simplePublicationBolt = new org.project.bolts.generator.SimplePublicationBolt();
 
         // handle anomalies
 
@@ -111,10 +113,13 @@ public class Application extends ConfigurableTopology {
 
         var anomalySimpleBolt = new AnomalySimpleBolt();
         var anomalyComplexBolt = new AnomalyComplexBolt();
-        var anomalyTerminalBolt = new AnomalyTerminalBolt();
+        var anomalyBolt = new AnomalyBolt(
+                AMQP_HOST,
+                AMQP_PORT
+        );
 
         builder.setSpout(
-                SimplePublicationSpout.ID,
+                org.project.spouts.generator.SimplePublicationSpout.ID,
                 source,
                 1);
 
@@ -122,7 +127,7 @@ public class Application extends ConfigurableTopology {
                         SimplePublicationAggregatorBolt.ID,
                         simplePublicationAggregatorBolt,
                         2)
-                .shuffleGrouping(SimplePublicationSpout.ID);
+                .shuffleGrouping(org.project.spouts.generator.SimplePublicationSpout.ID);
 
         builder.setBolt(
                         ComplexPublicationBolt.ID,
@@ -131,16 +136,16 @@ public class Application extends ConfigurableTopology {
                 .shuffleGrouping(SimplePublicationAggregatorBolt.ID);
 
         builder.setBolt(
-                        SimplePublicationBolt.ID,
+                        org.project.bolts.generator.SimplePublicationBolt.ID,
                         simplePublicationBolt,
                         2)
-                .shuffleGrouping(SimplePublicationSpout.ID);
+                .shuffleGrouping(org.project.spouts.generator.SimplePublicationSpout.ID);
 
         builder.setBolt(
                 FilterSimpleAnomalyBolt.ID,
                 filterSimpleAnomalyBolt,
                 1
-        ).shuffleGrouping(SimplePublicationBolt.ID);
+        ).shuffleGrouping(org.project.bolts.generator.SimplePublicationBolt.ID);
 
         builder.setBolt(
                         AnomalySimpleBolt.ID,
@@ -161,8 +166,8 @@ public class Application extends ConfigurableTopology {
                 .shuffleGrouping(FilterComplexAnomalyBolt.ID);
 
         builder.setBolt(
-                AnomalyTerminalBolt.ID,
-                anomalyTerminalBolt,
+                AnomalyBolt.ID,
+                anomalyBolt,
                 1
                 )
                 .fieldsGrouping(AnomalySimpleBolt.ID,  new Fields("AnomalyType", "SimplePublication"))
@@ -189,7 +194,7 @@ public class Application extends ConfigurableTopology {
                 FilterSimpleSubscriptionBolt.ID,
                 filterSimpleSubscriptionBolt,
                 1)
-                .fieldsGrouping(SimplePublicationSpout.ID,  new Fields("SimplePublication"))
+                .fieldsGrouping(org.project.spouts.generator.SimplePublicationSpout.ID,  new Fields("SimplePublication"))
                 .fieldsGrouping(SimpleSubscriptionSpout.ID, new Fields("SimpleSubscription"));
 
         builder.setBolt(
@@ -199,7 +204,35 @@ public class Application extends ConfigurableTopology {
                 .fieldsGrouping(ComplexPublicationBolt.ID,  new Fields("ComplexPublication"))
                 .fieldsGrouping(ComplexSubscriptionSpout.ID, new Fields("ComplexSubscription"));
 
-        builder.setSpout("spout", new AMQPSpout("localhost", 5672, "guest", "guest", "/", true, false), 1);
+        builder.setSpout(
+                SimplePublicationSpout.ID,
+                new SimplePublicationSpout(
+                        AMQP_HOST,
+                        AMQP_PORT,
+                        AMQP_USERNAME,
+                        AMQP_PASSWORD,
+                        AMQP_VHOST,
+                        AMQP_REQUEUE_ON_FAIL,
+                        AMQP_AUTO_ACK),
+                1);
+
+        builder.setBolt(
+                SimplePublicationBolt.ID,
+                new SimplePublicationBolt(
+                        AMQP_HOST,
+                        AMQP_PORT
+                ),
+                1)
+                .shuffleGrouping(org.project.spouts.generator.SimplePublicationSpout.ID);
+
+        builder.setBolt(
+                        org.project.bolts.toAMQP.ComplexPublicationBolt.ID,
+                        new org.project.bolts.toAMQP.ComplexPublicationBolt(
+                                AMQP_HOST,
+                                AMQP_PORT
+                        ),
+                        1)
+                .shuffleGrouping(org.project.bolts.generator.ComplexPublicationBolt.ID);
 
         return builder;
     }
