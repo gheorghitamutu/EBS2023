@@ -10,6 +10,7 @@ import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
+import org.project.rabbit.ConnectionManager;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -24,42 +25,25 @@ public class AnomalyBolt extends BaseRichBolt {
     private static final Logger LOG = Logger.getLogger(AnomalyBolt.class);
     private OutputCollector collector;
     private int eventsReceived;
-    private final String host;
-    private final int port;
-    private ConnectionFactory factory;
-    private Connection connection;
     private Channel channelSimpleAnomaly;
     private Channel channelComplexAnomaly;
-
-    public AnomalyBolt(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
 
     @Override
     public void prepare(Map<String, Object> map, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
         this.eventsReceived = 0;
 
-        this.factory = new ConnectionFactory();
-        Address[] address = { new Address(this.host, this.port) };
-        try {
-            this.connection = this.factory.newConnection(address);
-
-            this.channelSimpleAnomaly = this.connection.createChannel();
-            this.channelSimpleAnomaly.confirmSelect();
-            this.channelSimpleAnomaly.exchangeDeclare(SIMPLE_ANOMALY_EXCHANGE_NAME, "direct");
-            this.channelSimpleAnomaly.queueDeclare(SIMPLE_ANOMALY_QUEUE_NAME, true, false, false, null);
-            this.channelSimpleAnomaly.queueBind(SIMPLE_ANOMALY_QUEUE_NAME, SIMPLE_ANOMALY_EXCHANGE_NAME, SIMPLE_ANOMALY_ROUTING_KEY);
-
-            this.channelComplexAnomaly = this.connection.createChannel();
-            this.channelComplexAnomaly.confirmSelect();
-            this.channelComplexAnomaly.exchangeDeclare(COMPLEX_ANOMALY_EXCHANGE_NAME, "direct");
-            this.channelComplexAnomaly.queueDeclare(COMPLEX_ANOMALY_QUEUE_NAME, true, false, false, null);
-            this.channelComplexAnomaly.queueBind(COMPLEX_ANOMALY_QUEUE_NAME, COMPLEX_ANOMALY_EXCHANGE_NAME, COMPLEX_ANOMALY_ROUTING_KEY);
-        } catch (IOException | TimeoutException e) {
-            throw new RuntimeException(e);
-        }
+        final ConnectionManager cm = ConnectionManager.getInstance();
+        this.channelSimpleAnomaly = cm.GetChannel(
+                (int) DEFAULT_PREFETCH_COUNT,
+                SIMPLE_ANOMALY_EXCHANGE_NAME,
+                SIMPLE_ANOMALY_QUEUE_NAME,
+                SIMPLE_ANOMALY_ROUTING_KEY);
+        this.channelComplexAnomaly = cm.GetChannel(
+                (int) DEFAULT_PREFETCH_COUNT,
+                COMPLEX_ANOMALY_EXCHANGE_NAME,
+                COMPLEX_ANOMALY_QUEUE_NAME,
+                COMPLEX_ANOMALY_ROUTING_KEY);
     }
 
     @Override

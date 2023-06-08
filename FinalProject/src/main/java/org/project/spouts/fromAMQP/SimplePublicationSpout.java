@@ -9,6 +9,7 @@
 
 package org.project.spouts.fromAMQP;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.rabbitmq.client.*;
 import org.apache.log4j.Logger;
 import org.apache.storm.spout.SpoutOutputCollector;
@@ -18,9 +19,11 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
+import org.project.models.ProtoSimplePublication;
+import org.project.rabbit.ConnectionManager;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -29,38 +32,24 @@ import static org.project.cofiguration.GlobalConfiguration.*;
 public class SimplePublicationSpout implements IRichSpout {
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
     public static final String ID = SimplePublicationSpout.class.toString();
-    private final String amqpHost;
-    private final int amqpPort;
-    private final String amqpUsername;
-    private final String amqpPasswd;
-    private final String amqpVhost;
+    private String taskName;
     private final boolean requeueOnFail;
     private final boolean autoAck;
     private int prefetchCount;
     private SpoutOutputCollector collector;
-    private Connection amqpConnection;
     private Channel amqpChannel;
     private QueueingConsumer amqpConsumer;
     private String amqpConsumerTag;
-    private boolean spoutActive;
 
-    // The constructor where we set initialize all properties
-    public SimplePublicationSpout(String host, int port, String username, String password, String vhost, boolean requeueOnFail, boolean autoAck) {
-        this.amqpHost = host;
-        this.amqpPort = port;
-        this.amqpUsername = username;
-        this.amqpPasswd = password;
-        this.amqpVhost = vhost;
+    public SimplePublicationSpout(boolean requeueOnFail, boolean autoAck) {
         this.requeueOnFail = requeueOnFail;
         this.autoAck = autoAck;
     }
 
-    /*
-     * Open method of the spout , here we initialize the prefetch count, this
-     * parameter specified how many messages would be prefetched from the queue
-     * by the spout - to increase the efficiency of the solution
-     */
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+        this.collector = collector;
+        this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
+
         Long prefetchCount = (Long) conf.get(CONFIG_PREFETCH_COUNT);
         if (prefetchCount == null) {
             prefetchCount = DEFAULT_PREFETCH_COUNT;
@@ -70,8 +59,6 @@ public class SimplePublicationSpout implements IRichSpout {
         this.prefetchCount = prefetchCount.intValue();
 
         try {
-            this.collector = collector;
-
             setupAMQP();
         } catch (IOException e) {
             LOG.error("AMQP setup failed", e);
@@ -87,12 +74,6 @@ public class SimplePublicationSpout implements IRichSpout {
         }
     }
 
-    /**
-     * Reconnect to an AMQP broker.in case the connection breaks at some
-     * point
-     *
-     * @throws TimeoutException
-     */
     private void reconnect() throws TimeoutException {
         LOG.info("Reconnecting to AMQP broker...");
         try {
@@ -102,40 +83,17 @@ public class SimplePublicationSpout implements IRichSpout {
         }
     }
 
-    /**
-     * Set up a connection with an AMQP broker.
-     *
-     * @throws IOException      This is the method where we actually connect to the queue
-     *                          using AMQP client APIs
-     * @throws TimeoutException
-     */
     private void setupAMQP() throws IOException, TimeoutException {
-        final int prefetchCount = this.prefetchCount;
-        final ConnectionFactory connectionFactory = new ConnectionFactory() {
-            public void configureSocket(Socket socket) throws IOException {
-                socket.setTcpNoDelay(false);
-                socket.setReceiveBufferSize(20 * 1024);
-                socket.setSendBufferSize(20 * 1024);
-            }
-        };
-        connectionFactory.setHost(amqpHost);
-        connectionFactory.setPort(amqpPort);
-        connectionFactory.setUsername(amqpUsername);
-        connectionFactory.setPassword(amqpPasswd);
-        connectionFactory.setVirtualHost(amqpVhost);
-        this.amqpConnection = connectionFactory.newConnection();
-        this.amqpChannel = amqpConnection.createChannel();
-        this.amqpChannel.basicQos(prefetchCount);
-        this.amqpChannel.exchangeDeclare(SIMPLE_PUBLICATION_EXCHANGE_NAME, "direct");
-        this.amqpChannel.queueDeclare(SIMPLE_PUBLICATION_QUEUE_NAME, true, false, false, null);
-        this.amqpChannel.queueBind(SIMPLE_PUBLICATION_QUEUE_NAME, SIMPLE_PUBLICATION_EXCHANGE_NAME, "");
+        final ConnectionManager cm = ConnectionManager.getInstance();
+        this.amqpChannel = cm.GetChannel(
+                this.prefetchCount,
+                SIMPLE_PUBLICATION_EXCHANGE_NAME,
+                SIMPLE_PUBLICATION_QUEUE_NAME,
+                "");
         this.amqpConsumer = new QueueingConsumer(amqpChannel);
         this.amqpConsumerTag = amqpChannel.basicConsume(SIMPLE_PUBLICATION_QUEUE_NAME, this.autoAck, amqpConsumer);
     }
 
-    /*
-     * Cancels the queue subscription, and disconnects from the AMQP broker.
-     */
     public void close() {
         try {
             if (amqpChannel != null) {
@@ -149,27 +107,22 @@ public class SimplePublicationSpout implements IRichSpout {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-        try {
-            if (amqpConnection != null) {
-                amqpConnection.close();
-            }
-        } catch (IOException e) {
-            LOG.warn("Error closing AMQP connection: ", e);
-        }
     }
 
-    /*
-     * Emit message received from queue into collector
-     */
     public void nextTuple() {
-        if (spoutActive && amqpConsumer != null) {
+        if (amqpConsumer != null) {
             try {
                 final QueueingConsumer.Delivery delivery = amqpConsumer.nextDelivery(WAIT_FOR_NEXT_MESSAGE);
                 if (delivery == null) return;
                 final long deliveryTag = delivery.getEnvelope().getDeliveryTag();
-                String message = new String(delivery.getBody());
-                if (message.length() > 0) {
-                    collector.emit(new Values(message), deliveryTag);
+                if (delivery.getBody().length > 0) {
+                    ProtoSimplePublication.SimplePublication sp = null;
+                    try {
+                        sp = ProtoSimplePublication.SimplePublication.parseFrom(delivery.getBody());
+                    } catch (InvalidProtocolBufferException e) {
+                        throw new RuntimeException(e);
+                    }
+                    collector.emit(new Values(sp), deliveryTag);
                 } else {
                     LOG.debug("Malformed deserialized message, null or zero - length." + deliveryTag);
                     if (!this.autoAck) {
@@ -198,12 +151,11 @@ public class SimplePublicationSpout implements IRichSpout {
         }
     }
 
-    /*
-     * ack method to acknowledge the message that is successfully processed
-     */
-    public void ack(Object msgId) {
-        if (msgId instanceof Long) {
-            final long deliveryTag = (Long) msgId;
+    public void ack(Object id) {
+        // LOG.info(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, id));
+
+        if (id instanceof Long) {
+            final long deliveryTag = (Long) id;
             if (amqpChannel != null) {
                 try {
                     amqpChannel.basicAck(deliveryTag, false);
@@ -214,13 +166,15 @@ public class SimplePublicationSpout implements IRichSpout {
                 }
             }
         } else {
-            LOG.warn(String.format("don't know how to ack(%s: %s)", msgId.getClass().getName(), msgId));
+            LOG.warn(String.format("don't know how to ack(%s: %s)", id.getClass().getName(), id));
         }
     }
 
-    public void fail(Object msgId) {
-        if (msgId instanceof Long) {
-            final long deliveryTag = (Long) msgId;
+    public void fail(Object id) {
+        // LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, id));
+
+        if (id instanceof Long) {
+            final long deliveryTag = (Long) id;
             if (amqpChannel != null) {
                 try {
                     if (amqpChannel.isOpen()) {
@@ -237,12 +191,12 @@ public class SimplePublicationSpout implements IRichSpout {
                 }
             }
         } else {
-            LOG.warn(String.format("don't know how to reject(%s: %s)", msgId.getClass().getName(), msgId));
+            LOG.warn(String.format("Don't know how to reject(%s: %s)", id.getClass().getName(), id));
         }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("messages"));
+        declarer.declare(new Fields("SimplePublication"));
     }
 
     public void activate() {

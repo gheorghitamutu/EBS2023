@@ -113,10 +113,6 @@ public class Application extends ConfigurableTopology {
 
         var anomalySimpleBolt = new AnomalySimpleBolt();
         var anomalyComplexBolt = new AnomalyComplexBolt();
-        var anomalyBolt = new AnomalyBolt(
-                AMQP_HOST,
-                AMQP_PORT
-        );
 
         builder.setSpout(
                 org.project.spouts.generator.SimplePublicationSpout.ID,
@@ -165,6 +161,7 @@ public class Application extends ConfigurableTopology {
                         1)
                 .shuffleGrouping(FilterComplexAnomalyBolt.ID);
 
+        var anomalyBolt = new org.project.bolts.toAMQP.AnomalyBolt();
         builder.setBolt(
                 AnomalyBolt.ID,
                 anomalyBolt,
@@ -207,30 +204,19 @@ public class Application extends ConfigurableTopology {
         builder.setSpout(
                 SimplePublicationSpout.ID,
                 new SimplePublicationSpout(
-                        AMQP_HOST,
-                        AMQP_PORT,
-                        AMQP_USERNAME,
-                        AMQP_PASSWORD,
-                        AMQP_VHOST,
                         AMQP_REQUEUE_ON_FAIL,
                         AMQP_AUTO_ACK),
                 1);
 
         builder.setBolt(
                 SimplePublicationBolt.ID,
-                new SimplePublicationBolt(
-                        AMQP_HOST,
-                        AMQP_PORT
-                ),
+                new SimplePublicationBolt(),
                 1)
                 .shuffleGrouping(org.project.spouts.generator.SimplePublicationSpout.ID);
 
         builder.setBolt(
                         org.project.bolts.toAMQP.ComplexPublicationBolt.ID,
-                        new org.project.bolts.toAMQP.ComplexPublicationBolt(
-                                AMQP_HOST,
-                                AMQP_PORT
-                        ),
+                        new org.project.bolts.toAMQP.ComplexPublicationBolt(),
                         1)
                 .shuffleGrouping(org.project.bolts.generator.ComplexPublicationBolt.ID);
 

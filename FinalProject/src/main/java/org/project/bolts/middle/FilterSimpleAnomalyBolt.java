@@ -45,7 +45,7 @@ public class FilterSimpleAnomalyBolt extends BaseRichBolt {
                     var anomalyType = AnomalySimplePublication.ToString(AnomalySimplePublication.isAnomaly(sp));
                     this.collector.emit(input, new Values(anomalyType, sp));
                 } else {
-                    LOG.info("Field <" + f + "> Value <" + sp + "> (Filtered!)");
+                    // LOG.info("Field <" + f + "> Value <" + sp + "> (Filtered!)");
                 }
             } else {
                 LOG.info("Field (Unknown!) <" + f + "> Value (Unknown!) <" + value + ">");

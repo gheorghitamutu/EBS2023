@@ -22,7 +22,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        LOG.info("Complex subscription events received!");
+        // LOG.info("Complex subscription events received!");
         collector.ack(input);
     }
 

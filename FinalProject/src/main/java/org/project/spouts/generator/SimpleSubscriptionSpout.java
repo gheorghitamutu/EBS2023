@@ -51,14 +51,14 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
     @Override
     public void ack(Object id) {
         var uuid = (String)id;
-        LOG.info(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, uuid));
+        // LOG.info(MessageFormat.format("ACKED detected at {0} for {1}!", this.taskName, uuid));
         this.unconfirmed.remove(uuid);
     }
 
     @Override
     public void fail(Object id) {
         var uuid = (String)id;
-        LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
+        // LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
         this.collector.emit(new Values(this.unconfirmed.get(uuid)), uuid);
     }
 

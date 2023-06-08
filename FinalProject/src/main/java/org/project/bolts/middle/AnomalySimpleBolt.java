@@ -33,7 +33,7 @@ public class AnomalySimpleBolt extends BaseRichBolt {
         var sp = (ProtoSimplePublication.SimplePublication)(input.getValueByField("SimplePublication"));
         this.collector.emit(input, new Values(anomalyType, sp));
 
-        LOG.info(MessageFormat.format("Processed anomaly <{0}>!", input));
+        // LOG.info(MessageFormat.format("Processed anomaly <{0}>!", input));
         this.collector.ack(input);
         eventsReceived++;
     }
