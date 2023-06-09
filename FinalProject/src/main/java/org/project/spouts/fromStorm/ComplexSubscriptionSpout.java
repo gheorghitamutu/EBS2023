@@ -1,4 +1,4 @@
-package org.project.spouts.generator;
+package org.project.spouts.fromStorm;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.spout.SpoutOutputCollector;
@@ -8,6 +8,7 @@ import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.project.data.City;
+import org.project.data.SubscriptionGenerator;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimpleSubscription;
 
@@ -43,7 +44,7 @@ public class ComplexSubscriptionSpout extends BaseRichSpout {
 
         complexSubscriptionCount++;
 
-        var cs = ComplexSubscriptionSpout.ComplexSubscriptionGenerator.generateComplexSubscription();
+        var cs = SubscriptionGenerator.getInstance().generateComplex();
         unconfirmed.put(cs.getSubscriptionId(), cs);
 
         this.collector.emit(new Values(cs), cs.getSubscriptionId());
@@ -61,25 +62,6 @@ public class ComplexSubscriptionSpout extends BaseRichSpout {
         var uuid = (String)id;
         // LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
         this.collector.emit(new Values(this.unconfirmed.get(uuid)), uuid);
-    }
-
-    public static class ComplexSubscriptionGenerator {
-        public static ProtoComplexSubscription.ComplexSubscription generateComplexSubscription() {
-            return ProtoComplexSubscription.ComplexSubscription.newBuilder()
-                    .setSubscriptionId(randomUUID().toString())
-                    .setConditions(
-                            ProtoComplexSubscription.ComplexPublicationCondition.newBuilder()
-                                    .setCity(
-                                            ProtoComplexSubscription.ConditionString.newBuilder()
-                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.EQUAL_VALUE)
-                                                    .setValue(new City(City.Name.SAN_FRANCISCO).ToString())
-                                                    .build()
-                                    )
-                                    .build()
-                    )
-                    .setTimestamp(System.currentTimeMillis())
-                    .build();
-        }
     }
 
     @Override
