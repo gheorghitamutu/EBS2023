@@ -142,25 +142,29 @@ When running a container, it uses an isolated filesystem. This custom filesystem
 
 ### Setting up a minimal Storm cluster
 
+Start by creating a Docker network that will allow the two containers to communicate with each other. This network will act as a bridge between the containers:
+
+    docker network create EBS
+
 [Apache Zookeeper](https://zookeeper.apache.org) is a must for running a Storm cluster. Start it first. Since the Zookeeper "fails fast" it's better to always restart it.
 
-    docker run -d --restart always --name some-zookeeper zookeeper
+    docker run -d --restart always --name EBS-zookeeper --network=EBS zookeeper
 
 The Nimbus daemon has to be connected with the Zookeeper. It's also a "fail fast" system.
 
-    docker run -d --restart always --name some-nimbus --link some-zookeeper:zookeeper storm storm nimbus
+    docker run -d --restart always --name EBS-nimbus --network=EBS --link EBS-zookeeper:zookeeper storm storm nimbus
 
 Finally start a single Supervisor node. It will talk to the Nimbus and Zookeeper.
 
-    docker run -d --restart always --name supervisor --link some-zookeeper:zookeeper --link some-nimbus:nimbus storm storm supervisor
+    docker run -d --restart always --name EBS-supervisor --network=EBS --link EBS-zookeeper:zookeeper --link EBS-nimbus:nimbus storm storm supervisor
 
 Now you can submit a topology to our cluster.
 
-    docker run --link some-nimbus:nimbus -it --rm -v $(pwd)/topology.jar:/topology.jar storm storm jar /topology.jar org.apache.storm.starter.WordCountTopology topology
+    docker run --link EBS-nimbus:nimbus --network=EBS -it --rm -v $(pwd)/topology.jar:/topology.jar storm storm jar /topology.jar org.project.Application project_topology
 
 Optionally, you can start the Storm UI.
 
-    docker run -d -p 8080:8080 --restart always --name ui --link some-nimbus:nimbus storm storm ui
+    docker run -d -p 8080:8080 --restart always --name EBS-Storm-UI --network=EBS --link EBS-nimbus:nimbus storm storm ui 
 
 ### Integration with the docker image
 
@@ -459,7 +463,7 @@ The bolt then uses a map reduce operation on the aforementioned list with the co
 [RabbitMQ](https://hub.docker.com/_/rabbitmq) is open source message broker software (sometimes called message-oriented middleware) that implements the Advanced Message Queuing Protocol (AMQP). The RabbitMQ server is written in the Erlang programming language and is built on the Open Telecom Platform framework for clustering and failover. Client libraries to interface with the broker are available for all major programming languages.
 
     docker pull rabbitmq
-    docker run -d --hostname my-rabbit --name some-rabbit -p 9080:15672 -p 5672:5672 rabbitmq:3-management
+    docker run -d --hostname EBS-rabbit --name EBS-rabbit --network=EBS -p 9080:15672 -p 5672:5672 rabbitmq:3-management 
 
 Careful not to collide with port 8080 used by Apache Storm UI.
 
@@ -467,6 +471,9 @@ Careful to expose port 5672 in order to be able to connect via AMQP.
 
 This is a second set of tags provided with the [management plugin](https://www.rabbitmq.com/management.html) installed and enabled by default, which is available on the standard management port of 15672, with the default username and password of guest / guest.
 
+We'd also like to develop and connect from the host so we don't specify any network:
+
+    docker run -d --hostname EBS-rabbit --name EBS-local-rabbit -p 9081:15672 -p 5673:5672 rabbitmq:3-management
 
 ## Topology Diagram
 ![Topology](./docs/topology.png)
@@ -493,3 +500,5 @@ Initial code for the AMQP Spout has been taken from the book:
     by Shilpi Saxena, Saurabh Gupta
 
 The code has been modified to suit the needs of this project. The book can be found [here](https://subscription.packtpub.com/book/data/9781787281202/6).
+
+https://www.rabbitmq.com/tutorials/tutorial-seven-java.html

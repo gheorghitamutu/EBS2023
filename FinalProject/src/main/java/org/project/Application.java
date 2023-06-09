@@ -43,6 +43,11 @@ public class Application extends ConfigurableTopology {
     }
 
     static void runLocalCluster() throws Exception {
+
+        // override settings if ran from local cluster
+        AMQP_HOST = "localhost";
+        AMQP_PORT = 5673;
+
         var builder = buildTopology();
 
         try (LocalCluster cluster = new LocalCluster()) {

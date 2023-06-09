@@ -38,8 +38,8 @@ public class GlobalConfiguration {
     public static final String COMPLEX_ANOMALY_EXCHANGE_NAME = "ExchangeCA";
     public static final String COMPLEX_ANOMALY_QUEUE_NAME = "QueueCA";
     public static final String COMPLEX_ANOMALY_ROUTING_KEY = "QueueCA";
-    public static final String AMQP_HOST = "localhost";
-    public static final int AMQP_PORT = 5672;
+    public static String AMQP_HOST = "EBS-rabbit";
+    public static int AMQP_PORT = 5672;
     public static final String AMQP_USERNAME = "guest";
     public static final String AMQP_PASSWORD = "guest";
     public static final String AMQP_VHOST = "/";
