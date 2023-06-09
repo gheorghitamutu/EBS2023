@@ -10,7 +10,10 @@
 package org.project.spouts.fromAMQP;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConsumerCancelledException;
+import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.log4j.Logger;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -19,6 +22,8 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
+import org.project.models.ProtoComplexPublication;
+import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
 import org.project.rabbit.ConnectionManager;
 
@@ -29,9 +34,9 @@ import java.util.concurrent.TimeoutException;
 
 import static org.project.cofiguration.GlobalConfiguration.*;
 
-public class SimplePublicationSpout implements IRichSpout {
-    private static final org.apache.log4j.Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
-    public static final String ID = SimplePublicationSpout.class.toString();
+public class ComplexPublicationSpout implements IRichSpout {
+    private static final Logger LOG = Logger.getLogger(ComplexPublicationSpout.class);
+    public static final String ID = ComplexPublicationSpout.class.toString();
     private String taskName;
     private final boolean requeueOnFail;
     private final boolean autoAck;
@@ -41,7 +46,7 @@ public class SimplePublicationSpout implements IRichSpout {
     private QueueingConsumer amqpConsumer;
     private String amqpConsumerTag;
 
-    public SimplePublicationSpout(boolean requeueOnFail, boolean autoAck) {
+    public ComplexPublicationSpout(boolean requeueOnFail, boolean autoAck) {
         this.requeueOnFail = requeueOnFail;
         this.autoAck = autoAck;
     }
@@ -87,11 +92,11 @@ public class SimplePublicationSpout implements IRichSpout {
         final ConnectionManager cm = ConnectionManager.getInstance();
         this.amqpChannel = cm.GetChannel(
                 this.prefetchCount,
-                SIMPLE_PUBLICATION_EXCHANGE_NAME,
-                SIMPLE_PUBLICATION_QUEUE_NAME,
+                COMPLEX_PUBLICATION_EXCHANGE_NAME,
+                COMPLEX_PUBLICATION_QUEUE_NAME,
                 "");
         this.amqpConsumer = new QueueingConsumer(amqpChannel);
-        this.amqpConsumerTag = amqpChannel.basicConsume(SIMPLE_PUBLICATION_QUEUE_NAME, this.autoAck, amqpConsumer);
+        this.amqpConsumerTag = amqpChannel.basicConsume(COMPLEX_PUBLICATION_QUEUE_NAME, this.autoAck, amqpConsumer);
     }
 
     public void close() {
@@ -116,13 +121,13 @@ public class SimplePublicationSpout implements IRichSpout {
                 if (delivery == null) return;
                 final long deliveryTag = delivery.getEnvelope().getDeliveryTag();
                 if (delivery.getBody().length > 0) {
-                    ProtoSimplePublication.SimplePublication sp;
+                    ProtoComplexPublication.ComplexPublication cp;
                     try {
-                        sp = ProtoSimplePublication.SimplePublication.parseFrom(delivery.getBody());
+                        cp = ProtoComplexPublication.ComplexPublication.parseFrom(delivery.getBody());
                     } catch (InvalidProtocolBufferException e) {
                         throw new RuntimeException(e);
                     }
-                    collector.emit(new Values(sp), deliveryTag);
+                    collector.emit(new Values(cp), deliveryTag);
                 } else {
                     LOG.debug("Malformed deserialized message, null or zero - length." + deliveryTag);
                     if (!this.autoAck) {
@@ -196,7 +201,7 @@ public class SimplePublicationSpout implements IRichSpout {
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("SimplePublication"));
+        declarer.declare(new Fields("ComplexPublication"));
     }
 
     public void activate() {

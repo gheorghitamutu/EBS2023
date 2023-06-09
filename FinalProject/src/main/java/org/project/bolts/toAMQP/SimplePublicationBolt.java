@@ -23,16 +23,20 @@ public class SimplePublicationBolt extends BaseRichBolt {
     private OutputCollector collector;
     private Channel channel;
 
-    @Override
-    public void prepare(Map<String, Object> configuration, TopologyContext context, OutputCollector collector) {
-        this.collector = collector;
-
+    void setupChannel() {
         final ConnectionManager cm = ConnectionManager.getInstance();
         this.channel = cm.GetChannel(
                 (int) DEFAULT_PREFETCH_COUNT,
                 SIMPLE_PUBLICATION_EXCHANGE_NAME,
                 SIMPLE_PUBLICATION_QUEUE_NAME,
                 SIMPLE_PUBLICATION_ROUTING_KEY);
+    }
+
+    @Override
+    public void prepare(Map<String, Object> configuration, TopologyContext context, OutputCollector collector) {
+        this.collector = collector;
+
+        setupChannel();
     }
 
     @Override
@@ -45,8 +49,15 @@ public class SimplePublicationBolt extends BaseRichBolt {
                     sp.toByteArray());
             channel.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
             // LOG.info(" [x] Sent: " + sp);
+        } catch (AlreadyClosedException e) {
+            e.printStackTrace();
+            setupChannel();
+            this.collector.fail(input);
+            return;
         } catch (Exception e) {
             e.printStackTrace();
+            this.collector.fail(input);
+            return;
         }
         this.collector.ack(input);
     }

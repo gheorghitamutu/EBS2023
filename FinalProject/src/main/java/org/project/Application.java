@@ -20,6 +20,7 @@ import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
+import org.project.spouts.fromAMQP.ComplexPublicationSpout;
 import org.project.spouts.fromAMQP.SimplePublicationSpout;
 import org.project.spouts.generator.ComplexSubscriptionSpout;
 import org.project.spouts.generator.SimpleSubscriptionSpout;
@@ -196,19 +197,26 @@ public class Application extends ConfigurableTopology {
                 FilterSimpleSubscriptionBolt.ID,
                 filterSimpleSubscriptionBolt,
                 1)
-                .fieldsGrouping(org.project.spouts.generator.SimplePublicationSpout.ID,  new Fields("SimplePublication"))
+                .fieldsGrouping(org.project.spouts.fromAMQP.SimplePublicationSpout.ID,  new Fields("SimplePublication"))
                 .fieldsGrouping(SimpleSubscriptionSpout.ID, new Fields("SimpleSubscription"));
 
         builder.setBolt(
                 FilterComplexSubscriptionBolt.ID,
                 filterComplexSubscriptionBolt,
                 1)
-                .fieldsGrouping(ComplexPublicationBolt.ID,  new Fields("ComplexPublication"))
+                .fieldsGrouping(ComplexPublicationSpout.ID,  new Fields("ComplexPublication"))
                 .fieldsGrouping(ComplexSubscriptionSpout.ID, new Fields("ComplexSubscription"));
 
         builder.setSpout(
                 SimplePublicationSpout.ID,
                 new SimplePublicationSpout(
+                        AMQP_REQUEUE_ON_FAIL,
+                        AMQP_AUTO_ACK),
+                1);
+
+        builder.setSpout(
+                ComplexPublicationSpout.ID,
+                new ComplexPublicationSpout(
                         AMQP_REQUEUE_ON_FAIL,
                         AMQP_AUTO_ACK),
                 1);
