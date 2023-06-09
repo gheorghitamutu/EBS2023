@@ -130,17 +130,20 @@ public class SimplePublicationFilter {
         }
     }
 
-    public static Predicate<ProtoSimplePublication.SimplePublication> filterByDate(ProtoSimpleSubscription.Operator type, String date) {
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByDate(ProtoSimpleSubscription.Operator type, long timestamp) {
         switch (type) {
             case NONE:
                 return (sp) -> true;
             case LOWER_THAN:
-            case GREATER_THAN:
+                return (sp) -> sp.getTimestamp() < timestamp;
             case EQUAL_OR_LOWER_THAN:
-            case EQUAL_OR_GREATER_THAN:
-                throw new IllegalArgumentException("Cannot filter by date with HIGHER/LOWER operator!");
+                return (sp) -> sp.getTimestamp() <= timestamp;
             case EQUAL:
-                return (sp) -> sp.getDate().equals(date);
+                return (sp) -> sp.getTimestamp() == timestamp;
+            case EQUAL_OR_GREATER_THAN:
+                return (sp) -> sp.getTimestamp() >= timestamp;
+            case GREATER_THAN:
+                return (sp) -> sp.getTimestamp() > timestamp;
             default:
                 throw new IllegalArgumentException("Unknown operator!");
         }

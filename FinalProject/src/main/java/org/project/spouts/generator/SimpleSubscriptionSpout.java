@@ -91,6 +91,7 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
                                     )
                                     .build()
                     )
+                    .setTimestamp(System.currentTimeMillis())
                     .build();
         }
     }

@@ -32,4 +32,5 @@ message SimplePublicationCondition {
 message SimpleSubscription {
   string subscriptionId = 1;
   SimplePublicationCondition conditions = 2;
+  int64 timestamp = 3;
 }

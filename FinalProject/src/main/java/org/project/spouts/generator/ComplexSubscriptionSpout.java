@@ -77,6 +77,7 @@ public class ComplexSubscriptionSpout extends BaseRichSpout {
                                     )
                                     .build()
                     )
+                    .setTimestamp(System.currentTimeMillis())
                     .build();
         }
     }

@@ -127,7 +127,7 @@ public class SimplePublicationSpout extends BaseRichSpout {
                     .setRain(rain)
                     .setWind(wind)
                     .setDirection(direction)
-                    .setDate(date.toString())
+                    .setTimestamp(date.getTime())
                     .build();
         }
     }

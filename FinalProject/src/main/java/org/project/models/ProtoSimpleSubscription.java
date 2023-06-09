@@ -2625,6 +2625,12 @@ public final class ProtoSimpleSubscription {
      * <code>.SimplePublicationCondition conditions = 2;</code>
      */
     org.project.models.ProtoSimpleSubscription.SimplePublicationConditionOrBuilder getConditionsOrBuilder();
+
+    /**
+     * <code>int64 timestamp = 3;</code>
+     * @return The timestamp.
+     */
+    long getTimestamp();
   }
   /**
    * Protobuf type {@code SimpleSubscription}
@@ -2732,6 +2738,17 @@ public final class ProtoSimpleSubscription {
       return conditions_ == null ? org.project.models.ProtoSimpleSubscription.SimplePublicationCondition.getDefaultInstance() : conditions_;
     }
 
+    public static final int TIMESTAMP_FIELD_NUMBER = 3;
+    private long timestamp_ = 0L;
+    /**
+     * <code>int64 timestamp = 3;</code>
+     * @return The timestamp.
+     */
+    @java.lang.Override
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2752,6 +2769,9 @@ public final class ProtoSimpleSubscription {
       if (conditions_ != null) {
         output.writeMessage(2, getConditions());
       }
+      if (timestamp_ != 0L) {
+        output.writeInt64(3, timestamp_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2767,6 +2787,10 @@ public final class ProtoSimpleSubscription {
       if (conditions_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getConditions());
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2790,6 +2814,8 @@ public final class ProtoSimpleSubscription {
         if (!getConditions()
             .equals(other.getConditions())) return false;
       }
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2807,6 +2833,9 @@ public final class ProtoSimpleSubscription {
         hash = (37 * hash) + CONDITIONS_FIELD_NUMBER;
         hash = (53 * hash) + getConditions().hashCode();
       }
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2942,6 +2971,7 @@ public final class ProtoSimpleSubscription {
           conditionsBuilder_.dispose();
           conditionsBuilder_ = null;
         }
+        timestamp_ = 0L;
         return this;
       }
 
@@ -2982,6 +3012,9 @@ public final class ProtoSimpleSubscription {
           result.conditions_ = conditionsBuilder_ == null
               ? conditions_
               : conditionsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.timestamp_ = timestamp_;
         }
       }
 
@@ -3037,6 +3070,9 @@ public final class ProtoSimpleSubscription {
         if (other.hasConditions()) {
           mergeConditions(other.getConditions());
         }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -3075,6 +3111,11 @@ public final class ProtoSimpleSubscription {
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
+              case 24: {
+                timestamp_ = input.readInt64();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 24
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -3282,6 +3323,38 @@ public final class ProtoSimpleSubscription {
         }
         return conditionsBuilder_;
       }
+
+      private long timestamp_ ;
+      /**
+       * <code>int64 timestamp = 3;</code>
+       * @return The timestamp.
+       */
+      @java.lang.Override
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>int64 timestamp = 3;</code>
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 timestamp = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -3382,14 +3455,15 @@ public final class ProtoSimpleSubscription {
       "plePublicationCondition\022\036\n\004city\030\001 \001(\0132\020." +
       "ConditionString\022%\n\013temperature\030\002 \001(\0132\020.C" +
       "onditionDouble\022\036\n\004rain\030\003 \001(\0132\020.Condition" +
-      "Double\022\036\n\004wind\030\004 \001(\0132\020.ConditionDouble\"]" +
+      "Double\022\036\n\004wind\030\004 \001(\0132\020.ConditionDouble\"p" +
       "\n\022SimpleSubscription\022\026\n\016subscriptionId\030\001" +
       " \001(\t\022/\n\nconditions\030\002 \001(\0132\033.SimplePublica" +
-      "tionCondition*u\n\010Operator\022\010\n\004NONE\020\000\022\016\n\nL" +
-      "OWER_THAN\020\001\022\027\n\023EQUAL_OR_LOWER_THAN\020\002\022\t\n\005" +
-      "EQUAL\020\003\022\031\n\025EQUAL_OR_GREATER_THAN\020\004\022\020\n\014GR" +
-      "EATER_THAN\020\005B-\n\022org.project.modelsB\027Prot" +
-      "oSimpleSubscriptionb\006proto3"
+      "tionCondition\022\021\n\ttimestamp\030\003 \001(\003*u\n\010Oper" +
+      "ator\022\010\n\004NONE\020\000\022\016\n\nLOWER_THAN\020\001\022\027\n\023EQUAL_" +
+      "OR_LOWER_THAN\020\002\022\t\n\005EQUAL\020\003\022\031\n\025EQUAL_OR_G" +
+      "REATER_THAN\020\004\022\020\n\014GREATER_THAN\020\005B-\n\022org.p" +
+      "roject.modelsB\027ProtoSimpleSubscriptionb\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -3418,7 +3492,7 @@ public final class ProtoSimpleSubscription {
     internal_static_SimpleSubscription_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SimpleSubscription_descriptor,
-        new java.lang.String[] { "SubscriptionId", "Conditions", });
+        new java.lang.String[] { "SubscriptionId", "Conditions", "Timestamp", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -10,6 +10,7 @@ message ComplexPublication {
   double avg_temperature = 4;
   double avg_rain = 5;
   double avg_wind = 6;
+  int64 timestamp = 7;
 }
 
 message Location {

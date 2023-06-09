@@ -22,7 +22,7 @@ public final class ProtoComplexPublication {
      * <code>string uuid = 1;</code>
      * @return The uuid.
      */
-    String getUuid();
+    java.lang.String getUuid();
     /**
      * <code>string uuid = 1;</code>
      * @return The bytes for uuid.
@@ -34,7 +34,7 @@ public final class ProtoComplexPublication {
      * <code>string city = 2;</code>
      * @return The city.
      */
-    String getCity();
+    java.lang.String getCity();
     /**
      * <code>string city = 2;</code>
      * @return The bytes for city.
@@ -51,11 +51,11 @@ public final class ProtoComplexPublication {
      * <code>.Location location = 3;</code>
      * @return The location.
      */
-    Location getLocation();
+    org.project.models.ProtoComplexPublication.Location getLocation();
     /**
      * <code>.Location location = 3;</code>
      */
-    LocationOrBuilder getLocationOrBuilder();
+    org.project.models.ProtoComplexPublication.LocationOrBuilder getLocationOrBuilder();
 
     /**
      * <code>double avg_temperature = 4;</code>
@@ -74,6 +74,12 @@ public final class ProtoComplexPublication {
      * @return The avgWind.
      */
     double getAvgWind();
+
+    /**
+     * <code>int64 timestamp = 7;</code>
+     * @return The timestamp.
+     */
+    long getTimestamp();
   }
   /**
    * Protobuf type {@code ComplexPublication}
@@ -92,47 +98,47 @@ public final class ProtoComplexPublication {
       city_ = "";
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ComplexPublication();
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
+      return org.project.models.ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtoComplexPublication.internal_static_ComplexPublication_fieldAccessorTable
+      return org.project.models.ProtoComplexPublication.internal_static_ComplexPublication_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ComplexPublication.class, Builder.class);
+              org.project.models.ProtoComplexPublication.ComplexPublication.class, org.project.models.ProtoComplexPublication.ComplexPublication.Builder.class);
     }
 
     public static final int UUID_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
-    private volatile Object uuid_ = "";
+    private volatile java.lang.Object uuid_ = "";
     /**
      * <code>string uuid = 1;</code>
      * @return The uuid.
      */
-    @Override
-    public String getUuid() {
-      Object ref = uuid_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getUuid() {
+      java.lang.Object ref = uuid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         uuid_ = s;
         return s;
       }
@@ -141,14 +147,14 @@ public final class ProtoComplexPublication {
      * <code>string uuid = 1;</code>
      * @return The bytes for uuid.
      */
-    @Override
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getUuidBytes() {
-      Object ref = uuid_;
-      if (ref instanceof String) {
+      java.lang.Object ref = uuid_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         uuid_ = b;
         return b;
       } else {
@@ -158,20 +164,20 @@ public final class ProtoComplexPublication {
 
     public static final int CITY_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
-    private volatile Object city_ = "";
+    private volatile java.lang.Object city_ = "";
     /**
      * <code>string city = 2;</code>
      * @return The city.
      */
-    @Override
-    public String getCity() {
-      Object ref = city_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getCity() {
+      java.lang.Object ref = city_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         city_ = s;
         return s;
       }
@@ -180,14 +186,14 @@ public final class ProtoComplexPublication {
      * <code>string city = 2;</code>
      * @return The bytes for city.
      */
-    @Override
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCityBytes() {
-      Object ref = city_;
-      if (ref instanceof String) {
+      java.lang.Object ref = city_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         city_ = b;
         return b;
       } else {
@@ -196,12 +202,12 @@ public final class ProtoComplexPublication {
     }
 
     public static final int LOCATION_FIELD_NUMBER = 3;
-    private Location location_;
+    private org.project.models.ProtoComplexPublication.Location location_;
     /**
      * <code>.Location location = 3;</code>
      * @return Whether the location field is set.
      */
-    @Override
+    @java.lang.Override
     public boolean hasLocation() {
       return location_ != null;
     }
@@ -209,16 +215,16 @@ public final class ProtoComplexPublication {
      * <code>.Location location = 3;</code>
      * @return The location.
      */
-    @Override
-    public Location getLocation() {
-      return location_ == null ? Location.getDefaultInstance() : location_;
+    @java.lang.Override
+    public org.project.models.ProtoComplexPublication.Location getLocation() {
+      return location_ == null ? org.project.models.ProtoComplexPublication.Location.getDefaultInstance() : location_;
     }
     /**
      * <code>.Location location = 3;</code>
      */
-    @Override
-    public LocationOrBuilder getLocationOrBuilder() {
-      return location_ == null ? Location.getDefaultInstance() : location_;
+    @java.lang.Override
+    public org.project.models.ProtoComplexPublication.LocationOrBuilder getLocationOrBuilder() {
+      return location_ == null ? org.project.models.ProtoComplexPublication.Location.getDefaultInstance() : location_;
     }
 
     public static final int AVG_TEMPERATURE_FIELD_NUMBER = 4;
@@ -227,7 +233,7 @@ public final class ProtoComplexPublication {
      * <code>double avg_temperature = 4;</code>
      * @return The avgTemperature.
      */
-    @Override
+    @java.lang.Override
     public double getAvgTemperature() {
       return avgTemperature_;
     }
@@ -238,7 +244,7 @@ public final class ProtoComplexPublication {
      * <code>double avg_rain = 5;</code>
      * @return The avgRain.
      */
-    @Override
+    @java.lang.Override
     public double getAvgRain() {
       return avgRain_;
     }
@@ -249,13 +255,24 @@ public final class ProtoComplexPublication {
      * <code>double avg_wind = 6;</code>
      * @return The avgWind.
      */
-    @Override
+    @java.lang.Override
     public double getAvgWind() {
       return avgWind_;
     }
 
+    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    private long timestamp_ = 0L;
+    /**
+     * <code>int64 timestamp = 7;</code>
+     * @return The timestamp.
+     */
+    @java.lang.Override
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -265,7 +282,7 @@ public final class ProtoComplexPublication {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(uuid_)) {
@@ -277,19 +294,22 @@ public final class ProtoComplexPublication {
       if (location_ != null) {
         output.writeMessage(3, getLocation());
       }
-      if (Double.doubleToRawLongBits(avgTemperature_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgTemperature_) != 0) {
         output.writeDouble(4, avgTemperature_);
       }
-      if (Double.doubleToRawLongBits(avgRain_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgRain_) != 0) {
         output.writeDouble(5, avgRain_);
       }
-      if (Double.doubleToRawLongBits(avgWind_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgWind_) != 0) {
         output.writeDouble(6, avgWind_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(7, timestamp_);
       }
       getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -305,32 +325,36 @@ public final class ProtoComplexPublication {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getLocation());
       }
-      if (Double.doubleToRawLongBits(avgTemperature_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgTemperature_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(4, avgTemperature_);
       }
-      if (Double.doubleToRawLongBits(avgRain_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgRain_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(5, avgRain_);
       }
-      if (Double.doubleToRawLongBits(avgWind_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(avgWind_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(6, avgWind_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(7, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof ComplexPublication)) {
+      if (!(obj instanceof org.project.models.ProtoComplexPublication.ComplexPublication)) {
         return super.equals(obj);
       }
-      ComplexPublication other = (ComplexPublication) obj;
+      org.project.models.ProtoComplexPublication.ComplexPublication other = (org.project.models.ProtoComplexPublication.ComplexPublication) obj;
 
       if (!getUuid()
           .equals(other.getUuid())) return false;
@@ -341,20 +365,22 @@ public final class ProtoComplexPublication {
         if (!getLocation()
             .equals(other.getLocation())) return false;
       }
-      if (Double.doubleToLongBits(getAvgTemperature())
-          != Double.doubleToLongBits(
+      if (java.lang.Double.doubleToLongBits(getAvgTemperature())
+          != java.lang.Double.doubleToLongBits(
               other.getAvgTemperature())) return false;
-      if (Double.doubleToLongBits(getAvgRain())
-          != Double.doubleToLongBits(
+      if (java.lang.Double.doubleToLongBits(getAvgRain())
+          != java.lang.Double.doubleToLongBits(
               other.getAvgRain())) return false;
-      if (Double.doubleToLongBits(getAvgWind())
-          != Double.doubleToLongBits(
+      if (java.lang.Double.doubleToLongBits(getAvgWind())
+          != java.lang.Double.doubleToLongBits(
               other.getAvgWind())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -371,81 +397,84 @@ public final class ProtoComplexPublication {
       }
       hash = (37 * hash) + AVG_TEMPERATURE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getAvgTemperature()));
+          java.lang.Double.doubleToLongBits(getAvgTemperature()));
       hash = (37 * hash) + AVG_RAIN_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getAvgRain()));
+          java.lang.Double.doubleToLongBits(getAvgRain()));
       hash = (37 * hash) + AVG_WIND_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getAvgWind()));
+          java.lang.Double.doubleToLongBits(getAvgWind()));
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ComplexPublication parseFrom(byte[] data)
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ComplexPublication parseFrom(java.io.InputStream input)
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static ComplexPublication parseDelimitedFrom(java.io.InputStream input)
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static ComplexPublication parseDelimitedFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static ComplexPublication parseFrom(
+    public static org.project.models.ProtoComplexPublication.ComplexPublication parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -453,23 +482,23 @@ public final class ProtoComplexPublication {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(ComplexPublication prototype) {
+    public static Builder newBuilder(org.project.models.ProtoComplexPublication.ComplexPublication prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -479,18 +508,18 @@ public final class ProtoComplexPublication {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:ComplexPublication)
-        ComplexPublicationOrBuilder {
+        org.project.models.ProtoComplexPublication.ComplexPublicationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
+        return org.project.models.ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
       }
 
-      @Override
-      protected FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtoComplexPublication.internal_static_ComplexPublication_fieldAccessorTable
+        return org.project.models.ProtoComplexPublication.internal_static_ComplexPublication_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ComplexPublication.class, Builder.class);
+                org.project.models.ProtoComplexPublication.ComplexPublication.class, org.project.models.ProtoComplexPublication.ComplexPublication.Builder.class);
       }
 
       // Construct using org.project.models.ProtoComplexPublication.ComplexPublication.newBuilder()
@@ -499,11 +528,11 @@ public final class ProtoComplexPublication {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
 
       }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
@@ -517,38 +546,39 @@ public final class ProtoComplexPublication {
         avgTemperature_ = 0D;
         avgRain_ = 0D;
         avgWind_ = 0D;
+        timestamp_ = 0L;
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
+        return org.project.models.ProtoComplexPublication.internal_static_ComplexPublication_descriptor;
       }
 
-      @Override
-      public ComplexPublication getDefaultInstanceForType() {
-        return ComplexPublication.getDefaultInstance();
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.ComplexPublication getDefaultInstanceForType() {
+        return org.project.models.ProtoComplexPublication.ComplexPublication.getDefaultInstance();
       }
 
-      @Override
-      public ComplexPublication build() {
-        ComplexPublication result = buildPartial();
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.ComplexPublication build() {
+        org.project.models.ProtoComplexPublication.ComplexPublication result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      @Override
-      public ComplexPublication buildPartial() {
-        ComplexPublication result = new ComplexPublication(this);
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.ComplexPublication buildPartial() {
+        org.project.models.ProtoComplexPublication.ComplexPublication result = new org.project.models.ProtoComplexPublication.ComplexPublication(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(ComplexPublication result) {
+      private void buildPartial0(org.project.models.ProtoComplexPublication.ComplexPublication result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.uuid_ = uuid_;
@@ -570,52 +600,55 @@ public final class ProtoComplexPublication {
         if (((from_bitField0_ & 0x00000020) != 0)) {
           result.avgWind_ = avgWind_;
         }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
       }
 
-      @Override
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ComplexPublication) {
-          return mergeFrom((ComplexPublication)other);
+        if (other instanceof org.project.models.ProtoComplexPublication.ComplexPublication) {
+          return mergeFrom((org.project.models.ProtoComplexPublication.ComplexPublication)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ComplexPublication other) {
-        if (other == ComplexPublication.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.project.models.ProtoComplexPublication.ComplexPublication other) {
+        if (other == org.project.models.ProtoComplexPublication.ComplexPublication.getDefaultInstance()) return this;
         if (!other.getUuid().isEmpty()) {
           uuid_ = other.uuid_;
           bitField0_ |= 0x00000001;
@@ -638,23 +671,26 @@ public final class ProtoComplexPublication {
         if (other.getAvgWind() != 0D) {
           setAvgWind(other.getAvgWind());
         }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         if (extensionRegistry == null) {
-          throw new NullPointerException();
+          throw new java.lang.NullPointerException();
         }
         try {
           boolean done = false;
@@ -696,6 +732,11 @@ public final class ProtoComplexPublication {
                 bitField0_ |= 0x00000020;
                 break;
               } // case 49
+              case 56: {
+                timestamp_ = input.readInt64();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 56
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -713,21 +754,21 @@ public final class ProtoComplexPublication {
       }
       private int bitField0_;
 
-      private Object uuid_ = "";
+      private java.lang.Object uuid_ = "";
       /**
        * <code>string uuid = 1;</code>
        * @return The uuid.
        */
-      public String getUuid() {
-        Object ref = uuid_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getUuid() {
+        java.lang.Object ref = uuid_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           uuid_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -736,11 +777,11 @@ public final class ProtoComplexPublication {
        */
       public com.google.protobuf.ByteString
           getUuidBytes() {
-        Object ref = uuid_;
+        java.lang.Object ref = uuid_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           uuid_ = b;
           return b;
         } else {
@@ -753,7 +794,7 @@ public final class ProtoComplexPublication {
        * @return This builder for chaining.
        */
       public Builder setUuid(
-          String value) {
+          java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         uuid_ = value;
         bitField0_ |= 0x00000001;
@@ -785,21 +826,21 @@ public final class ProtoComplexPublication {
         return this;
       }
 
-      private Object city_ = "";
+      private java.lang.Object city_ = "";
       /**
        * <code>string city = 2;</code>
        * @return The city.
        */
-      public String getCity() {
-        Object ref = city_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getCity() {
+        java.lang.Object ref = city_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           city_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -808,11 +849,11 @@ public final class ProtoComplexPublication {
        */
       public com.google.protobuf.ByteString
           getCityBytes() {
-        Object ref = city_;
+        java.lang.Object ref = city_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           city_ = b;
           return b;
         } else {
@@ -825,7 +866,7 @@ public final class ProtoComplexPublication {
        * @return This builder for chaining.
        */
       public Builder setCity(
-          String value) {
+          java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         city_ = value;
         bitField0_ |= 0x00000002;
@@ -857,9 +898,9 @@ public final class ProtoComplexPublication {
         return this;
       }
 
-      private Location location_;
+      private org.project.models.ProtoComplexPublication.Location location_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          Location, Location.Builder, LocationOrBuilder> locationBuilder_;
+          org.project.models.ProtoComplexPublication.Location, org.project.models.ProtoComplexPublication.Location.Builder, org.project.models.ProtoComplexPublication.LocationOrBuilder> locationBuilder_;
       /**
        * <code>.Location location = 3;</code>
        * @return Whether the location field is set.
@@ -871,9 +912,9 @@ public final class ProtoComplexPublication {
        * <code>.Location location = 3;</code>
        * @return The location.
        */
-      public Location getLocation() {
+      public org.project.models.ProtoComplexPublication.Location getLocation() {
         if (locationBuilder_ == null) {
-          return location_ == null ? Location.getDefaultInstance() : location_;
+          return location_ == null ? org.project.models.ProtoComplexPublication.Location.getDefaultInstance() : location_;
         } else {
           return locationBuilder_.getMessage();
         }
@@ -881,7 +922,7 @@ public final class ProtoComplexPublication {
       /**
        * <code>.Location location = 3;</code>
        */
-      public Builder setLocation(Location value) {
+      public Builder setLocation(org.project.models.ProtoComplexPublication.Location value) {
         if (locationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -898,7 +939,7 @@ public final class ProtoComplexPublication {
        * <code>.Location location = 3;</code>
        */
       public Builder setLocation(
-          Location.Builder builderForValue) {
+          org.project.models.ProtoComplexPublication.Location.Builder builderForValue) {
         if (locationBuilder_ == null) {
           location_ = builderForValue.build();
         } else {
@@ -911,11 +952,11 @@ public final class ProtoComplexPublication {
       /**
        * <code>.Location location = 3;</code>
        */
-      public Builder mergeLocation(Location value) {
+      public Builder mergeLocation(org.project.models.ProtoComplexPublication.Location value) {
         if (locationBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
             location_ != null &&
-            location_ != Location.getDefaultInstance()) {
+            location_ != org.project.models.ProtoComplexPublication.Location.getDefaultInstance()) {
             getLocationBuilder().mergeFrom(value);
           } else {
             location_ = value;
@@ -943,7 +984,7 @@ public final class ProtoComplexPublication {
       /**
        * <code>.Location location = 3;</code>
        */
-      public Location.Builder getLocationBuilder() {
+      public org.project.models.ProtoComplexPublication.Location.Builder getLocationBuilder() {
         bitField0_ |= 0x00000004;
         onChanged();
         return getLocationFieldBuilder().getBuilder();
@@ -951,23 +992,23 @@ public final class ProtoComplexPublication {
       /**
        * <code>.Location location = 3;</code>
        */
-      public LocationOrBuilder getLocationOrBuilder() {
+      public org.project.models.ProtoComplexPublication.LocationOrBuilder getLocationOrBuilder() {
         if (locationBuilder_ != null) {
           return locationBuilder_.getMessageOrBuilder();
         } else {
           return location_ == null ?
-              Location.getDefaultInstance() : location_;
+              org.project.models.ProtoComplexPublication.Location.getDefaultInstance() : location_;
         }
       }
       /**
        * <code>.Location location = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          Location, Location.Builder, LocationOrBuilder>
+          org.project.models.ProtoComplexPublication.Location, org.project.models.ProtoComplexPublication.Location.Builder, org.project.models.ProtoComplexPublication.LocationOrBuilder> 
           getLocationFieldBuilder() {
         if (locationBuilder_ == null) {
           locationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              Location, Location.Builder, LocationOrBuilder>(
+              org.project.models.ProtoComplexPublication.Location, org.project.models.ProtoComplexPublication.Location.Builder, org.project.models.ProtoComplexPublication.LocationOrBuilder>(
                   getLocation(),
                   getParentForChildren(),
                   isClean());
@@ -981,7 +1022,7 @@ public final class ProtoComplexPublication {
        * <code>double avg_temperature = 4;</code>
        * @return The avgTemperature.
        */
-      @Override
+      @java.lang.Override
       public double getAvgTemperature() {
         return avgTemperature_;
       }
@@ -1013,7 +1054,7 @@ public final class ProtoComplexPublication {
        * <code>double avg_rain = 5;</code>
        * @return The avgRain.
        */
-      @Override
+      @java.lang.Override
       public double getAvgRain() {
         return avgRain_;
       }
@@ -1045,7 +1086,7 @@ public final class ProtoComplexPublication {
        * <code>double avg_wind = 6;</code>
        * @return The avgWind.
        */
-      @Override
+      @java.lang.Override
       public double getAvgWind() {
         return avgWind_;
       }
@@ -1071,13 +1112,45 @@ public final class ProtoComplexPublication {
         onChanged();
         return this;
       }
-      @Override
+
+      private long timestamp_ ;
+      /**
+       * <code>int64 timestamp = 7;</code>
+       * @return The timestamp.
+       */
+      @java.lang.Override
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>int64 timestamp = 7;</code>
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 timestamp = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -1088,18 +1161,18 @@ public final class ProtoComplexPublication {
     }
 
     // @@protoc_insertion_point(class_scope:ComplexPublication)
-    private static final ComplexPublication DEFAULT_INSTANCE;
+    private static final org.project.models.ProtoComplexPublication.ComplexPublication DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new ComplexPublication();
+      DEFAULT_INSTANCE = new org.project.models.ProtoComplexPublication.ComplexPublication();
     }
 
-    public static ComplexPublication getDefaultInstance() {
+    public static org.project.models.ProtoComplexPublication.ComplexPublication getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
     private static final com.google.protobuf.Parser<ComplexPublication>
         PARSER = new com.google.protobuf.AbstractParser<ComplexPublication>() {
-      @Override
+      @java.lang.Override
       public ComplexPublication parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1123,13 +1196,13 @@ public final class ProtoComplexPublication {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ComplexPublication> getParserForType() {
       return PARSER;
     }
 
-    @Override
-    public ComplexPublication getDefaultInstanceForType() {
+    @java.lang.Override
+    public org.project.models.ProtoComplexPublication.ComplexPublication getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1166,29 +1239,29 @@ public final class ProtoComplexPublication {
     private Location() {
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new Location();
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtoComplexPublication.internal_static_Location_descriptor;
+      return org.project.models.ProtoComplexPublication.internal_static_Location_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtoComplexPublication.internal_static_Location_fieldAccessorTable
+      return org.project.models.ProtoComplexPublication.internal_static_Location_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Location.class, Builder.class);
+              org.project.models.ProtoComplexPublication.Location.class, org.project.models.ProtoComplexPublication.Location.Builder.class);
     }
 
     public static final int LATITUDE_FIELD_NUMBER = 1;
@@ -1197,7 +1270,7 @@ public final class ProtoComplexPublication {
      * <code>double latitude = 1;</code>
      * @return The latitude.
      */
-    @Override
+    @java.lang.Override
     public double getLatitude() {
       return latitude_;
     }
@@ -1208,13 +1281,13 @@ public final class ProtoComplexPublication {
      * <code>double longitude = 2;</code>
      * @return The longitude.
      */
-    @Override
+    @java.lang.Override
     public double getLongitude() {
       return longitude_;
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -1224,29 +1297,29 @@ public final class ProtoComplexPublication {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (Double.doubleToRawLongBits(latitude_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(latitude_) != 0) {
         output.writeDouble(1, latitude_);
       }
-      if (Double.doubleToRawLongBits(longitude_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(longitude_) != 0) {
         output.writeDouble(2, longitude_);
       }
       getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (Double.doubleToRawLongBits(latitude_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(latitude_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(1, latitude_);
       }
-      if (Double.doubleToRawLongBits(longitude_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(longitude_) != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(2, longitude_);
       }
@@ -1255,27 +1328,27 @@ public final class ProtoComplexPublication {
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof Location)) {
+      if (!(obj instanceof org.project.models.ProtoComplexPublication.Location)) {
         return super.equals(obj);
       }
-      Location other = (Location) obj;
+      org.project.models.ProtoComplexPublication.Location other = (org.project.models.ProtoComplexPublication.Location) obj;
 
-      if (Double.doubleToLongBits(getLatitude())
-          != Double.doubleToLongBits(
+      if (java.lang.Double.doubleToLongBits(getLatitude())
+          != java.lang.Double.doubleToLongBits(
               other.getLatitude())) return false;
-      if (Double.doubleToLongBits(getLongitude())
-          != Double.doubleToLongBits(
+      if (java.lang.Double.doubleToLongBits(getLongitude())
+          != java.lang.Double.doubleToLongBits(
               other.getLongitude())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -1284,78 +1357,78 @@ public final class ProtoComplexPublication {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + LATITUDE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getLatitude()));
+          java.lang.Double.doubleToLongBits(getLatitude()));
       hash = (37 * hash) + LONGITUDE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getLongitude()));
+          java.lang.Double.doubleToLongBits(getLongitude()));
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Location parseFrom(byte[] data)
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Location parseFrom(java.io.InputStream input)
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Location parseDelimitedFrom(java.io.InputStream input)
+    public static org.project.models.ProtoComplexPublication.Location parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static Location parseDelimitedFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static Location parseFrom(
+    public static org.project.models.ProtoComplexPublication.Location parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1363,23 +1436,23 @@ public final class ProtoComplexPublication {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(Location prototype) {
+    public static Builder newBuilder(org.project.models.ProtoComplexPublication.Location prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1389,18 +1462,18 @@ public final class ProtoComplexPublication {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Location)
-        LocationOrBuilder {
+        org.project.models.ProtoComplexPublication.LocationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtoComplexPublication.internal_static_Location_descriptor;
+        return org.project.models.ProtoComplexPublication.internal_static_Location_descriptor;
       }
 
-      @Override
-      protected FieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtoComplexPublication.internal_static_Location_fieldAccessorTable
+        return org.project.models.ProtoComplexPublication.internal_static_Location_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Location.class, Builder.class);
+                org.project.models.ProtoComplexPublication.Location.class, org.project.models.ProtoComplexPublication.Location.Builder.class);
       }
 
       // Construct using org.project.models.ProtoComplexPublication.Location.newBuilder()
@@ -1409,11 +1482,11 @@ public final class ProtoComplexPublication {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
 
       }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
@@ -1422,35 +1495,35 @@ public final class ProtoComplexPublication {
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtoComplexPublication.internal_static_Location_descriptor;
+        return org.project.models.ProtoComplexPublication.internal_static_Location_descriptor;
       }
 
-      @Override
-      public Location getDefaultInstanceForType() {
-        return Location.getDefaultInstance();
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.Location getDefaultInstanceForType() {
+        return org.project.models.ProtoComplexPublication.Location.getDefaultInstance();
       }
 
-      @Override
-      public Location build() {
-        Location result = buildPartial();
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.Location build() {
+        org.project.models.ProtoComplexPublication.Location result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      @Override
-      public Location buildPartial() {
-        Location result = new Location(this);
+      @java.lang.Override
+      public org.project.models.ProtoComplexPublication.Location buildPartial() {
+        org.project.models.ProtoComplexPublication.Location result = new org.project.models.ProtoComplexPublication.Location(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(Location result) {
+      private void buildPartial0(org.project.models.ProtoComplexPublication.Location result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.latitude_ = latitude_;
@@ -1460,50 +1533,50 @@ public final class ProtoComplexPublication {
         }
       }
 
-      @Override
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Location) {
-          return mergeFrom((Location)other);
+        if (other instanceof org.project.models.ProtoComplexPublication.Location) {
+          return mergeFrom((org.project.models.ProtoComplexPublication.Location)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Location other) {
-        if (other == Location.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.project.models.ProtoComplexPublication.Location other) {
+        if (other == org.project.models.ProtoComplexPublication.Location.getDefaultInstance()) return this;
         if (other.getLatitude() != 0D) {
           setLatitude(other.getLatitude());
         }
@@ -1515,18 +1588,18 @@ public final class ProtoComplexPublication {
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         if (extensionRegistry == null) {
-          throw new NullPointerException();
+          throw new java.lang.NullPointerException();
         }
         try {
           boolean done = false;
@@ -1568,7 +1641,7 @@ public final class ProtoComplexPublication {
        * <code>double latitude = 1;</code>
        * @return The latitude.
        */
-      @Override
+      @java.lang.Override
       public double getLatitude() {
         return latitude_;
       }
@@ -1600,7 +1673,7 @@ public final class ProtoComplexPublication {
        * <code>double longitude = 2;</code>
        * @return The longitude.
        */
-      @Override
+      @java.lang.Override
       public double getLongitude() {
         return longitude_;
       }
@@ -1626,13 +1699,13 @@ public final class ProtoComplexPublication {
         onChanged();
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -1643,18 +1716,18 @@ public final class ProtoComplexPublication {
     }
 
     // @@protoc_insertion_point(class_scope:Location)
-    private static final Location DEFAULT_INSTANCE;
+    private static final org.project.models.ProtoComplexPublication.Location DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Location();
+      DEFAULT_INSTANCE = new org.project.models.ProtoComplexPublication.Location();
     }
 
-    public static Location getDefaultInstance() {
+    public static org.project.models.ProtoComplexPublication.Location getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
     private static final com.google.protobuf.Parser<Location>
         PARSER = new com.google.protobuf.AbstractParser<Location>() {
-      @Override
+      @java.lang.Override
       public Location parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1678,13 +1751,13 @@ public final class ProtoComplexPublication {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Location> getParserForType() {
       return PARSER;
     }
 
-    @Override
-    public Location getDefaultInstanceForType() {
+    @java.lang.Override
+    public org.project.models.ProtoComplexPublication.Location getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1708,14 +1781,15 @@ public final class ProtoComplexPublication {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\030ComplexPublication.proto\"\212\001\n\022ComplexPu" +
+    java.lang.String[] descriptorData = {
+      "\n\030ComplexPublication.proto\"\235\001\n\022ComplexPu" +
       "blication\022\014\n\004uuid\030\001 \001(\t\022\014\n\004city\030\002 \001(\t\022\033\n" +
       "\010location\030\003 \001(\0132\t.Location\022\027\n\017avg_temper" +
       "ature\030\004 \001(\001\022\020\n\010avg_rain\030\005 \001(\001\022\020\n\010avg_win" +
-      "d\030\006 \001(\001\"/\n\010Location\022\020\n\010latitude\030\001 \001(\001\022\021\n" +
-      "\tlongitude\030\002 \001(\001B-\n\022org.project.modelsB\027" +
-      "ProtoComplexPublicationb\006proto3"
+      "d\030\006 \001(\001\022\021\n\ttimestamp\030\007 \001(\003\"/\n\010Location\022\020" +
+      "\n\010latitude\030\001 \001(\001\022\021\n\tlongitude\030\002 \001(\001B-\n\022o" +
+      "rg.project.modelsB\027ProtoComplexPublicati" +
+      "onb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1726,13 +1800,13 @@ public final class ProtoComplexPublication {
     internal_static_ComplexPublication_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ComplexPublication_descriptor,
-        new String[] { "Uuid", "City", "Location", "AvgTemperature", "AvgRain", "AvgWind", });
+        new java.lang.String[] { "Uuid", "City", "Location", "AvgTemperature", "AvgRain", "AvgWind", "Timestamp", });
     internal_static_Location_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Location_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Location_descriptor,
-        new String[] { "Latitude", "Longitude", });
+        new java.lang.String[] { "Latitude", "Longitude", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

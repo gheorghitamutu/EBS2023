@@ -32,5 +32,6 @@ message ComplexPublicationCondition {
 message ComplexSubscription {
   string subscriptionId = 1;
   ComplexPublicationCondition conditions = 2;
+  int64 timestamp = 3;
 }
 

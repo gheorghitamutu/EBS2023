@@ -252,7 +252,7 @@ And this generates the required .java files that we'll be using in our project.
         double rain = 6;
         double wind = 7;
         string direction = 8;
-        string date = 9;
+        int64 timestamp = 9;
     }
 
     message Location {
@@ -284,6 +284,7 @@ And this generates the required .java files that we'll be using in our project.
         double avg_temperature = 4;
         double avg_rain = 5;
         double avg_wind = 6;
+        int64 timestamp = 7;
     }
 
     message Location {
@@ -334,6 +335,7 @@ And this generates the required .java files that we'll be using in our project.
     message SimpleSubscription {
         string subscriptionId = 1;
         SimplePublicationCondition conditions = 2;
+        int64 timestamp = 3;
     }
 
 
@@ -373,6 +375,7 @@ And this generates the required .java files that we'll be using in our project.
     message ComplexSubscription {
         string subscriptionId = 1;
         ComplexPublicationCondition conditions = 2;
+        int64 timestamp = 3;
     }
 
 ## Filters
