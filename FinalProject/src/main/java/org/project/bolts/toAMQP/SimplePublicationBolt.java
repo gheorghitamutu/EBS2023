@@ -18,7 +18,7 @@ import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class SimplePublicationBolt extends BaseRichBolt {
 
-    public static final String ID = SimplePublicationBolt.class.toString();
+    public static final String ID = SimplePublicationBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(SimplePublicationBolt.class);
     private OutputCollector collector;
     private Channel channel;

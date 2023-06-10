@@ -31,7 +31,7 @@ import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class SimplePublicationSpout implements IRichSpout {
     private static final org.apache.log4j.Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
-    public static final String ID = SimplePublicationSpout.class.toString();
+    public static final String ID = SimplePublicationSpout.class.getCanonicalName();
     private String taskName;
     private final boolean requeueOnFail;
     private final boolean autoAck;

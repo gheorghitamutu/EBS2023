@@ -24,7 +24,7 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
     private Map<String, ProtoSimpleSubscription.SimpleSubscription> unconfirmed;
     private int simpleSubscriptionCount;
     private static final Logger LOG = Logger.getLogger(SimpleSubscriptionSpout.class);
-    public static final String ID = SimpleSubscriptionSpout.class.toString();
+    public static final String ID = SimpleSubscriptionSpout.class.getCanonicalName();
 
     @Override
     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {

@@ -7,12 +7,10 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
-import org.project.data.City;
 import org.project.data.PublicationGenerator;
 import org.project.models.ProtoSimplePublication;
 
 import java.text.MessageFormat;
-import java.time.Duration;
 import java.util.*;
 
 import static org.project.cofiguration.GlobalConfiguration.MAX_TIME;
@@ -25,7 +23,7 @@ public class SimplePublicationSpout extends BaseRichSpout {
     private int simplePublicationCount;
     private static final Logger LOG = Logger.getLogger(SimplePublicationSpout.class);
 
-    public static final String ID = SimplePublicationSpout.class.toString();
+    public static final String ID = SimplePublicationSpout.class.getCanonicalName();
     private static final long START_TIME = System.currentTimeMillis();
 
     @Override

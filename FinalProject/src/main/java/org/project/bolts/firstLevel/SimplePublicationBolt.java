@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class SimplePublicationBolt extends BaseRichBolt {
 
-    public static final String ID = SimplePublicationBolt.class.toString();
+    public static final String ID = SimplePublicationBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(SimplePublicationBolt.class);
     private int eventsReceived;
     private OutputCollector collector;

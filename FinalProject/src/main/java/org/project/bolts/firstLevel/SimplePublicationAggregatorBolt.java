@@ -1,6 +1,8 @@
 package org.project.bolts.firstLevel;
 
 import org.apache.log4j.Logger;
+import org.apache.storm.metric.api.MeanReducer;
+import org.apache.storm.metric.api.ReducedMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -18,16 +20,26 @@ import java.util.Map;
 
 public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
 
-    public static final String ID = SimplePublicationAggregatorBolt.class.toString();
+    public static final String ID = SimplePublicationAggregatorBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(SimplePublicationAggregatorBolt.class);
 
     private int eventsReceived;
     private OutputCollector collector;
 
+    private transient ReducedMetric latencyForGeneration;
+    private transient ReducedMetric latencyForStorage;
+    private static final int TIME_BUCKET_SIZE_IN_SECS = 60;
+
     @Override
-    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector collector) {
+    public void prepare(Map<String, Object> map, TopologyContext context, OutputCollector collector) {
         this.eventsReceived = 0;
         this.collector = collector;
+
+        latencyForGeneration = new ReducedMetric(new MeanReducer());
+        latencyForStorage = new ReducedMetric(new MeanReducer());
+
+        context.registerMetric("latency-generation", latencyForGeneration, TIME_BUCKET_SIZE_IN_SECS);
+        context.registerMetric("latency-storage", latencyForStorage, TIME_BUCKET_SIZE_IN_SECS);
     }
 
     public ProtoComplexPublication.ComplexPublication buildComplexPublication(
@@ -46,6 +58,8 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
 
     @Override
     public void execute(TupleWindow input) {
+        long start = System.currentTimeMillis();
+
         var oldCount = eventsReceived;
         List<ProtoSimplePublication.SimplePublication> sps = new ArrayList<>();
 
@@ -61,7 +75,12 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
         }
 
         var cp = buildComplexPublication(sps);
+        latencyForGeneration.update(System.currentTimeMillis() - start);
+
+        start = System.currentTimeMillis();
         this.collector.emit(input.get(), new Values(cp));
+        latencyForStorage.update(System.currentTimeMillis() - start);
+
         // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
     }
 
@@ -73,5 +92,10 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
     @Override
     public void cleanup() {
         LOG.info(MessageFormat.format("Events received: {0}!", this.eventsReceived));
+    }
+
+    public void getComponentPageInfo() {
+        LOG.info(MessageFormat.format("Component ID: {0}!", ID));
+        LOG.info(MessageFormat.format("Component Type: {0}!", this.getClass().toString()));
     }
 }

@@ -13,7 +13,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 public class ComplexPublicationBolt extends BaseRichBolt {
-    public static final String ID = ComplexPublicationBolt.class.toString();
+    public static final String ID = ComplexPublicationBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(ComplexPublicationBolt.class);
     private int eventsReceived;
     private OutputCollector collector;

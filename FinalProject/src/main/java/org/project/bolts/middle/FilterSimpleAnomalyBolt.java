@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 
 public class FilterSimpleAnomalyBolt extends BaseRichBolt {
 
-    public static final String ID = FilterSimpleAnomalyBolt.class.toString();
+    public static final String ID = FilterSimpleAnomalyBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(FilterSimpleAnomalyBolt.class);
     final private List<Predicate<ProtoSimplePublication.SimplePublication>> predicates;
     private OutputCollector collector;

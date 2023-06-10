@@ -36,7 +36,7 @@ import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class ComplexPublicationSpout implements IRichSpout {
     private static final Logger LOG = Logger.getLogger(ComplexPublicationSpout.class);
-    public static final String ID = ComplexPublicationSpout.class.toString();
+    public static final String ID = ComplexPublicationSpout.class.getCanonicalName();
     private String taskName;
     private final boolean requeueOnFail;
     private final boolean autoAck;

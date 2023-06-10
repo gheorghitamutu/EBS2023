@@ -21,7 +21,7 @@ import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class AnomalyBolt extends BaseRichBolt {
 
-    public static final String ID = AnomalyBolt.class.toString();
+    public static final String ID = AnomalyBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(AnomalyBolt.class);
     private OutputCollector collector;
     private int eventsReceived;

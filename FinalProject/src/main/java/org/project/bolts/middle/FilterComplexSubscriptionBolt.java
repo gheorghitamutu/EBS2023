@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class FilterComplexSubscriptionBolt extends BaseRichBolt {
 
-    public static final String ID = FilterComplexSubscriptionBolt.class.toString();
+    public static final String ID = FilterComplexSubscriptionBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(FilterComplexSubscriptionBolt.class);
     private OutputCollector collector;
 

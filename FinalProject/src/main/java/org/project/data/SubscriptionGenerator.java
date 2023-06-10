@@ -4,6 +4,8 @@ import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimpleSubscription;
 
 import static java.util.UUID.randomUUID;
+import static org.project.data.RawData.CITIES;
+import static org.project.data.RawData.RANDOM;
 
 public class SubscriptionGenerator {
     private static SubscriptionGenerator instance = null;
@@ -16,7 +18,7 @@ public class SubscriptionGenerator {
                                 .setCity(
                                         ProtoSimpleSubscription.ConditionString.newBuilder()
                                                 .setOperatorValue(ProtoSimpleSubscription.Operator.EQUAL_VALUE)
-                                                .setValue(new City(City.Name.SAN_FRANCISCO).ToString())
+                                                .setValue(CITIES[RANDOM.nextInt(CITIES.length)])
                                                 .build()
                                 )
                                 .build()
@@ -33,7 +35,7 @@ public class SubscriptionGenerator {
                                 .setCity(
                                         ProtoComplexSubscription.ConditionString.newBuilder()
                                                 .setOperatorValue(ProtoComplexSubscription.Operator.EQUAL_VALUE)
-                                                .setValue(new City(City.Name.SAN_FRANCISCO).ToString())
+                                                .setValue(CITIES[RANDOM.nextInt(CITIES.length)])
                                                 .build()
                                 )
                                 .build()

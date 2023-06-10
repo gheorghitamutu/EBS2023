@@ -7,16 +7,13 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
-import org.project.data.City;
 import org.project.data.SubscriptionGenerator;
 import org.project.models.ProtoComplexSubscription;
-import org.project.models.ProtoSimpleSubscription;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.UUID.randomUUID;
 import static org.project.cofiguration.GlobalConfiguration.COMPLEX_SUBSCRIPTION_COUNT;
 
 public class ComplexSubscriptionSpout extends BaseRichSpout {
@@ -26,7 +23,7 @@ public class ComplexSubscriptionSpout extends BaseRichSpout {
     private Map<String, ProtoComplexSubscription.ComplexSubscription> unconfirmed;
     private int complexSubscriptionCount;
     private static final Logger LOG = Logger.getLogger(ComplexSubscriptionSpout.class);
-    public static final String ID = ComplexSubscriptionSpout.class.toString();
+    public static final String ID = ComplexSubscriptionSpout.class.getCanonicalName();
 
     @Override
     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {

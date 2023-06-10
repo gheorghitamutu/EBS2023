@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AnomalyComplexBolt  extends BaseRichBolt {
 
-    public static final String ID = AnomalyComplexBolt.class.toString();
+    public static final String ID = AnomalyComplexBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(AnomalyComplexBolt.class);
     private OutputCollector collector;
     private int eventsReceived;
