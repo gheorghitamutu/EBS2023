@@ -1,6 +1,7 @@
-package org.project.bolts.firstLevel;
+package org.project.bolts.transformers;
 
 import org.apache.log4j.Logger;
+import org.apache.storm.metric.api.AssignableMetric;
 import org.apache.storm.metric.api.MeanReducer;
 import org.apache.storm.metric.api.ReducedMetric;
 import org.apache.storm.task.OutputCollector;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.abs;
+import static org.project.cofiguration.GlobalConfiguration.*;
+
 public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
 
     public static final String ID = SimplePublicationAggregatorBolt.class.getCanonicalName();
@@ -26,20 +30,21 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
     private int eventsReceived;
     private OutputCollector collector;
 
-    private transient ReducedMetric latencyForGeneration;
-    private transient ReducedMetric latencyForStorage;
-    private static final int TIME_BUCKET_SIZE_IN_SECS = 60;
+    private transient AssignableMetric latencyForGeneration;
+    private transient AssignableMetric latencyForStorage;
 
     @Override
     public void prepare(Map<String, Object> map, TopologyContext context, OutputCollector collector) {
         this.eventsReceived = 0;
         this.collector = collector;
 
-        latencyForGeneration = new ReducedMetric(new MeanReducer());
-        latencyForStorage = new ReducedMetric(new MeanReducer());
+        //http://<storm-ui-host>:<ui-port>/api/v1/topology/<topology-id>/component/<component-id>/metric/<metric-name>
+        // http://localhost:8080/api/v1/topology/weather-topology-10-1686397266/component/org.project.bolts.firstLevel.SimplePublicationAggregator/metric/latency-generation
+        latencyForGeneration = new AssignableMetric(0);
+        latencyForStorage = new AssignableMetric(0);
 
-        context.registerMetric("latency-generation", latencyForGeneration, TIME_BUCKET_SIZE_IN_SECS);
-        context.registerMetric("latency-storage", latencyForStorage, TIME_BUCKET_SIZE_IN_SECS);
+        context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_GENERATION, latencyForGeneration, TIME_BUCKET_SIZE_IN_SECS);
+        context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_STORAGE, latencyForStorage, TIME_BUCKET_SIZE_IN_SECS);
     }
 
     public ProtoComplexPublication.ComplexPublication buildComplexPublication(
@@ -53,6 +58,7 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
                 .setAvgTemperature(avgTemperature)
                 .setAvgWind(avgWind)
                 .setAvgRain(avgRain)
+                .setTimestamp(System.currentTimeMillis())
                 .build();
     }
 
@@ -75,11 +81,11 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
         }
 
         var cp = buildComplexPublication(sps);
-        latencyForGeneration.update(System.currentTimeMillis() - start);
+        latencyForGeneration.setValue(abs(System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();
         this.collector.emit(input.get(), new Values(cp));
-        latencyForStorage.update(System.currentTimeMillis() - start);
+        latencyForStorage.setValue(abs(System.currentTimeMillis() - start));
 
         // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
     }

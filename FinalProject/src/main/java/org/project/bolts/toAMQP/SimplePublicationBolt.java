@@ -1,6 +1,7 @@
 package org.project.bolts.toAMQP;
 
 import com.rabbitmq.client.*;
+import org.apache.commons.logging.Log;
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -49,7 +50,7 @@ public class SimplePublicationBolt extends BaseRichBolt {
                     sp.toByteArray());
             channel.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
             // LOG.info(" [x] Sent: " + sp);
-        } catch (AlreadyClosedException e) {
+        } catch (AlreadyClosedException | InterruptedException e) {
             e.printStackTrace();
             setupChannel();
             this.collector.fail(input);
@@ -71,7 +72,11 @@ public class SimplePublicationBolt extends BaseRichBolt {
     public void cleanup() {
         try {
             this.channel.close();
-        } catch (IOException | TimeoutException e) {
+        }
+        catch (AlreadyClosedException e) {
+            LOG.warn("Channel already closed", e);
+        }
+        catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }

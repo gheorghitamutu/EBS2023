@@ -9,9 +9,13 @@
 
 package org.project.spouts.fromAMQP;
 
+import com.codahale.metrics.Metric;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.rabbitmq.client.*;
 import org.apache.log4j.Logger;
+import org.apache.storm.metric.api.AssignableMetric;
+import org.apache.storm.metric.api.MeanReducer;
+import org.apache.storm.metric.api.ReducedMetric;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichSpout;
@@ -27,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static java.lang.Math.abs;
 import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class SimplePublicationSpout implements IRichSpout {
@@ -41,6 +46,8 @@ public class SimplePublicationSpout implements IRichSpout {
     private QueueingConsumer amqpConsumer;
     private String amqpConsumerTag;
 
+    private AssignableMetric latencyForFullFlow;
+
     public SimplePublicationSpout(boolean requeueOnFail, boolean autoAck) {
         this.requeueOnFail = requeueOnFail;
         this.autoAck = autoAck;
@@ -49,6 +56,9 @@ public class SimplePublicationSpout implements IRichSpout {
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;
         this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
+
+        latencyForFullFlow = new AssignableMetric(0);
+        context.registerMetric(METRICS_LATENCY_SIMPLE_PUBLICATION_FULL_FLOW, latencyForFullFlow, TIME_BUCKET_SIZE_IN_SECS);
 
         Long prefetchCount = (Long) conf.get(CONFIG_PREFETCH_COUNT);
         if (prefetchCount == null) {
@@ -110,44 +120,53 @@ public class SimplePublicationSpout implements IRichSpout {
     }
 
     public void nextTuple() {
-        if (amqpConsumer != null) {
-            try {
-                final QueueingConsumer.Delivery delivery = amqpConsumer.nextDelivery(WAIT_FOR_NEXT_MESSAGE);
-                if (delivery == null) return;
-                final long deliveryTag = delivery.getEnvelope().getDeliveryTag();
-                if (delivery.getBody().length > 0) {
-                    ProtoSimplePublication.SimplePublication sp;
-                    try {
-                        sp = ProtoSimplePublication.SimplePublication.parseFrom(delivery.getBody());
-                    } catch (InvalidProtocolBufferException e) {
-                        throw new RuntimeException(e);
-                    }
-                    collector.emit(new Values(sp), deliveryTag);
-                } else {
-                    LOG.debug("Malformed deserialized message, null or zero - length." + deliveryTag);
-                    if (!this.autoAck) {
-                        ack(deliveryTag);
-                    }
-                }
-            } catch (ShutdownSignalException e) {
-                LOG.warn("AMQP connection dropped, will attempt to reconnect...");
-                Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
-                try {
-                    reconnect();
-                } catch (TimeoutException e1) {
-                    e1.printStackTrace();
-                }
-            } catch (ConsumerCancelledException e) {
-                LOG.warn("AMQP consumer cancelled, will attempt to reconnect...");
-                Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
-                try {
-                    reconnect();
-                } catch (TimeoutException e1) {
-                    e1.printStackTrace();
-                }
-            } catch (InterruptedException e) {
-                LOG.error("Interrupted while reading a message, with Exception :" + e);
+        if (amqpConsumer == null) {
+            return;
+        }
+        try {
+            final QueueingConsumer.Delivery delivery = amqpConsumer.nextDelivery(WAIT_FOR_NEXT_MESSAGE);
+            if (delivery == null) {
+                return;
             }
+
+            final long deliveryTag = delivery.getEnvelope().getDeliveryTag();
+            if (delivery.getBody().length > 0) {
+                ProtoSimplePublication.SimplePublication sp;
+                try {
+                    sp = ProtoSimplePublication.SimplePublication.parseFrom(delivery.getBody());
+                } catch (InvalidProtocolBufferException e) {
+                    throw new RuntimeException(e);
+                }
+                collector.emit(new Values(sp), deliveryTag);
+
+                final long creationTimestamp = sp.getTimestamp();
+                final long delta = System.currentTimeMillis() - creationTimestamp;
+                // LOG.debug(MessageFormat.format("Emitted message with ID {0} (age: {1} ms)", sp.getUuid(), delta));
+                latencyForFullFlow.setValue(abs(delta));
+            } else {
+                LOG.debug("Malformed deserialized message, null or zero - length." + deliveryTag);
+                if (!this.autoAck) {
+                    ack(deliveryTag);
+                }
+            }
+        } catch (ShutdownSignalException e) {
+            LOG.warn("AMQP connection dropped, will attempt to reconnect...");
+            Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
+            try {
+                reconnect();
+            } catch (TimeoutException e1) {
+                e1.printStackTrace();
+            }
+        } catch (ConsumerCancelledException e) {
+            LOG.warn("AMQP consumer cancelled, will attempt to reconnect...");
+            Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
+            try {
+                reconnect();
+            } catch (TimeoutException e1) {
+                e1.printStackTrace();
+            }
+        } catch (InterruptedException e) {
+            LOG.error("Interrupted while reading a message, with Exception :" + e);
         }
     }
 

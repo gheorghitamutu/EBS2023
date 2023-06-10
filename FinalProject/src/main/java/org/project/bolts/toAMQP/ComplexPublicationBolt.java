@@ -50,7 +50,7 @@ public class ComplexPublicationBolt extends BaseRichBolt {
                     cp.toByteArray());
             channel.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
             // LOG.info(" [x] Sent: " + cp);
-        } catch (AlreadyClosedException e) {
+        } catch (AlreadyClosedException | InterruptedException e) {
             e.printStackTrace();
             setupChannel();
             this.collector.fail(input);
@@ -72,6 +72,8 @@ public class ComplexPublicationBolt extends BaseRichBolt {
     public void cleanup() {
         try {
             this.channel.close();
+        } catch (AlreadyClosedException e) {
+            LOG.warn("Channel already closed", e);
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }

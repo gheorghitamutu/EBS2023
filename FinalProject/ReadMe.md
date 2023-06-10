@@ -11,6 +11,11 @@ Table of Contents
     - [Docker Storm Image](#docker-storm-image)
     - [Setting up a minimal Storm cluster](#setting-up-a-minimal-storm-cluster)
     - [Integration with the docker image](#integration-with-the-docker-image)
+  - [Integration with Storm UI](#integration-with-storm-ui)
+  - [Custom metrics](#custom-metrics)
+  - [Custom metrices (Graphite)](#custom-metrices-graphite)
+    - [Graphite integration with JAVA and Apache Storm](#graphite-integration-with-java-and-apache-storm)
+  - [Graphite with Docker](#graphite-with-docker)
 - [Implementation](#implementation)
   - [Protobuf](#protobuf)
   - [Simple publication](#simple-publication)
@@ -226,6 +231,154 @@ But this was not enough. Using Storm UI, we checked our topology and we've found
 We killed the topology, added dependencies and tried again:
 
     SUCCESS!
+
+## Integration with Storm UI
+
+You cannot have spaces in your bolt IDs!! If you use:
+
+    public static final String ID = ComplexPublicationSpout.class.toString();
+as your class ID you'll get something like this:
+
+    http://localhost:8080/component.html?id=class+org.project.spouts.fromAMQP.ComplexPublicationSpout&topology_id=weather-topology-9-1686396870
+
+If you look closely, there's a class+name there. This crashes the page:
+
+    org.apache.storm.thrift.TApplicationException: Internal error processing getComponentPageInfo
+	at org.apache.storm.thrift.TServiceClient.receiveBase(TServiceClient.java:79)
+	at org.apache.storm.generated.Nimbus$Client.recv_getComponentPageInfo(Nimbus.java:1521)
+	at org.apache.storm.generated.Nimbus$Client.getComponentPageInfo(Nimbus.java:1505)
+	at org.apache.storm.daemon.ui.UIHelpers.getComponentPage(UIHelpers.java:2082)
+	at org.apache.storm.daemon.ui.resources.StormApiResource.getTopologyComponent(StormApiResource.java:428)
+	at jdk.internal.reflect.GeneratedMethodAccessor33.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:124)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:167)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:79)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:469)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:391)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:80)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:253)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:232)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:680)
+	at org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:392)
+	at org.glassfish.jersey.servlet.WebComponent.service(WebComponent.java:346)
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:365)
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:318)
+	at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:205)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:867)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1623)
+	at org.apache.storm.daemon.ui.filters.HeaderResponseServletFilter.doFilter(HeaderResponseServletFilter.java:62)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1610)
+	at org.apache.storm.daemon.drpc.webapp.ReqContextFilter.handle(ReqContextFilter.java:83)
+	at org.apache.storm.daemon.drpc.webapp.ReqContextFilter.doFilter(ReqContextFilter.java:70)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1610)
+	at org.apache.storm.logging.filters.AccessLoggingFilter.handle(AccessLoggingFilter.java:46)
+	at org.apache.storm.logging.filters.AccessLoggingFilter.doFilter(AccessLoggingFilter.java:38)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1610)
+	at org.eclipse.jetty.servlets.CrossOriginFilter.handle(CrossOriginFilter.java:311)
+	at org.eclipse.jetty.servlets.CrossOriginFilter.doFilter(CrossOriginFilter.java:265)
+	at org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1610)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:540)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1588)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1345)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:480)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1557)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1247)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)
+	at org.eclipse.jetty.server.Server.handle(Server.java:502)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:364)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:305)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:103)
+	at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118)
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:333)
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:310)
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:168)
+	at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:126)
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:366)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:765)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:683)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+You can use:
+
+    public static final String ID = SimplePublicationAggregatorBolt.class.getCanonicalName();
+
+## Custom metrics
+
+You can use Storm API:
+
+    http://localhost:8080/api/v1/topology
+
+and manually connect it to what you'd need.
+But there are alternatives.
+
+## Custom metrices (Graphite)
+
+[Graphite](https://graphiteapp.org) is an open-source monitoring and graphing tool used for collecting, storing, and visualizing time-series data. It is designed to handle large volumes of time-series metrics and provides a flexible and scalable solution for monitoring and analyzing the performance of systems and applications.
+
+Key components of Graphite include:
+
+- Data Collection: Graphite can receive metrics data from various sources, such as applications, servers, network devices, and other monitoring systems. The data is typically collected using a protocol called "Carbon," which accepts data in a specific format (e.g., timestamp-value pairs).
+
+- Storage: Graphite stores the incoming metrics data in a time-series database known as Whisper. Whisper is optimized for time-series data and provides efficient storage and retrieval of metrics over time.
+
+- Query and Analysis: Graphite provides a query language called "Graphite Query Language" (GQL) that allows you to retrieve and analyze metrics data. GQL enables you to specify the time range, aggregation functions, and mathematical operations to perform on the metrics data.
+
+- Visualization: Graphite offers a web-based interface called the Graphite Web App that allows you to create visualizations and graphs based on the queried metrics data. You can customize the graphs with various options, such as different chart types, colors, and legends.
+
+### Graphite integration with JAVA and Apache Storm
+
+    <!--- https://discuss.lightbend.com/t/error-missing-com-codahale-metrics-jmxreporter-class/3051/5 -->
+    <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.2.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-graphite</artifactId>
+        <version>4.2.17</version>
+    </dependency>
+
+Once you added the required dependencies, you can just set it up as it follows:
+
+    this.metricRegistry = new MetricRegistry();
+
+    String graphiteHost = "localhost"; // Replace with the actual Graphite server hostname or IP
+    int graphitePort = 2003; // Replace with the actual Graphite server port
+
+    Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, graphitePort));
+    GraphiteReporter reporter = GraphiteReporter.forRegistry(metricRegistry)
+            .prefixedWith("ebs_final_project2.metrics") // Prefix for your metrics in Graphite
+            .build(graphite);
+
+    reporter.start(1, TimeUnit.SECONDS); // Configure the reporting interval (e.g., every 1 second)
+
+## Graphite with Docker
+
+For an instance that you can connect running a LocalCluster topology:
+
+    docker run -d --name EBS-graphite --restart=always -p 80:80 -p 2003-2004:2003-2004 -p 2023-2024:2023-2024 -p 8125:8125/udp -p 8126:8126 graphiteapp/graphite-statsd
+
+If you want it to add it into the project network you'd use:
+
+    docker run -d --name EBS-graphite --network=EBS --restart=always -p 80:80 -p 2003-2004:2003-2004 -p 2023-2024:2023-2024 -p 8125:8125/udp -p 8126:8126 graphiteapp/graphite-statsd
 
 # Implementation
 

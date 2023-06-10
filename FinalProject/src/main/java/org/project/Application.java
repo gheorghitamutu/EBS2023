@@ -8,7 +8,7 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
 import org.project.bolts.firstLevel.*;
-import org.project.bolts.middle.*;
+import org.project.bolts.transformers.*;
 import org.project.bolts.toAMQP.AnomalyBolt;
 import org.project.bolts.toAMQP.SimplePublicationBolt;
 import org.project.cofiguration.GlobalConfiguration;
@@ -16,6 +16,7 @@ import org.project.data.AnomalyComplexPublication;
 import org.project.data.AnomalySimplePublication;
 import org.project.filters.ComplexPublicationFilter;
 import org.project.filters.SimplePublicationFilter;
+import org.project.metrics.GraphiteMetricsConsumer;
 import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimplePublication;
@@ -46,8 +47,13 @@ public class Application extends ConfigurableTopology {
     static void runLocalCluster() throws Exception {
 
         // override settings if ran from local cluster
+        RUNNING_LOCALLY = true;
+
         AMQP_HOST = "localhost";
         AMQP_PORT = 5673;
+
+        GRAPHITE_HOST = "localhost";
+        GRAPHITE_PORT = 2003;
 
         var builder = buildTopology();
 
@@ -123,55 +129,55 @@ public class Application extends ConfigurableTopology {
         builder.setSpout(
                 org.project.spouts.fromStorm.SimplePublicationSpout.ID,
                 source,
-                1);
+                MINIMUM_NODE_COUNT);
 
         builder.setBolt(
                         SimplePublicationAggregatorBolt.ID,
                         simplePublicationAggregatorBolt,
-                        2)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(org.project.spouts.fromStorm.SimplePublicationSpout.ID);
 
         builder.setBolt(
                         ComplexPublicationBolt.ID,
                         complexPublicationBolt,
-                        2)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(SimplePublicationAggregatorBolt.ID);
 
         builder.setBolt(
                         org.project.bolts.firstLevel.SimplePublicationBolt.ID,
                         simplePublicationBolt,
-                        2)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(org.project.spouts.fromStorm.SimplePublicationSpout.ID);
 
         builder.setBolt(
                 FilterSimpleAnomalyBolt.ID,
                 filterSimpleAnomalyBolt,
-                1
+                MINIMUM_NODE_COUNT
         ).shuffleGrouping(org.project.bolts.firstLevel.SimplePublicationBolt.ID);
 
         builder.setBolt(
                         AnomalySimpleBolt.ID,
                         anomalySimpleBolt,
-                        2)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(FilterSimpleAnomalyBolt.ID);
 
         builder.setBolt(
                 FilterComplexAnomalyBolt.ID,
                 filterComplexAnomalyBolt,
-                1
+                MINIMUM_NODE_COUNT
         ).shuffleGrouping(ComplexPublicationBolt.ID);
 
         builder.setBolt(
                         AnomalyComplexBolt.ID,
                         anomalyComplexBolt,
-                        1)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(FilterComplexAnomalyBolt.ID);
 
         var anomalyBolt = new org.project.bolts.toAMQP.AnomalyBolt();
         builder.setBolt(
                 AnomalyBolt.ID,
                 anomalyBolt,
-                1
+                        MINIMUM_NODE_COUNT
                 )
                 .fieldsGrouping(AnomalySimpleBolt.ID,  new Fields("AnomalyType", "SimplePublication"))
                 .fieldsGrouping(AnomalyComplexBolt.ID,  new Fields("AnomalyType", "ComplexPublication"));
@@ -184,11 +190,11 @@ public class Application extends ConfigurableTopology {
         builder.setSpout(
                 SimpleSubscriptionSpout.ID,
                 simpleSubscriptionSpout,
-                1);
+                MINIMUM_NODE_COUNT);
         builder.setSpout(
                 ComplexSubscriptionSpout.ID,
                 complexSubscriptionSpout,
-                1);
+                MINIMUM_NODE_COUNT);
 
         var filterSimpleSubscriptionBolt = new FilterSimpleSubscriptionBolt();
         var filterComplexSubscriptionBolt = new FilterComplexSubscriptionBolt();
@@ -196,14 +202,14 @@ public class Application extends ConfigurableTopology {
         builder.setBolt(
                 FilterSimpleSubscriptionBolt.ID,
                 filterSimpleSubscriptionBolt,
-                1)
+                        MINIMUM_NODE_COUNT)
                 .fieldsGrouping(org.project.spouts.fromAMQP.SimplePublicationSpout.ID,  new Fields("SimplePublication"))
                 .fieldsGrouping(SimpleSubscriptionSpout.ID, new Fields("SimpleSubscription"));
 
         builder.setBolt(
                 FilterComplexSubscriptionBolt.ID,
                 filterComplexSubscriptionBolt,
-                1)
+                        MINIMUM_NODE_COUNT)
                 .fieldsGrouping(ComplexPublicationSpout.ID,  new Fields("ComplexPublication"))
                 .fieldsGrouping(ComplexSubscriptionSpout.ID, new Fields("ComplexSubscription"));
 
@@ -212,25 +218,25 @@ public class Application extends ConfigurableTopology {
                 new SimplePublicationSpout(
                         AMQP_REQUEUE_ON_FAIL,
                         AMQP_AUTO_ACK),
-                1);
+                MINIMUM_NODE_COUNT);
 
         builder.setSpout(
                 ComplexPublicationSpout.ID,
                 new ComplexPublicationSpout(
                         AMQP_REQUEUE_ON_FAIL,
                         AMQP_AUTO_ACK),
-                1);
+                MINIMUM_NODE_COUNT);
 
         builder.setBolt(
                 SimplePublicationBolt.ID,
                 new SimplePublicationBolt(),
-                1)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(org.project.spouts.fromStorm.SimplePublicationSpout.ID);
 
         builder.setBolt(
                         org.project.bolts.toAMQP.ComplexPublicationBolt.ID,
                         new org.project.bolts.toAMQP.ComplexPublicationBolt(),
-                        1)
+                        MINIMUM_NODE_COUNT)
                 .shuffleGrouping(org.project.bolts.firstLevel.ComplexPublicationBolt.ID);
 
         return builder;
@@ -242,6 +248,8 @@ public class Application extends ConfigurableTopology {
         config.put(Config.TOPOLOGY_TRANSFER_BATCH_SIZE, GlobalConfiguration.TOPOLOGY_TRANSFER_BATCH_SIZE);
         config.put(Config.TOPOLOGY_PRODUCER_BATCH_SIZE, GlobalConfiguration.TOPOLOGY_PRODUCER_BATCH_SIZE);
         config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, GlobalConfiguration.TOPOLOGY_STATS_SAMPLE_RATE);
+
+        config.registerMetricsConsumer(GraphiteMetricsConsumer.class, 1);
 
         config.setDebug(TOPOLOGY_DEBUG);
         config.setNumWorkers(TOPOLOGY_WORKERS);
