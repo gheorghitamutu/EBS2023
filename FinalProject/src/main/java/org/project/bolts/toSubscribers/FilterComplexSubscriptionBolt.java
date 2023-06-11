@@ -5,7 +5,9 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 import org.project.filters.ComplexPublicationFilter;
 import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
@@ -38,6 +40,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                 publicationsCount++;
                 var cp = (ProtoComplexPublication.ComplexPublication) value;
 
+                List<String> subscribers = new ArrayList<>();
                 subscriptions.forEach(
                     (k, v) -> {
                         var matched = v.stream().anyMatch((cs) -> ComplexPublicationFilter.filter(cs).test(cp));
@@ -46,6 +49,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                             // LOG.info("Subscriber ID: " + k);
                             // LOG.info("Complex publication:\n " + cp);
 
+                            subscribers.add(k);
                             if (publicationMatched.containsKey(k)) {
                                 publicationMatched.put(k, publicationMatched.get(k) + 1);
                             } else {
@@ -54,6 +58,10 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                         }
                     }
                 );
+
+                if (!subscribers.isEmpty()) {
+                    this.collector.emit(input, new Values(subscribers, cp));
+                }
               }
             else if (f.equals("ComplexSubscription")) {
                 try {
@@ -77,7 +85,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // No output fields
+        declarer.declare(new Fields("Subscribers", "ComplexPublication"));
     }
 
     @Override

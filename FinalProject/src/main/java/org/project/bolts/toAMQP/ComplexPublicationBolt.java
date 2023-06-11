@@ -45,19 +45,20 @@ public class ComplexPublicationBolt extends BaseRichBolt {
         var cp = (ProtoComplexPublication.ComplexPublication) input.getValueByField("ComplexPublication");
         try {
             channel.basicPublish(
-                    COMPLEX_PUBLICATION_EXCHANGE_NAME, COMPLEX_PUBLICATION_ROUTING_KEY,
+                    COMPLEX_PUBLICATION_EXCHANGE_NAME,
+                    COMPLEX_PUBLICATION_ROUTING_KEY,
                     MessageProperties.PERSISTENT_BASIC,
                     cp.toByteArray());
             channel.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
             // LOG.info(" [x] Sent: " + cp);
         } catch (AlreadyClosedException | InterruptedException e) {
-            collector.reportError(e);
+            // collector.reportError(e);
             e.printStackTrace();
             setupChannel();
             this.collector.fail(input);
             return;
         } catch (Exception e) {
-            collector.reportError(e);
+            // collector.reportError(e);
             e.printStackTrace();
             this.collector.fail(input);
             return;

@@ -5,7 +5,9 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 import org.project.filters.SimplePublicationFilter;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
 
@@ -38,6 +41,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
                 publicationsCount++;
                 var sp = (ProtoSimplePublication.SimplePublication) value;
 
+                List<String> subscribers = new ArrayList<>();
                 subscriptions.forEach(
                         (k, v) -> {
                             var matched = v.stream().anyMatch((ss) -> SimplePublicationFilter.filter(ss).test(sp));
@@ -46,6 +50,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
                                 // LOG.info("Subscriber ID: " + k);
                                 // LOG.info("Simple publication:\n " + sp);
 
+                                subscribers.add(k);
                                 if (publicationMatched.containsKey(k)) {
                                     publicationMatched.put(k, publicationMatched.get(k) + 1);
                                 } else {
@@ -54,6 +59,10 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
                             }
                         }
                 );
+
+                if (!subscribers.isEmpty()) {
+                    collector.emit(input, new Values(subscribers, sp));
+                }
             }
             else if (f.equals("SimpleSubscription")) {
                 try {
@@ -77,7 +86,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // TODO: nothing to declare
+        declarer.declare(new Fields("Subscribers", "SimplePublication"));
     }
 
     @Override

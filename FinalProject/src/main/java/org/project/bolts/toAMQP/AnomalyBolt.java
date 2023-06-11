@@ -1,9 +1,6 @@
 package org.project.bolts.toAMQP;
 
-import com.rabbitmq.client.Address;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -58,12 +55,14 @@ public class AnomalyBolt extends BaseRichBolt {
                     this.channelSimpleAnomaly.basicPublish(
                             SIMPLE_ANOMALY_EXCHANGE_NAME,
                             SIMPLE_ANOMALY_ROUTING_KEY,
-                            null,
+                            MessageProperties.PERSISTENT_BASIC,
                             sp.toByteArray());
                     this.channelSimpleAnomaly.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
                 } catch (IOException | InterruptedException | TimeoutException e) {
-                    collector.reportError(e);
-                    throw new RuntimeException(e);
+                    // collector.reportError(e);
+                    this.collector.fail(input);
+                    LOG.error(e.getMessage());
+                    return;
                 }
             }
 
@@ -75,12 +74,14 @@ public class AnomalyBolt extends BaseRichBolt {
                     this.channelComplexAnomaly.basicPublish(
                             COMPLEX_ANOMALY_EXCHANGE_NAME,
                             COMPLEX_ANOMALY_ROUTING_KEY,
-                            null,
+                            MessageProperties.PERSISTENT_BASIC,
                             cp.toByteArray());
                     this.channelComplexAnomaly.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
                 } catch (IOException | InterruptedException | TimeoutException e) {
-                    collector.reportError(e);
-                    throw new RuntimeException(e);
+                    // collector.reportError(e);
+                    this.collector.fail(input);
+                    LOG.error(e.getMessage());
+                    return;
                 }
             }
         }

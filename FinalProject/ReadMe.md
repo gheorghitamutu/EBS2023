@@ -26,6 +26,9 @@ Table of Contents
   - [Brokers](#brokers)
     - [RabbitMQ](#rabbitmq)
   - [Topology Diagram](#topology-diagram)
+  - [Assignment breakdown](#assignment-breakdown)
+    - [(5p) Publications stream](#5p-publications-stream)
+    - [(10p) Network of brokers (2-3), content-based filtering \& publication windows](#10p-network-of-brokers-2-3-content-based-filtering--publication-windows)
   - [References](#references)
 
 
@@ -640,6 +643,16 @@ We'd also like to develop and connect from the host so we don't specify any netw
 
 ## Topology Diagram
 ![Topology](./docs/topology.png)
+
+## Assignment breakdown
+
+### (5p) Publications stream
+
+As seen in the [Topology Diagram](./docs/topology.png), there is a Storm spout (publisher node) that generates all the randomized sensor weather data. The java class spout is called `SimpleSubscriptionSpout.java`.
+
+### (10p) Network of brokers (2-3), content-based filtering & publication windows
+
+The brokers area is split between Apache Storm & RabbitMQ. The simple publication are passed to a bolt that aggregates data and based upon the configured window it creates complex publication. The simple & complex publications are then send to a RabbitMQ queue. Another Apache Storm spouts that connect to said queues will later match the clients with their subscriptions accordingly and send the publications (via RabbitMQ as well).
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm

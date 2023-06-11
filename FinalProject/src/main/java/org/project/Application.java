@@ -8,6 +8,7 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
 import org.project.bolts.firstLevel.*;
+import org.project.bolts.toAMQP.PublicationViaSubscriptionBolt;
 import org.project.bolts.toSubscribers.FilterComplexSubscriptionBolt;
 import org.project.bolts.toSubscribers.FilterSimpleSubscriptionBolt;
 import org.project.bolts.transformers.*;
@@ -240,6 +241,15 @@ public class Application extends ConfigurableTopology {
                         new org.project.bolts.toAMQP.ComplexPublicationBolt(),
                         MINIMUM_NODE_COUNT)
                 .shuffleGrouping(org.project.bolts.firstLevel.ComplexPublicationBolt.ID);
+
+        var publicationViaSubscriptionBolt = new org.project.bolts.toAMQP.PublicationViaSubscriptionBolt();
+        builder.setBolt(
+                        PublicationViaSubscriptionBolt.ID,
+                        publicationViaSubscriptionBolt,
+                        MINIMUM_NODE_COUNT
+                )
+                .fieldsGrouping(FilterSimpleSubscriptionBolt.ID,  new Fields("Subscribers", "SimplePublication"))
+                .fieldsGrouping(FilterComplexSubscriptionBolt.ID,  new Fields("Subscribers", "ComplexPublication"));
 
         return builder;
     }
