@@ -29,6 +29,8 @@ Table of Contents
   - [Assignment breakdown](#assignment-breakdown)
     - [(5p) Publications stream](#5p-publications-stream)
     - [(10p) Network of brokers (2-3), content-based filtering \& publication windows](#10p-network-of-brokers-2-3-content-based-filtering--publication-windows)
+    - [(5p) Subscriber nodes (simple \& complex subscriptions)](#5p-subscriber-nodes-simple--complex-subscriptions)
+    - [WIP](#wip)
   - [References](#references)
 
 
@@ -653,6 +655,12 @@ As seen in the [Topology Diagram](./docs/topology.png), there is a Storm spout (
 ### (10p) Network of brokers (2-3), content-based filtering & publication windows
 
 The brokers area is split between Apache Storm & RabbitMQ. The simple publication are passed to a bolt that aggregates data and based upon the configured window it creates complex publication. The simple & complex publications are then send to a RabbitMQ queue. Another Apache Storm spouts that connect to said queues will later match the clients with their subscriptions accordingly and send the publications (via RabbitMQ as well).
+
+### (5p) Subscriber nodes (simple & complex subscriptions)
+
+The subscribers "nodes" are simulated using an array of 3 UUIDs (in `SubscriptionGenerator` class) and then passed to every subscription (simple or complex) generated. The filters are lengthy described in their dedicated section in this document. The actual filtering on simple and complex publication is being done with Apache Storm bolts as well.
+
+### WIP
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
