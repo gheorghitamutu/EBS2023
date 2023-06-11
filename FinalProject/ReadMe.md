@@ -13,9 +13,9 @@ Table of Contents
     - [Integration with the docker image](#integration-with-the-docker-image)
   - [Integration with Storm UI](#integration-with-storm-ui)
   - [Custom metrics](#custom-metrics)
-  - [Custom metrices (Graphite)](#custom-metrices-graphite)
+    - [Graphite](#graphite)
     - [Graphite integration with JAVA and Apache Storm](#graphite-integration-with-java-and-apache-storm)
-  - [Graphite with Docker](#graphite-with-docker)
+    - [Graphite with Docker](#graphite-with-docker)
 - [Implementation](#implementation)
   - [Protobuf](#protobuf)
   - [Simple publication](#simple-publication)
@@ -327,7 +327,7 @@ You can use Storm API:
 and manually connect it to what you'd need.
 But there are alternatives.
 
-## Custom metrices (Graphite)
+### Graphite
 
 [Graphite](https://graphiteapp.org) is an open-source monitoring and graphing tool used for collecting, storing, and visualizing time-series data. It is designed to handle large volumes of time-series metrics and provides a flexible and scalable solution for monitoring and analyzing the performance of systems and applications.
 
@@ -370,7 +370,7 @@ Once you added the required dependencies, you can just set it up as it follows:
 
     reporter.start(1, TimeUnit.SECONDS); // Configure the reporting interval (e.g., every 1 second)
 
-## Graphite with Docker
+### Graphite with Docker
 
 For an instance that you can connect running a LocalCluster topology:
 
@@ -485,10 +485,11 @@ And this generates the required .java files that we'll be using in our project.
         ConditionDouble wind = 4;
     }
 
-    message SimpleSubscription {
-        string subscriptionId = 1;
-        SimplePublicationCondition conditions = 2;
-        int64 timestamp = 3;
+    message SimpleSubscription {  
+        string subscriberId = 1;
+        string subscriptionId = 2;
+        SimplePublicationCondition conditions = 3;
+        int64 timestamp = 4;
     }
 
 
@@ -526,9 +527,10 @@ And this generates the required .java files that we'll be using in our project.
     }
 
     message ComplexSubscription {
-        string subscriptionId = 1;
-        ComplexPublicationCondition conditions = 2;
-        int64 timestamp = 3;
+        string subscriberId = 1;
+        string subscriptionId = 2;
+        ComplexPublicationCondition conditions = 3;
+        int64 timestamp = 4;
     }
 
 ## Filters

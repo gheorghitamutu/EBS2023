@@ -3,15 +3,28 @@ package org.project.data;
 import org.project.models.ProtoComplexSubscription;
 import org.project.models.ProtoSimpleSubscription;
 
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 import static java.util.UUID.randomUUID;
 import static org.project.data.RawData.CITIES;
-import static org.project.data.RawData.RANDOM;
 
 public class SubscriptionGenerator {
+
+    static final private List<String> subscribers = List.of(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+    );
+
+    public static final Random RANDOM = new Random();
+
     private static SubscriptionGenerator instance = null;
 
     public ProtoSimpleSubscription.SimpleSubscription generateSimple() {
         return ProtoSimpleSubscription.SimpleSubscription.newBuilder()
+                .setSubscriberId(subscribers.get(RANDOM.nextInt(subscribers.size())))
                 .setSubscriptionId(randomUUID().toString())
                 .setConditions(
                         ProtoSimpleSubscription.SimplePublicationCondition.newBuilder()
@@ -29,6 +42,7 @@ public class SubscriptionGenerator {
 
     public ProtoComplexSubscription.ComplexSubscription generateComplex() {
         return ProtoComplexSubscription.ComplexSubscription.newBuilder()
+                .setSubscriberId(subscribers.get(RANDOM.nextInt(subscribers.size())))
                 .setSubscriptionId(randomUUID().toString())
                 .setConditions(
                         ProtoComplexSubscription.ComplexPublicationCondition.newBuilder()

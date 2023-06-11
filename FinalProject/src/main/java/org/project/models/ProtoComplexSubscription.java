@@ -2600,34 +2600,46 @@ public final class ProtoComplexSubscription {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string subscriptionId = 1;</code>
+     * <code>string subscriberId = 1;</code>
+     * @return The subscriberId.
+     */
+    java.lang.String getSubscriberId();
+    /**
+     * <code>string subscriberId = 1;</code>
+     * @return The bytes for subscriberId.
+     */
+    com.google.protobuf.ByteString
+        getSubscriberIdBytes();
+
+    /**
+     * <code>string subscriptionId = 2;</code>
      * @return The subscriptionId.
      */
     java.lang.String getSubscriptionId();
     /**
-     * <code>string subscriptionId = 1;</code>
+     * <code>string subscriptionId = 2;</code>
      * @return The bytes for subscriptionId.
      */
     com.google.protobuf.ByteString
         getSubscriptionIdBytes();
 
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      * @return Whether the conditions field is set.
      */
     boolean hasConditions();
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      * @return The conditions.
      */
     org.project.models.ProtoComplexSubscription.ComplexPublicationCondition getConditions();
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      */
     org.project.models.ProtoComplexSubscription.ComplexPublicationConditionOrBuilder getConditionsOrBuilder();
 
     /**
-     * <code>int64 timestamp = 3;</code>
+     * <code>int64 timestamp = 4;</code>
      * @return The timestamp.
      */
     long getTimestamp();
@@ -2645,6 +2657,7 @@ public final class ProtoComplexSubscription {
       super(builder);
     }
     private ComplexSubscription() {
+      subscriberId_ = "";
       subscriptionId_ = "";
     }
 
@@ -2673,11 +2686,50 @@ public final class ProtoComplexSubscription {
               org.project.models.ProtoComplexSubscription.ComplexSubscription.class, org.project.models.ProtoComplexSubscription.ComplexSubscription.Builder.class);
     }
 
-    public static final int SUBSCRIPTIONID_FIELD_NUMBER = 1;
+    public static final int SUBSCRIBERID_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object subscriberId_ = "";
+    /**
+     * <code>string subscriberId = 1;</code>
+     * @return The subscriberId.
+     */
+    @java.lang.Override
+    public java.lang.String getSubscriberId() {
+      java.lang.Object ref = subscriberId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        subscriberId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string subscriberId = 1;</code>
+     * @return The bytes for subscriberId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSubscriberIdBytes() {
+      java.lang.Object ref = subscriberId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        subscriberId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SUBSCRIPTIONID_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
     private volatile java.lang.Object subscriptionId_ = "";
     /**
-     * <code>string subscriptionId = 1;</code>
+     * <code>string subscriptionId = 2;</code>
      * @return The subscriptionId.
      */
     @java.lang.Override
@@ -2694,7 +2746,7 @@ public final class ProtoComplexSubscription {
       }
     }
     /**
-     * <code>string subscriptionId = 1;</code>
+     * <code>string subscriptionId = 2;</code>
      * @return The bytes for subscriptionId.
      */
     @java.lang.Override
@@ -2712,10 +2764,10 @@ public final class ProtoComplexSubscription {
       }
     }
 
-    public static final int CONDITIONS_FIELD_NUMBER = 2;
+    public static final int CONDITIONS_FIELD_NUMBER = 3;
     private org.project.models.ProtoComplexSubscription.ComplexPublicationCondition conditions_;
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      * @return Whether the conditions field is set.
      */
     @java.lang.Override
@@ -2723,7 +2775,7 @@ public final class ProtoComplexSubscription {
       return conditions_ != null;
     }
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      * @return The conditions.
      */
     @java.lang.Override
@@ -2731,17 +2783,17 @@ public final class ProtoComplexSubscription {
       return conditions_ == null ? org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.getDefaultInstance() : conditions_;
     }
     /**
-     * <code>.ComplexPublicationCondition conditions = 2;</code>
+     * <code>.ComplexPublicationCondition conditions = 3;</code>
      */
     @java.lang.Override
     public org.project.models.ProtoComplexSubscription.ComplexPublicationConditionOrBuilder getConditionsOrBuilder() {
       return conditions_ == null ? org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.getDefaultInstance() : conditions_;
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 3;
+    public static final int TIMESTAMP_FIELD_NUMBER = 4;
     private long timestamp_ = 0L;
     /**
-     * <code>int64 timestamp = 3;</code>
+     * <code>int64 timestamp = 4;</code>
      * @return The timestamp.
      */
     @java.lang.Override
@@ -2763,14 +2815,17 @@ public final class ProtoComplexSubscription {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscriberId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, subscriberId_);
+      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscriptionId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, subscriptionId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, subscriptionId_);
       }
       if (conditions_ != null) {
-        output.writeMessage(2, getConditions());
+        output.writeMessage(3, getConditions());
       }
       if (timestamp_ != 0L) {
-        output.writeInt64(3, timestamp_);
+        output.writeInt64(4, timestamp_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2781,16 +2836,19 @@ public final class ProtoComplexSubscription {
       if (size != -1) return size;
 
       size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscriberId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, subscriberId_);
+      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(subscriptionId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, subscriptionId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, subscriptionId_);
       }
       if (conditions_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getConditions());
+          .computeMessageSize(3, getConditions());
       }
       if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, timestamp_);
+          .computeInt64Size(4, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2807,6 +2865,8 @@ public final class ProtoComplexSubscription {
       }
       org.project.models.ProtoComplexSubscription.ComplexSubscription other = (org.project.models.ProtoComplexSubscription.ComplexSubscription) obj;
 
+      if (!getSubscriberId()
+          .equals(other.getSubscriberId())) return false;
       if (!getSubscriptionId()
           .equals(other.getSubscriptionId())) return false;
       if (hasConditions() != other.hasConditions()) return false;
@@ -2827,6 +2887,8 @@ public final class ProtoComplexSubscription {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SUBSCRIBERID_FIELD_NUMBER;
+      hash = (53 * hash) + getSubscriberId().hashCode();
       hash = (37 * hash) + SUBSCRIPTIONID_FIELD_NUMBER;
       hash = (53 * hash) + getSubscriptionId().hashCode();
       if (hasConditions()) {
@@ -2965,6 +3027,7 @@ public final class ProtoComplexSubscription {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
+        subscriberId_ = "";
         subscriptionId_ = "";
         conditions_ = null;
         if (conditionsBuilder_ != null) {
@@ -3006,14 +3069,17 @@ public final class ProtoComplexSubscription {
       private void buildPartial0(org.project.models.ProtoComplexSubscription.ComplexSubscription result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.subscriptionId_ = subscriptionId_;
+          result.subscriberId_ = subscriberId_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.subscriptionId_ = subscriptionId_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.conditions_ = conditionsBuilder_ == null
               ? conditions_
               : conditionsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           result.timestamp_ = timestamp_;
         }
       }
@@ -3062,9 +3128,14 @@ public final class ProtoComplexSubscription {
 
       public Builder mergeFrom(org.project.models.ProtoComplexSubscription.ComplexSubscription other) {
         if (other == org.project.models.ProtoComplexSubscription.ComplexSubscription.getDefaultInstance()) return this;
+        if (!other.getSubscriberId().isEmpty()) {
+          subscriberId_ = other.subscriberId_;
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         if (!other.getSubscriptionId().isEmpty()) {
           subscriptionId_ = other.subscriptionId_;
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasConditions()) {
@@ -3100,22 +3171,27 @@ public final class ProtoComplexSubscription {
                 done = true;
                 break;
               case 10: {
-                subscriptionId_ = input.readStringRequireUtf8();
+                subscriberId_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
-                input.readMessage(
-                    getConditionsFieldBuilder().getBuilder(),
-                    extensionRegistry);
+                subscriptionId_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
-              case 24: {
-                timestamp_ = input.readInt64();
+              case 26: {
+                input.readMessage(
+                    getConditionsFieldBuilder().getBuilder(),
+                    extensionRegistry);
                 bitField0_ |= 0x00000004;
                 break;
-              } // case 24
+              } // case 26
+              case 32: {
+                timestamp_ = input.readInt64();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -3133,9 +3209,81 @@ public final class ProtoComplexSubscription {
       }
       private int bitField0_;
 
+      private java.lang.Object subscriberId_ = "";
+      /**
+       * <code>string subscriberId = 1;</code>
+       * @return The subscriberId.
+       */
+      public java.lang.String getSubscriberId() {
+        java.lang.Object ref = subscriberId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          subscriberId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string subscriberId = 1;</code>
+       * @return The bytes for subscriberId.
+       */
+      public com.google.protobuf.ByteString
+          getSubscriberIdBytes() {
+        java.lang.Object ref = subscriberId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          subscriberId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string subscriberId = 1;</code>
+       * @param value The subscriberId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSubscriberId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        subscriberId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string subscriberId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSubscriberId() {
+        subscriberId_ = getDefaultInstance().getSubscriberId();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string subscriberId = 1;</code>
+       * @param value The bytes for subscriberId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSubscriberIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        subscriberId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object subscriptionId_ = "";
       /**
-       * <code>string subscriptionId = 1;</code>
+       * <code>string subscriptionId = 2;</code>
        * @return The subscriptionId.
        */
       public java.lang.String getSubscriptionId() {
@@ -3151,7 +3299,7 @@ public final class ProtoComplexSubscription {
         }
       }
       /**
-       * <code>string subscriptionId = 1;</code>
+       * <code>string subscriptionId = 2;</code>
        * @return The bytes for subscriptionId.
        */
       public com.google.protobuf.ByteString
@@ -3168,7 +3316,7 @@ public final class ProtoComplexSubscription {
         }
       }
       /**
-       * <code>string subscriptionId = 1;</code>
+       * <code>string subscriptionId = 2;</code>
        * @param value The subscriptionId to set.
        * @return This builder for chaining.
        */
@@ -3176,22 +3324,22 @@ public final class ProtoComplexSubscription {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         subscriptionId_ = value;
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>string subscriptionId = 1;</code>
+       * <code>string subscriptionId = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearSubscriptionId() {
         subscriptionId_ = getDefaultInstance().getSubscriptionId();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>string subscriptionId = 1;</code>
+       * <code>string subscriptionId = 2;</code>
        * @param value The bytes for subscriptionId to set.
        * @return This builder for chaining.
        */
@@ -3200,7 +3348,7 @@ public final class ProtoComplexSubscription {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         subscriptionId_ = value;
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3209,14 +3357,14 @@ public final class ProtoComplexSubscription {
       private com.google.protobuf.SingleFieldBuilderV3<
           org.project.models.ProtoComplexSubscription.ComplexPublicationCondition, org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.Builder, org.project.models.ProtoComplexSubscription.ComplexPublicationConditionOrBuilder> conditionsBuilder_;
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        * @return Whether the conditions field is set.
        */
       public boolean hasConditions() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        * @return The conditions.
        */
       public org.project.models.ProtoComplexSubscription.ComplexPublicationCondition getConditions() {
@@ -3227,7 +3375,7 @@ public final class ProtoComplexSubscription {
         }
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public Builder setConditions(org.project.models.ProtoComplexSubscription.ComplexPublicationCondition value) {
         if (conditionsBuilder_ == null) {
@@ -3238,12 +3386,12 @@ public final class ProtoComplexSubscription {
         } else {
           conditionsBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public Builder setConditions(
           org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.Builder builderForValue) {
@@ -3252,16 +3400,16 @@ public final class ProtoComplexSubscription {
         } else {
           conditionsBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public Builder mergeConditions(org.project.models.ProtoComplexSubscription.ComplexPublicationCondition value) {
         if (conditionsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0) &&
+          if (((bitField0_ & 0x00000004) != 0) &&
             conditions_ != null &&
             conditions_ != org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.getDefaultInstance()) {
             getConditionsBuilder().mergeFrom(value);
@@ -3271,15 +3419,15 @@ public final class ProtoComplexSubscription {
         } else {
           conditionsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public Builder clearConditions() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         conditions_ = null;
         if (conditionsBuilder_ != null) {
           conditionsBuilder_.dispose();
@@ -3289,15 +3437,15 @@ public final class ProtoComplexSubscription {
         return this;
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.Builder getConditionsBuilder() {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getConditionsFieldBuilder().getBuilder();
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       public org.project.models.ProtoComplexSubscription.ComplexPublicationConditionOrBuilder getConditionsOrBuilder() {
         if (conditionsBuilder_ != null) {
@@ -3308,7 +3456,7 @@ public final class ProtoComplexSubscription {
         }
       }
       /**
-       * <code>.ComplexPublicationCondition conditions = 2;</code>
+       * <code>.ComplexPublicationCondition conditions = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.project.models.ProtoComplexSubscription.ComplexPublicationCondition, org.project.models.ProtoComplexSubscription.ComplexPublicationCondition.Builder, org.project.models.ProtoComplexSubscription.ComplexPublicationConditionOrBuilder> 
@@ -3326,7 +3474,7 @@ public final class ProtoComplexSubscription {
 
       private long timestamp_ ;
       /**
-       * <code>int64 timestamp = 3;</code>
+       * <code>int64 timestamp = 4;</code>
        * @return The timestamp.
        */
       @java.lang.Override
@@ -3334,23 +3482,23 @@ public final class ProtoComplexSubscription {
         return timestamp_;
       }
       /**
-       * <code>int64 timestamp = 3;</code>
+       * <code>int64 timestamp = 4;</code>
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
         
         timestamp_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>int64 timestamp = 3;</code>
+       * <code>int64 timestamp = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -3456,14 +3604,15 @@ public final class ProtoComplexSubscription {
       "\020.ConditionString\022,\n\022averageTemperature\030" +
       "\002 \001(\0132\020.ConditionDouble\022%\n\013averageRain\030\003" +
       " \001(\0132\020.ConditionDouble\022%\n\013averageWind\030\004 " +
-      "\001(\0132\020.ConditionDouble\"r\n\023ComplexSubscrip" +
-      "tion\022\026\n\016subscriptionId\030\001 \001(\t\0220\n\nconditio" +
-      "ns\030\002 \001(\0132\034.ComplexPublicationCondition\022\021" +
-      "\n\ttimestamp\030\003 \001(\003*u\n\010Operator\022\010\n\004NONE\020\000\022" +
-      "\016\n\nLOWER_THAN\020\001\022\027\n\023EQUAL_OR_LOWER_THAN\020\002" +
-      "\022\t\n\005EQUAL\020\003\022\031\n\025EQUAL_OR_GREATER_THAN\020\004\022\020" +
-      "\n\014GREATER_THAN\020\005B.\n\022org.project.modelsB\030" +
-      "ProtoComplexSubscriptionb\006proto3"
+      "\001(\0132\020.ConditionDouble\"\210\001\n\023ComplexSubscri" +
+      "ption\022\024\n\014subscriberId\030\001 \001(\t\022\026\n\016subscript" +
+      "ionId\030\002 \001(\t\0220\n\nconditions\030\003 \001(\0132\034.Comple" +
+      "xPublicationCondition\022\021\n\ttimestamp\030\004 \001(\003" +
+      "*u\n\010Operator\022\010\n\004NONE\020\000\022\016\n\nLOWER_THAN\020\001\022\027" +
+      "\n\023EQUAL_OR_LOWER_THAN\020\002\022\t\n\005EQUAL\020\003\022\031\n\025EQ" +
+      "UAL_OR_GREATER_THAN\020\004\022\020\n\014GREATER_THAN\020\005B" +
+      ".\n\022org.project.modelsB\030ProtoComplexSubsc" +
+      "riptionb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -3492,7 +3641,7 @@ public final class ProtoComplexSubscription {
     internal_static_ComplexSubscription_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ComplexSubscription_descriptor,
-        new java.lang.String[] { "SubscriptionId", "Conditions", "Timestamp", });
+        new java.lang.String[] { "SubscriberId", "SubscriptionId", "Conditions", "Timestamp", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

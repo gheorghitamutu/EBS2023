@@ -30,7 +30,8 @@ message SimplePublicationCondition {
 }
 
 message SimpleSubscription {
-  string subscriptionId = 1;
-  SimplePublicationCondition conditions = 2;
-  int64 timestamp = 3;
+  string subscriberId = 1;
+  string subscriptionId = 2;
+  SimplePublicationCondition conditions = 3;
+  int64 timestamp = 4;
 }

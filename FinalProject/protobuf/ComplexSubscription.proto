@@ -30,8 +30,8 @@ message ComplexPublicationCondition {
 }
 
 message ComplexSubscription {
-  string subscriptionId = 1;
-  ComplexPublicationCondition conditions = 2;
-  int64 timestamp = 3;
+  string subscriberId = 1;
+  string subscriptionId = 2;
+  ComplexPublicationCondition conditions = 3;
+  int64 timestamp = 4;
 }
-
