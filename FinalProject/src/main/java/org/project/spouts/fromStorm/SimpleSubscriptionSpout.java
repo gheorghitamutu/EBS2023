@@ -8,6 +8,7 @@ import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.project.data.City;
+import org.project.data.SubscriptionGenerator;
 import org.project.models.ProtoSimpleSubscription;
 
 import java.text.MessageFormat;
@@ -42,7 +43,7 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
 
         simpleSubscriptionCount++;
 
-        var ss = SimpleSubscriptionSpout.SimpleSubscriptionGenerator.generateSimpleSubscription();
+        var ss = SubscriptionGenerator.getInstance().generateSimple();
         unconfirmed.put(ss.getSubscriptionId(), ss);
 
         this.collector.emit(new Values(ss), ss.getSubscriptionId());
@@ -60,40 +61,6 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
         var uuid = (String)id;
         // LOG.info(MessageFormat.format("FAILURE detected at {0} for {1}!", this.taskName, uuid));
         this.collector.emit(new Values(this.unconfirmed.get(uuid)), uuid);
-    }
-
-    public static class SimpleSubscriptionGenerator {
-        public static ProtoSimpleSubscription.SimpleSubscription generateSimpleSubscription() {
-            return ProtoSimpleSubscription.SimpleSubscription.newBuilder()
-                    .setSubscriptionId(randomUUID().toString())
-                    .setConditions(
-                            ProtoSimpleSubscription.SimplePublicationCondition.newBuilder()
-                                    .setCity(
-                                            ProtoSimpleSubscription.ConditionString.newBuilder()
-                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.EQUAL_VALUE)
-                                                    .setValue(new City(City.Name.SAN_FRANCISCO).ToString())
-                                                    .build()
-                                    )
-                                    .setTemperature(
-                                            ProtoSimpleSubscription.ConditionDouble.newBuilder()
-                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.NONE_VALUE)
-                                                    .build()
-                                    )
-                                    .setRain(
-                                            ProtoSimpleSubscription.ConditionDouble.newBuilder()
-                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.NONE_VALUE)
-                                                    .build()
-                                    )
-                                    .setWind(
-                                            ProtoSimpleSubscription.ConditionDouble.newBuilder()
-                                                    .setOperatorValue(ProtoSimpleSubscription.Operator.NONE_VALUE)
-                                                    .build()
-                                    )
-                                    .build()
-                    )
-                    .setTimestamp(System.currentTimeMillis())
-                    .build();
-        }
     }
 
     @Override

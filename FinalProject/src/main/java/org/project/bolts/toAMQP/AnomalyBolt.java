@@ -62,6 +62,7 @@ public class AnomalyBolt extends BaseRichBolt {
                             sp.toByteArray());
                     this.channelSimpleAnomaly.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
                 } catch (IOException | InterruptedException | TimeoutException e) {
+                    collector.reportError(e);
                     throw new RuntimeException(e);
                 }
             }
@@ -78,6 +79,7 @@ public class AnomalyBolt extends BaseRichBolt {
                             cp.toByteArray());
                     this.channelComplexAnomaly.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
                 } catch (IOException | InterruptedException | TimeoutException e) {
+                    collector.reportError(e);
                     throw new RuntimeException(e);
                 }
             }

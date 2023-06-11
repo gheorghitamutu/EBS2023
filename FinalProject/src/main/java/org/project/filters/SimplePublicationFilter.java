@@ -135,15 +135,15 @@ public class SimplePublicationFilter {
             case NONE:
                 return (sp) -> true;
             case LOWER_THAN:
-                return (sp) -> sp.getTimestamp() < timestamp;
+                return (sp) -> sp.getDateTimestamp() < timestamp;
             case EQUAL_OR_LOWER_THAN:
-                return (sp) -> sp.getTimestamp() <= timestamp;
+                return (sp) -> sp.getDateTimestamp() <= timestamp;
             case EQUAL:
-                return (sp) -> sp.getTimestamp() == timestamp;
+                return (sp) -> sp.getDateTimestamp() == timestamp;
             case EQUAL_OR_GREATER_THAN:
-                return (sp) -> sp.getTimestamp() >= timestamp;
+                return (sp) -> sp.getDateTimestamp() >= timestamp;
             case GREATER_THAN:
-                return (sp) -> sp.getTimestamp() > timestamp;
+                return (sp) -> sp.getDateTimestamp() > timestamp;
             default:
                 throw new IllegalArgumentException("Unknown operator!");
         }

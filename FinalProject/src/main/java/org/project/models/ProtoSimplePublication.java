@@ -100,10 +100,16 @@ public final class ProtoSimplePublication {
         getDirectionBytes();
 
     /**
-     * <code>int64 timestamp = 9;</code>
-     * @return The timestamp.
+     * <code>int64 date_timestamp = 9;</code>
+     * @return The dateTimestamp.
      */
-    long getTimestamp();
+    long getDateTimestamp();
+
+    /**
+     * <code>int64 generation_timestamp = 10;</code>
+     * @return The generationTimestamp.
+     */
+    long getGenerationTimestamp();
   }
   /**
    * Protobuf type {@code SimplePublication}
@@ -364,15 +370,26 @@ public final class ProtoSimplePublication {
       }
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 9;
-    private long timestamp_ = 0L;
+    public static final int DATE_TIMESTAMP_FIELD_NUMBER = 9;
+    private long dateTimestamp_ = 0L;
     /**
-     * <code>int64 timestamp = 9;</code>
-     * @return The timestamp.
+     * <code>int64 date_timestamp = 9;</code>
+     * @return The dateTimestamp.
      */
     @java.lang.Override
-    public long getTimestamp() {
-      return timestamp_;
+    public long getDateTimestamp() {
+      return dateTimestamp_;
+    }
+
+    public static final int GENERATION_TIMESTAMP_FIELD_NUMBER = 10;
+    private long generationTimestamp_ = 0L;
+    /**
+     * <code>int64 generation_timestamp = 10;</code>
+     * @return The generationTimestamp.
+     */
+    @java.lang.Override
+    public long getGenerationTimestamp() {
+      return generationTimestamp_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -413,8 +430,11 @@ public final class ProtoSimplePublication {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(direction_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, direction_);
       }
-      if (timestamp_ != 0L) {
-        output.writeInt64(9, timestamp_);
+      if (dateTimestamp_ != 0L) {
+        output.writeInt64(9, dateTimestamp_);
+      }
+      if (generationTimestamp_ != 0L) {
+        output.writeInt64(10, generationTimestamp_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -453,9 +473,13 @@ public final class ProtoSimplePublication {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(direction_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, direction_);
       }
-      if (timestamp_ != 0L) {
+      if (dateTimestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(9, timestamp_);
+          .computeInt64Size(9, dateTimestamp_);
+      }
+      if (generationTimestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(10, generationTimestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -494,8 +518,10 @@ public final class ProtoSimplePublication {
               other.getWind())) return false;
       if (!getDirection()
           .equals(other.getDirection())) return false;
-      if (getTimestamp()
-          != other.getTimestamp()) return false;
+      if (getDateTimestamp()
+          != other.getDateTimestamp()) return false;
+      if (getGenerationTimestamp()
+          != other.getGenerationTimestamp()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -528,9 +554,12 @@ public final class ProtoSimplePublication {
           java.lang.Double.doubleToLongBits(getWind()));
       hash = (37 * hash) + DIRECTION_FIELD_NUMBER;
       hash = (53 * hash) + getDirection().hashCode();
-      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (37 * hash) + DATE_TIMESTAMP_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getTimestamp());
+          getDateTimestamp());
+      hash = (37 * hash) + GENERATION_TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getGenerationTimestamp());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -672,7 +701,8 @@ public final class ProtoSimplePublication {
         rain_ = 0D;
         wind_ = 0D;
         direction_ = "";
-        timestamp_ = 0L;
+        dateTimestamp_ = 0L;
+        generationTimestamp_ = 0L;
         return this;
       }
 
@@ -733,7 +763,10 @@ public final class ProtoSimplePublication {
           result.direction_ = direction_;
         }
         if (((from_bitField0_ & 0x00000100) != 0)) {
-          result.timestamp_ = timestamp_;
+          result.dateTimestamp_ = dateTimestamp_;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.generationTimestamp_ = generationTimestamp_;
         }
       }
 
@@ -813,8 +846,11 @@ public final class ProtoSimplePublication {
           bitField0_ |= 0x00000080;
           onChanged();
         }
-        if (other.getTimestamp() != 0L) {
-          setTimestamp(other.getTimestamp());
+        if (other.getDateTimestamp() != 0L) {
+          setDateTimestamp(other.getDateTimestamp());
+        }
+        if (other.getGenerationTimestamp() != 0L) {
+          setGenerationTimestamp(other.getGenerationTimestamp());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -885,10 +921,15 @@ public final class ProtoSimplePublication {
                 break;
               } // case 66
               case 72: {
-                timestamp_ = input.readInt64();
+                dateTimestamp_ = input.readInt64();
                 bitField0_ |= 0x00000100;
                 break;
               } // case 72
+              case 80: {
+                generationTimestamp_ = input.readInt64();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 80
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1409,34 +1450,66 @@ public final class ProtoSimplePublication {
         return this;
       }
 
-      private long timestamp_ ;
+      private long dateTimestamp_ ;
       /**
-       * <code>int64 timestamp = 9;</code>
-       * @return The timestamp.
+       * <code>int64 date_timestamp = 9;</code>
+       * @return The dateTimestamp.
        */
       @java.lang.Override
-      public long getTimestamp() {
-        return timestamp_;
+      public long getDateTimestamp() {
+        return dateTimestamp_;
       }
       /**
-       * <code>int64 timestamp = 9;</code>
-       * @param value The timestamp to set.
+       * <code>int64 date_timestamp = 9;</code>
+       * @param value The dateTimestamp to set.
        * @return This builder for chaining.
        */
-      public Builder setTimestamp(long value) {
+      public Builder setDateTimestamp(long value) {
         
-        timestamp_ = value;
+        dateTimestamp_ = value;
         bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
       /**
-       * <code>int64 timestamp = 9;</code>
+       * <code>int64 date_timestamp = 9;</code>
        * @return This builder for chaining.
        */
-      public Builder clearTimestamp() {
+      public Builder clearDateTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        timestamp_ = 0L;
+        dateTimestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long generationTimestamp_ ;
+      /**
+       * <code>int64 generation_timestamp = 10;</code>
+       * @return The generationTimestamp.
+       */
+      @java.lang.Override
+      public long getGenerationTimestamp() {
+        return generationTimestamp_;
+      }
+      /**
+       * <code>int64 generation_timestamp = 10;</code>
+       * @param value The generationTimestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setGenerationTimestamp(long value) {
+        
+        generationTimestamp_ = value;
+        bitField0_ |= 0x00000200;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 generation_timestamp = 10;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearGenerationTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        generationTimestamp_ = 0L;
         onChanged();
         return this;
       }
@@ -2078,14 +2151,15 @@ public final class ProtoSimplePublication {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\027SimplePublication.proto\"\267\001\n\021SimplePubl" +
+      "\n\027SimplePublication.proto\"\332\001\n\021SimplePubl" +
       "ication\022\014\n\004uuid\030\001 \001(\t\022\022\n\nstation_id\030\002 \001(" +
       "\t\022\033\n\010location\030\003 \001(\0132\t.Location\022\014\n\004city\030\004" +
       " \001(\t\022\023\n\013temperature\030\005 \001(\001\022\014\n\004rain\030\006 \001(\001\022" +
-      "\014\n\004wind\030\007 \001(\001\022\021\n\tdirection\030\010 \001(\t\022\021\n\ttime" +
-      "stamp\030\t \001(\003\"/\n\010Location\022\020\n\010latitude\030\001 \001(" +
-      "\001\022\021\n\tlongitude\030\002 \001(\001B,\n\022org.project.mode" +
-      "lsB\026ProtoSimplePublicationb\006proto3"
+      "\014\n\004wind\030\007 \001(\001\022\021\n\tdirection\030\010 \001(\t\022\026\n\016date" +
+      "_timestamp\030\t \001(\003\022\034\n\024generation_timestamp" +
+      "\030\n \001(\003\"/\n\010Location\022\020\n\010latitude\030\001 \001(\001\022\021\n\t" +
+      "longitude\030\002 \001(\001B,\n\022org.project.modelsB\026P" +
+      "rotoSimplePublicationb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2096,7 +2170,7 @@ public final class ProtoSimplePublication {
     internal_static_SimplePublication_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SimplePublication_descriptor,
-        new java.lang.String[] { "Uuid", "StationId", "Location", "City", "Temperature", "Rain", "Wind", "Direction", "Timestamp", });
+        new java.lang.String[] { "Uuid", "StationId", "Location", "City", "Temperature", "Rain", "Wind", "Direction", "DateTimestamp", "GenerationTimestamp", });
     internal_static_Location_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Location_fieldAccessorTable = new

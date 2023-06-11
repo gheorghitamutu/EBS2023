@@ -12,7 +12,8 @@ message SimplePublication {
   double rain = 6;
   double wind = 7;
   string direction = 8;
-  int64 timestamp = 9;
+  int64 date_timestamp = 9;
+  int64 generation_timestamp = 10;
 }
 
 message Location {

@@ -92,11 +92,11 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
         }
 
         var cps = buildComplexPublications(sps);
-        latencyForGeneration.setValue(abs(System.currentTimeMillis() - start));
+        latencyForGeneration.setValue((Long)abs(System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();
         cps.forEach((cp) -> this.collector.emit(input.get(), new Values(cp)));
-        latencyForStorage.setValue(abs(System.currentTimeMillis() - start));
+        latencyForStorage.setValue((Long)abs(System.currentTimeMillis() - start));
 
         // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
     }

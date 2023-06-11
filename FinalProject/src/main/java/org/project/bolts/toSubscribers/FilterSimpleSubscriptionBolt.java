@@ -10,6 +10,7 @@ import org.project.filters.SimplePublicationFilter;
 import org.project.models.ProtoSimplePublication;
 import org.project.models.ProtoSimpleSubscription;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
     private OutputCollector collector;
     final private Map<String, List<ProtoSimpleSubscription.SimpleSubscription>> subscriptions = new HashMap<>();
     final private Map<String, Integer> publicationMatched = new HashMap<>();
+    private int publicationsCount = 0;
 
     @Override
     public void prepare(Map<String, Object> configuration, TopologyContext context, OutputCollector collector) {
@@ -33,6 +35,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
         input.getFields().forEach((f) -> {
             var value = input.getValueByField(f);
             if (f.equals("SimplePublication")) {
+                publicationsCount++;
                 var sp = (ProtoSimplePublication.SimplePublication) value;
 
                 subscriptions.forEach(
@@ -55,7 +58,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
             else if (f.equals("SimpleSubscription")) {
                 try {
                     var ss = (ProtoSimpleSubscription.SimpleSubscription) value;
-                    var key = ss.getSubscriptionId();
+                    var key = ss.getSubscriberId();
                     if (subscriptions.containsKey(key)) {
                         subscriptions.get(key).add(ss);
                     } else {
@@ -63,6 +66,7 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
                     }
                 }
                 catch (Exception e) {
+                    collector.reportError(e);
                     LOG.error("Error while processing simple subscription: " + e.getMessage());
                 }
             }
@@ -79,6 +83,8 @@ public class FilterSimpleSubscriptionBolt extends BaseRichBolt {
     @Override
     public void cleanup() {
         LOG.info("Simple subscription bolt cleanup");
+        subscriptions.forEach((k, v) -> LOG.info(MessageFormat.format("Subscriber ID: {0} Subscriptions count: {1}!", k, v.size())));
+        LOG.info("Publications count: " + publicationsCount);
         LOG.info("Publication matched: " + publicationMatched);
     }
 }

@@ -33,7 +33,8 @@ public class PublicationGenerator {
                 .setRain(rain)
                 .setWind(wind)
                 .setDirection(direction)
-                .setTimestamp(date.getTime())
+                .setDateTimestamp(date.getTime())
+                .setGenerationTimestamp(System.currentTimeMillis())
                 .build();
     }
 

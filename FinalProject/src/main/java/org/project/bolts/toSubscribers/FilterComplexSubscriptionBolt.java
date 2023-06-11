@@ -10,6 +10,7 @@ import org.project.filters.ComplexPublicationFilter;
 import org.project.models.ProtoComplexPublication;
 import org.project.models.ProtoComplexSubscription;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
     private OutputCollector collector;
     final private Map<String, List<ProtoComplexSubscription.ComplexSubscription>> subscriptions = new HashMap<>();
     final private Map<String, Integer> publicationMatched = new HashMap<>();
+    private static int publicationsCount = 0;
 
     @Override
     public void prepare(Map<String, Object> configuration, TopologyContext context, OutputCollector collector) {
@@ -33,6 +35,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
         input.getFields().forEach((f) -> {
             var value = input.getValueByField(f);
             if (f.equals("ComplexPublication")) {
+                publicationsCount++;
                 var cp = (ProtoComplexPublication.ComplexPublication) value;
 
                 subscriptions.forEach(
@@ -55,7 +58,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
             else if (f.equals("ComplexSubscription")) {
                 try {
                     var cs = (ProtoComplexSubscription.ComplexSubscription) value;
-                    var key = cs.getSubscriptionId();
+                    var key = cs.getSubscriberId();
                     if (subscriptions.containsKey(key)) {
                         subscriptions.get(key).add(cs);
                     } else {
@@ -63,6 +66,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                     }
                 }
                 catch (Exception e) {
+                    collector.reportError(e);
                     LOG.error("Error while processing complex subscription: " + e.getMessage());
                 }
             }
@@ -73,12 +77,14 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
+        // No output fields
     }
 
     @Override
     public void cleanup() {
         LOG.info("Complex subscription bolt cleanup");
+        subscriptions.forEach((k, v) -> LOG.info(MessageFormat.format("Subscriber ID: {0} Subscriptions count: {1}!", k, v.size())));
+        LOG.info("Publications count: " + publicationsCount);
         LOG.info("Publication matched: " + publicationMatched);
     }
 }

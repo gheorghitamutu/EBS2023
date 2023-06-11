@@ -252,6 +252,7 @@ public class Application extends ConfigurableTopology {
         config.put(Config.TOPOLOGY_STATS_SAMPLE_RATE, GlobalConfiguration.TOPOLOGY_STATS_SAMPLE_RATE);
 
         config.registerMetricsConsumer(GraphiteMetricsConsumer.class, 1);
+        config.registerMetricsConsumer(org.apache.storm.metric.LoggingMetricsConsumer.class, 1);
 
         config.setDebug(TOPOLOGY_DEBUG);
         config.setNumWorkers(TOPOLOGY_WORKERS);

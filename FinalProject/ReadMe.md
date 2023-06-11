@@ -404,8 +404,9 @@ And this generates the required .java files that we'll be using in our project.
         double temperature = 5;
         double rain = 6;
         double wind = 7;
-        string direction = 8;
-        int64 timestamp = 9;
+        string direction = 8;  
+        int64 date_timestamp = 9;
+        int64 generation_timestamp = 10;
     }
 
     message Location {
@@ -421,7 +422,8 @@ And this generates the required .java files that we'll be using in our project.
 - rain: A double field for the current rain reading in millimeters.
 - wind: A double field for the current wind speed reading in kilometers per hour.
 - direction: A string field for the current wind direction reading.
-- date: A string field for the date and time of the weather reading in ISO 8601 format.
+- date_timestamp: An int64 field containing the timestamp when the data was generated.
+- generation_timestamp: An int64 field containing the timestamp when data first reached the system.
 
 ## Complex Publication
 
@@ -452,6 +454,8 @@ And this generates the required .java files that we'll be using in our project.
 - avg_temperature: This field is a double that represents the average temperature recorded by the weather station over a period of time, such as a day or a month.
 - avg_rain: This field is a double that represents the average amount of rainfall recorded by the weather station over a period of time, such as a day or a month.
 - avg_wind: This field is a double that represents the average wind speed recorded by the weather station over a period of time, such as a day or a month.
+- publications_count: This field contains the number of simple publications this complex publication was generated based upon.
+- timestamp: This field contains the timestamp this complex generation was created.
 
 ## Simple Subscription
 

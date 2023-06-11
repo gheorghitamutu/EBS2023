@@ -71,15 +71,18 @@ public class SimplePublicationSpout implements IRichSpout {
         try {
             setupAMQP();
         } catch (IOException e) {
+            collector.reportError(e);
             LOG.error("AMQP setup failed", e);
             LOG.warn("AMQP setup failed, will attempt to reconnect...");
             Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
             try {
                 reconnect();
             } catch (TimeoutException e1) {
+                collector.reportError(e1);
                 e1.printStackTrace();
             }
         } catch (TimeoutException e) {
+            collector.reportError(e);
             e.printStackTrace();
         }
     }
@@ -89,6 +92,7 @@ public class SimplePublicationSpout implements IRichSpout {
         try {
             setupAMQP();
         } catch (IOException e) {
+            collector.reportError(e);
             LOG.warn("Failed to reconnect to AMQP broker", e);
         }
     }
@@ -113,8 +117,10 @@ public class SimplePublicationSpout implements IRichSpout {
                 amqpChannel.close();
             }
         } catch (IOException e) {
+            collector.reportError(e);
             LOG.warn("Error closing AMQP channel: ", e);
         } catch (TimeoutException e) {
+            collector.reportError(e);
             e.printStackTrace();
         }
     }
@@ -135,11 +141,12 @@ public class SimplePublicationSpout implements IRichSpout {
                 try {
                     sp = ProtoSimplePublication.SimplePublication.parseFrom(delivery.getBody());
                 } catch (InvalidProtocolBufferException e) {
+                    collector.reportError(e);
                     throw new RuntimeException(e);
                 }
                 collector.emit(new Values(sp), deliveryTag);
 
-                final long creationTimestamp = sp.getTimestamp();
+                final long creationTimestamp = sp.getGenerationTimestamp();
                 final long delta = System.currentTimeMillis() - creationTimestamp;
                 // LOG.debug(MessageFormat.format("Emitted message with ID {0} (age: {1} ms)", sp.getUuid(), delta));
                 latencyForFullFlow.setValue(abs(delta));
@@ -150,19 +157,23 @@ public class SimplePublicationSpout implements IRichSpout {
                 }
             }
         } catch (ShutdownSignalException e) {
+            collector.reportError(e);
             LOG.warn("AMQP connection dropped, will attempt to reconnect...");
             Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
             try {
                 reconnect();
             } catch (TimeoutException e1) {
+                collector.reportError(e);
                 e1.printStackTrace();
             }
         } catch (ConsumerCancelledException e) {
+            collector.reportError(e);
             LOG.warn("AMQP consumer cancelled, will attempt to reconnect...");
             Utils.sleep(WAIT_AFTER_SHUTDOWN_SIGNAL);
             try {
                 reconnect();
             } catch (TimeoutException e1) {
+                collector.reportError(e1);
                 e1.printStackTrace();
             }
         } catch (InterruptedException e) {
@@ -179,8 +190,10 @@ public class SimplePublicationSpout implements IRichSpout {
                 try {
                     amqpChannel.basicAck(deliveryTag, false);
                 } catch (IOException e) {
+                    collector.reportError(e);
                     LOG.warn("Failed to ack delivery-tag " + deliveryTag, e);
                 } catch (ShutdownSignalException e) {
+                    collector.reportError(e);
                     LOG.warn("AMQP connection failed. Failed to ack delivery - tag" + deliveryTag, e);
                 }
             }
@@ -204,8 +217,10 @@ public class SimplePublicationSpout implements IRichSpout {
                         reconnect();
                     }
                 } catch (IOException e) {
+                    collector.reportError(e);
                     LOG.warn("Failed to reject delivery-tag " + deliveryTag, e);
                 } catch (TimeoutException e) {
+                    collector.reportError(e);
                     e.printStackTrace();
                 }
             }
