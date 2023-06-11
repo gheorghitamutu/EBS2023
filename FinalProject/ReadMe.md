@@ -437,7 +437,8 @@ And this generates the required .java files that we'll be using in our project.
         double avg_temperature = 4;
         double avg_rain = 5;
         double avg_wind = 6;
-        int64 timestamp = 7;
+        int32 publications_count= 7;
+        int64 timestamp = 8;
     }
 
     message Location {

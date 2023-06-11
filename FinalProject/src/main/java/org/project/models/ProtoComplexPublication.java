@@ -76,7 +76,13 @@ public final class ProtoComplexPublication {
     double getAvgWind();
 
     /**
-     * <code>int64 timestamp = 7;</code>
+     * <code>int32 publications_count = 7;</code>
+     * @return The publicationsCount.
+     */
+    int getPublicationsCount();
+
+    /**
+     * <code>int64 timestamp = 8;</code>
      * @return The timestamp.
      */
     long getTimestamp();
@@ -260,10 +266,21 @@ public final class ProtoComplexPublication {
       return avgWind_;
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    public static final int PUBLICATIONS_COUNT_FIELD_NUMBER = 7;
+    private int publicationsCount_ = 0;
+    /**
+     * <code>int32 publications_count = 7;</code>
+     * @return The publicationsCount.
+     */
+    @java.lang.Override
+    public int getPublicationsCount() {
+      return publicationsCount_;
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 8;
     private long timestamp_ = 0L;
     /**
-     * <code>int64 timestamp = 7;</code>
+     * <code>int64 timestamp = 8;</code>
      * @return The timestamp.
      */
     @java.lang.Override
@@ -303,8 +320,11 @@ public final class ProtoComplexPublication {
       if (java.lang.Double.doubleToRawLongBits(avgWind_) != 0) {
         output.writeDouble(6, avgWind_);
       }
+      if (publicationsCount_ != 0) {
+        output.writeInt32(7, publicationsCount_);
+      }
       if (timestamp_ != 0L) {
-        output.writeInt64(7, timestamp_);
+        output.writeInt64(8, timestamp_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -337,9 +357,13 @@ public final class ProtoComplexPublication {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(6, avgWind_);
       }
+      if (publicationsCount_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, publicationsCount_);
+      }
       if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(7, timestamp_);
+          .computeInt64Size(8, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -374,6 +398,8 @@ public final class ProtoComplexPublication {
       if (java.lang.Double.doubleToLongBits(getAvgWind())
           != java.lang.Double.doubleToLongBits(
               other.getAvgWind())) return false;
+      if (getPublicationsCount()
+          != other.getPublicationsCount()) return false;
       if (getTimestamp()
           != other.getTimestamp()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -404,6 +430,8 @@ public final class ProtoComplexPublication {
       hash = (37 * hash) + AVG_WIND_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getAvgWind()));
+      hash = (37 * hash) + PUBLICATIONS_COUNT_FIELD_NUMBER;
+      hash = (53 * hash) + getPublicationsCount();
       hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getTimestamp());
@@ -546,6 +574,7 @@ public final class ProtoComplexPublication {
         avgTemperature_ = 0D;
         avgRain_ = 0D;
         avgWind_ = 0D;
+        publicationsCount_ = 0;
         timestamp_ = 0L;
         return this;
       }
@@ -601,6 +630,9 @@ public final class ProtoComplexPublication {
           result.avgWind_ = avgWind_;
         }
         if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.publicationsCount_ = publicationsCount_;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
           result.timestamp_ = timestamp_;
         }
       }
@@ -671,6 +703,9 @@ public final class ProtoComplexPublication {
         if (other.getAvgWind() != 0D) {
           setAvgWind(other.getAvgWind());
         }
+        if (other.getPublicationsCount() != 0) {
+          setPublicationsCount(other.getPublicationsCount());
+        }
         if (other.getTimestamp() != 0L) {
           setTimestamp(other.getTimestamp());
         }
@@ -733,10 +768,15 @@ public final class ProtoComplexPublication {
                 break;
               } // case 49
               case 56: {
-                timestamp_ = input.readInt64();
+                publicationsCount_ = input.readInt32();
                 bitField0_ |= 0x00000040;
                 break;
               } // case 56
+              case 64: {
+                timestamp_ = input.readInt64();
+                bitField0_ |= 0x00000080;
+                break;
+              } // case 64
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1113,9 +1153,41 @@ public final class ProtoComplexPublication {
         return this;
       }
 
+      private int publicationsCount_ ;
+      /**
+       * <code>int32 publications_count = 7;</code>
+       * @return The publicationsCount.
+       */
+      @java.lang.Override
+      public int getPublicationsCount() {
+        return publicationsCount_;
+      }
+      /**
+       * <code>int32 publications_count = 7;</code>
+       * @param value The publicationsCount to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPublicationsCount(int value) {
+        
+        publicationsCount_ = value;
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 publications_count = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPublicationsCount() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        publicationsCount_ = 0;
+        onChanged();
+        return this;
+      }
+
       private long timestamp_ ;
       /**
-       * <code>int64 timestamp = 7;</code>
+       * <code>int64 timestamp = 8;</code>
        * @return The timestamp.
        */
       @java.lang.Override
@@ -1123,23 +1195,23 @@ public final class ProtoComplexPublication {
         return timestamp_;
       }
       /**
-       * <code>int64 timestamp = 7;</code>
+       * <code>int64 timestamp = 8;</code>
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
         
         timestamp_ = value;
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
       /**
-       * <code>int64 timestamp = 7;</code>
+       * <code>int64 timestamp = 8;</code>
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -1782,14 +1854,14 @@ public final class ProtoComplexPublication {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\030ComplexPublication.proto\"\235\001\n\022ComplexPu" +
+      "\n\030ComplexPublication.proto\"\271\001\n\022ComplexPu" +
       "blication\022\014\n\004uuid\030\001 \001(\t\022\014\n\004city\030\002 \001(\t\022\033\n" +
       "\010location\030\003 \001(\0132\t.Location\022\027\n\017avg_temper" +
       "ature\030\004 \001(\001\022\020\n\010avg_rain\030\005 \001(\001\022\020\n\010avg_win" +
-      "d\030\006 \001(\001\022\021\n\ttimestamp\030\007 \001(\003\"/\n\010Location\022\020" +
-      "\n\010latitude\030\001 \001(\001\022\021\n\tlongitude\030\002 \001(\001B-\n\022o" +
-      "rg.project.modelsB\027ProtoComplexPublicati" +
-      "onb\006proto3"
+      "d\030\006 \001(\001\022\032\n\022publications_count\030\007 \001(\005\022\021\n\tt" +
+      "imestamp\030\010 \001(\003\"/\n\010Location\022\020\n\010latitude\030\001" +
+      " \001(\001\022\021\n\tlongitude\030\002 \001(\001B-\n\022org.project.m" +
+      "odelsB\027ProtoComplexPublicationb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1800,7 +1872,7 @@ public final class ProtoComplexPublication {
     internal_static_ComplexPublication_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ComplexPublication_descriptor,
-        new java.lang.String[] { "Uuid", "City", "Location", "AvgTemperature", "AvgRain", "AvgWind", "Timestamp", });
+        new java.lang.String[] { "Uuid", "City", "Location", "AvgTemperature", "AvgRain", "AvgWind", "PublicationsCount", "Timestamp", });
     internal_static_Location_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_Location_fieldAccessorTable = new

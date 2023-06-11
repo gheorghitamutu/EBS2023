@@ -41,7 +41,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                         if (matched) {
                             LOG.info("Complex subscription matched!");
                             LOG.info("Subscriber ID: " + k);
-                            LOG.info("Complex publication: " + cp);
+                            LOG.info("Complex publication:\n " + cp);
 
                             if (publicationMatched.containsKey(k)) {
                                 publicationMatched.put(k, publicationMatched.get(k) + 1);
@@ -63,7 +63,7 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                     }
                 }
                 catch (Exception e) {
-                    LOG.error("Error while adding predicate to complex subscription", e);
+                    LOG.error("Error while processing complex subscription: " + e.getMessage());
                 }
             }
         });

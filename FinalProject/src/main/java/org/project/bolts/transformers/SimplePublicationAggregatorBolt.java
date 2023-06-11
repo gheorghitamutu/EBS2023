@@ -18,6 +18,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
 import static org.project.cofiguration.GlobalConfiguration.*;
@@ -47,19 +48,30 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
         context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_STORAGE, latencyForStorage, TIME_BUCKET_SIZE_IN_SECS);
     }
 
-    public ProtoComplexPublication.ComplexPublication buildComplexPublication(
+    public List<ProtoComplexPublication.ComplexPublication> buildComplexPublications(
             List<ProtoSimplePublication.SimplePublication> sps) {
 
-        var avgTemperature = sps.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getTemperature).average().orElse(0.0);
-        var avgWind = sps.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getWind).average().orElse(0.0);
-        var avgRain = sps.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getRain).average().orElse(0.0);
+        var cities = sps.stream().map(ProtoSimplePublication.SimplePublication::getCity).collect(Collectors.toSet());
 
-        return ProtoComplexPublication.ComplexPublication.newBuilder()
-                .setAvgTemperature(avgTemperature)
-                .setAvgWind(avgWind)
-                .setAvgRain(avgRain)
-                .setTimestamp(System.currentTimeMillis())
-                .build();
+        List<ProtoComplexPublication.ComplexPublication> cps = new ArrayList<>();
+        for (var city: cities) {
+            var spsForCity = sps.stream().filter((sp) -> sp.getCity().equals(city)).collect(Collectors.toUnmodifiableSet());
+
+            var avgTemperature = spsForCity.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getTemperature).average().orElse(0.0);
+            var avgWind = spsForCity.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getWind).average().orElse(0.0);
+            var avgRain = spsForCity.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getRain).average().orElse(0.0);
+
+            cps.add(ProtoComplexPublication.ComplexPublication.newBuilder()
+                    .setCity(city)
+                    .setAvgTemperature(avgTemperature)
+                    .setAvgWind(avgWind)
+                    .setAvgRain(avgRain)
+                    .setPublicationsCount(spsForCity.size())
+                    .setTimestamp(System.currentTimeMillis())
+                    .build());
+        }
+
+        return cps;
     }
 
     @Override
@@ -80,11 +92,11 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
             this.collector.ack(tuple);
         }
 
-        var cp = buildComplexPublication(sps);
+        var cps = buildComplexPublications(sps);
         latencyForGeneration.setValue(abs(System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();
-        this.collector.emit(input.get(), new Values(cp));
+        cps.forEach((cp) -> this.collector.emit(input.get(), new Values(cp)));
         latencyForStorage.setValue(abs(System.currentTimeMillis() - start));
 
         // LOG.info(MessageFormat.format("Processed <{0}> value(s)!", eventsReceived - oldCount));
