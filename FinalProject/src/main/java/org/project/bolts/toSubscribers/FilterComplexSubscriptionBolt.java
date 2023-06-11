@@ -1,4 +1,4 @@
-package org.project.bolts.transformers;
+package org.project.bolts.toSubscribers;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -39,9 +39,9 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
                     (k, v) -> {
                         var matched = v.stream().anyMatch((cs) -> ComplexPublicationFilter.filter(cs).test(cp));
                         if (matched) {
-                            LOG.info("Complex subscription matched!");
-                            LOG.info("Subscriber ID: " + k);
-                            LOG.info("Complex publication:\n " + cp);
+                            // LOG.info("Complex subscription matched!");
+                            // LOG.info("Subscriber ID: " + k);
+                            // LOG.info("Complex publication:\n " + cp);
 
                             if (publicationMatched.containsKey(k)) {
                                 publicationMatched.put(k, publicationMatched.get(k) + 1);

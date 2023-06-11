@@ -8,6 +8,8 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
 import org.project.bolts.firstLevel.*;
+import org.project.bolts.toSubscribers.FilterComplexSubscriptionBolt;
+import org.project.bolts.toSubscribers.FilterSimpleSubscriptionBolt;
 import org.project.bolts.transformers.*;
 import org.project.bolts.toAMQP.AnomalyBolt;
 import org.project.bolts.toAMQP.SimplePublicationBolt;

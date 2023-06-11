@@ -2,8 +2,6 @@ package org.project.bolts.transformers;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.metric.api.AssignableMetric;
-import org.apache.storm.metric.api.MeanReducer;
-import org.apache.storm.metric.api.ReducedMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -51,10 +49,10 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
     public List<ProtoComplexPublication.ComplexPublication> buildComplexPublications(
             List<ProtoSimplePublication.SimplePublication> sps) {
 
-        var cities = sps.stream().map(ProtoSimplePublication.SimplePublication::getCity).collect(Collectors.toSet());
-
         List<ProtoComplexPublication.ComplexPublication> cps = new ArrayList<>();
-        for (var city: cities) {
+
+        var cities = sps.stream().map(ProtoSimplePublication.SimplePublication::getCity).collect(Collectors.toSet());
+        cities.forEach((city) -> {
             var spsForCity = sps.stream().filter((sp) -> sp.getCity().equals(city)).collect(Collectors.toUnmodifiableSet());
 
             var avgTemperature = spsForCity.stream().mapToDouble(ProtoSimplePublication.SimplePublication::getTemperature).average().orElse(0.0);
@@ -69,7 +67,8 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
                     .setPublicationsCount(spsForCity.size())
                     .setTimestamp(System.currentTimeMillis())
                     .build());
-        }
+                }
+        );
 
         return cps;
     }
