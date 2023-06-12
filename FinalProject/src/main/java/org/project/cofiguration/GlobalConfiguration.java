@@ -46,14 +46,13 @@ public class GlobalConfiguration {
     public static final String COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_EXCHANGE_NAME = "ExchangeSCP";
     public static final String COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_QUEUE_NAME = "QueueSCP";
     public static final String COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_ROUTING_KEY = "QueueSCP";
-    public static String AMQP_HOST = "EBS-rabbit";
+    public static String AMQP_HOST = "EBS-rabbit1"; // in production there are 1,2,3 rabbitmq servers
     public static int AMQP_PORT = 5672;
     public static final String AMQP_USERNAME = "guest";
     public static final String AMQP_PASSWORD = "guest";
     public static final String AMQP_VHOST = "/";
     public static final boolean AMQP_REQUEUE_ON_FAIL = true;
     public static final boolean AMQP_AUTO_ACK = false;
-
     public static final long AMQP_ACK_TIMEOUT = 5_000;
 
     // Metrics

@@ -30,7 +30,8 @@ Table of Contents
     - [(5p) Publications stream](#5p-publications-stream)
     - [(10p) Network of brokers (2-3), content-based filtering \& publication windows](#10p-network-of-brokers-2-3-content-based-filtering--publication-windows)
     - [(5p) Subscriber nodes (simple \& complex subscriptions)](#5p-subscriber-nodes-simple--complex-subscriptions)
-    - [WIP](#wip)
+    - [(5p) Binary serialization mechanism](#5p-binary-serialization-mechanism)
+    - [(10p) Sistem evaluation (10 subscriptions)](#10p-sistem-evaluation-10-subscriptions)
   - [References](#references)
 
 
@@ -643,6 +644,31 @@ We'd also like to develop and connect from the host so we don't specify any netw
 
     docker run -d --hostname EBS-rabbit --name EBS-local-rabbit -p 9081:15672 -p 5673:5672 rabbitmq:3-management
 
+But we'd like a cluster to ensure that if a node crashes/fails, we have several replicas. Based on [this artcile](https://medium.com/@saurabh.singh0829/how-to-create-rabbitmq-cluster-in-docker-aws-linux-4b26a31f90bc) we configured our environment as it follows:
+
+    docker run -d --hostname EBS-rabbit1 --name EBS-rabbit1 --network=EBS -p 9080:15672 -p 5672:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+    docker run -d --hostname EBS-rabbit2 --name EBS-rabbit2 --network=EBS -p 5674:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+    docker run -d --hostname EBS-rabbit3 --name EBS-rabbit3 --network=EBS -p 5675:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+And then we restarted everything in order to create the cluster:
+
+    docker exec -it EBS-rabbit1 bash
+    rabbitmqctl stop_app
+    rabbitmqctl reset
+    rabbitmqctl start_app
+
+    docker exec -it EBS-rabbit2 bash
+    rabbitmqctl stop_app
+    rabbitmqctl reset
+    rabbitmqctl start_app
+
+    docker exec -it EBS-rabbit2 bash
+    rabbitmqctl stop_app
+    rabbitmqctl reset
+    rabbitmqctl start_app
+
 ## Topology Diagram
 ![Topology](./docs/topology.png)
 
@@ -660,7 +686,45 @@ The brokers area is split between Apache Storm & RabbitMQ. The simple publicatio
 
 The subscribers "nodes" are simulated using an array of 3 UUIDs (in `SubscriptionGenerator` class) and then passed to every subscription (simple or complex) generated. The filters are lengthy described in their dedicated section in this document. The actual filtering on simple and complex publication is being done with Apache Storm bolts as well.
 
-### WIP
+### (5p) Binary serialization mechanism
+
+Google Protobuf (proto3 to be more specific) is used for binary serialization. It's usage & integration is lengthy explained in this document above.
+
+### (10p) Sistem evaluation (10 subscriptions)
+
+- Publications successfully delivered through the broker network in a continuous 3-minute feed interval
+
+        TODO:
+
+- The average delivery latency of a publication (the time from sending to receiving) for publications sent within the same interval
+
+        TODO:
+
+- The matching rate for the case when the generated subscriptions contain only an equality operator (100%) on one of the fields, compared to the situation where the frequency of the equality operator on that field is approximately one quarter (25%)
+
+        TODO:
+
+- Implement an advanced routing mechanism for registering simple subscriptions that should be distributed across the broker network (publications will pass through multiple brokers until reaching the destination, with each broker partially handling the routing, rather than a single broker containing all subscriptions and performing a simple match)
+  
+        TODO:
+
+- Simulate and handle (by providing support in the implementation) cases of failures on broker nodes to ensure that no notifications are lost, including for complex subscriptions
+- - There are multiple requirements here as we are using `Apache Storm` nodes along with `RabbitMQ` queues
+- - For `Apache Storm` we are using `active replication`. There are at least `2 replicas` of each node used by our topologies. This ensures that if one fails, the we still have the other one. In the same time, the entire flow (routing) is being done by `ack` each input received. If we `fail` to ack an input that a bolt receives, that input will be `resent`.
+- - For `RabbitMQ` we are using a built-in `ack` mechanism combined with the `Apache Storm` one. Each `Spout` based with `RabbitMQ` connection `ack` that it received the data and that it send it succesfully.
+- - We also have a `cluster` of 3 instances for main `RabbitMQ` database using Docker.
+
+- (5-10p) Implement a message filtering mechanism that does not allow brokers to access the content of messages (matching on encrypted subscriptions/publications)
+    - Explored but `NOT IMPLEMENTED`. 
+    - If there are multiple users who should receive the same publication and you want to encrypt the publication individually for each user, you can use a `hybrid encryption` approach in which you generate a `symmetric encryption key` for each publication and encrypt the publication with it.
+    - Then, you encrypt the symmetric key with the `individual public keys` of each recipient.
+    - `User-Specific Encryption Keys:` Each user should have a unique encryption key pair consisting of a public key and a private key. The private key should be securely stored and accessible only to the user, while the public key can be shared.
+    - `Message Routing:` Define a message routing mechanism that allows you to route publications to multiple recipients. This can be achieved using routing keys, topics, or other routing mechanisms provided by your messaging system (e.g., RabbitMQ).
+    - `Symmetric Key Generation:` For each publication, generate a random symmetric encryption key. This key will be used to encrypt the publication content.
+    - Publication Encryption: When publishing a message, retrieve the list of intended recipients for that message based on its routing criteria. For each recipient, retrieve their corresponding public key. Encrypt the symmetric encryption key with the recipient's public key. Then, encrypt the publication content with the symmetric encryption key.
+    - `Message Delivery:` Send the encrypted publications over the messaging system. The brokers will handle the routing and delivery of the encrypted publications to the appropriate recipients based on the routing criteria.
+    - `Recipient Decryption:` Within each recipient's application code, retrieve the encrypted publications from the messaging system. For each publication, decrypt the symmetric encryption key using the recipient's private key. Then, decrypt the publication content using the decrypted symmetric encryption key.
+    - By using a `hybrid encryption` approach, you can efficiently encrypt the publication content with a `symmetric encryption key` and protect the symmetric key itself by encrypting it individually for each recipient using their `public key`. This allows multiple users to receive the same publication while ensuring that each recipient can decrypt the publication content using their `private key`.
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
