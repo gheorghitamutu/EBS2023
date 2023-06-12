@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.apache.log4j.Logger;
+import org.apache.storm.metric.api.AssignableMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import static java.lang.Math.abs;
 import static org.project.cofiguration.GlobalConfiguration.*;
 
 public class PublicationViaSubscriptionBolt extends BaseRichBolt {
@@ -31,6 +33,9 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
     private int eventsReceived;
     private Channel channelSimplePublication;
     private Channel channelComplexPublication;
+
+    private AssignableMetric latencyForDeliverySimplePublication;
+    private AssignableMetric latencyForDeliveryComplexPublication;
 
     @Override
     public void prepare(Map<String, Object> map, TopologyContext context, OutputCollector collector) {
@@ -48,6 +53,12 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
                 COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_EXCHANGE_NAME,
                 COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_QUEUE_NAME,
                 COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_ROUTING_KEY);
+
+        this.latencyForDeliverySimplePublication = new AssignableMetric(0);
+        this.latencyForDeliveryComplexPublication = new AssignableMetric(0);
+
+        context.registerMetric(METRICS_LATENCY_SIMPLE_PUBLICATION_DELIVERY, latencyForDeliverySimplePublication, TIME_BUCKET_SIZE_IN_SECS);
+        context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_DELIVERY, latencyForDeliveryComplexPublication, TIME_BUCKET_SIZE_IN_SECS);
     }
 
     @Override
@@ -103,6 +114,9 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
                         null,
                         json.getBytes());
                 this.channelSimplePublication.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
+
+                var sp = (ProtoSimplePublication.SimplePublication) input.getValueByField(f1);
+                this.latencyForDeliverySimplePublication.setValue((Long)abs(System.currentTimeMillis() - sp.getGenerationTimestamp()));
             } catch (IOException | InterruptedException | TimeoutException e) {
                 // collector.reportError(e);
                 this.collector.fail(input);
@@ -118,6 +132,9 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
                         null,
                         json.getBytes());
                 this.channelComplexPublication.waitForConfirmsOrDie(AMQP_ACK_TIMEOUT);
+
+                var cp = (ProtoComplexPublication.ComplexPublication) input.getValueByField(f1);
+                this.latencyForDeliveryComplexPublication.setValue((Long)abs(System.currentTimeMillis() - cp.getTimestamp()));
             } catch (IOException | InterruptedException | TimeoutException e) {
                 // collector.reportError(e);
                 this.collector.fail(input);

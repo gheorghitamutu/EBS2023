@@ -61,6 +61,8 @@ public class GlobalConfiguration {
     public static final String METRICS_LATENCY_COMPLEX_PUBLICATION_STORAGE = "latency_complex_publication_storage";
     public static final String METRICS_LATENCY_SIMPLE_PUBLICATION_FULL_FLOW = "latency_simple_publication_full_flow";
     public static final String METRICS_LATENCY_COMPLEX_PUBLICATION_FULL_FLOW = "latency_complex_publication_full_flow";
+    public static final String METRICS_LATENCY_SIMPLE_PUBLICATION_DELIVERY = "latency_simple_publication_delivery";
+    public static final String METRICS_LATENCY_COMPLEX_PUBLICATION_DELIVERY = "latency_complex_publication_delivery";
 
     // Graphite
     public static String GRAPHITE_HOST = "EBS-graphite";

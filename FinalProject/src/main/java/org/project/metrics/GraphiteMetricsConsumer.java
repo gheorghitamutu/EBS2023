@@ -22,6 +22,8 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
     private final List<Long> complexPublicationStorage = new ArrayList<>();
     private final List<Long> simplePublicationFullFlow = new ArrayList<>();
     private final List<Long> complexPublicationFullFlow = new ArrayList<>();
+    private final List<Long> simplePublicationDelivery= new ArrayList<>();
+    private final List<Long> complexPublicationDelivery = new ArrayList<>();
 
     MetricRegistry metricRegistry = null;
     Counter counterComplexPublicationGeneration = null;
@@ -40,6 +42,14 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
     Meter meterComplexPublicationFullFlow = null;
     Timer timerComplexPublicationFullFlow = null;
     Histogram histogramComplexPublicationFullFlow = null;
+    Counter counterSimplePublicationDelivery = null;
+    Meter meterSimplePublicationDelivery = null;
+    Timer timerSimplePublicationDelivery = null;
+    Histogram histogramSimplePublicationDelivery = null;
+    Counter counterComplexPublicationDelivery = null;
+    Meter meterComplexPublicationDelivery = null;
+    Timer timerComplexPublicationDelivery = null;
+    Histogram histogramComplexPublicationDelivery = null;
 
     public Double computeAverage(List<Long> times) {
         return times.stream().mapToDouble(Long::longValue).sum() / times.size();
@@ -82,6 +92,18 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
         this.timerComplexPublicationFullFlow = metricRegistry.timer("timer.cpff");
         this.histogramComplexPublicationFullFlow = metricRegistry.histogram("histogram.cpff");
         metricRegistry.register("gauge.cpff", (Gauge<Double>) () -> computeAverage(complexPublicationFullFlow));
+
+        this.counterSimplePublicationDelivery = metricRegistry.counter("counter.spd");
+        this.meterSimplePublicationDelivery = metricRegistry.meter("meter.spd");
+        this.timerSimplePublicationDelivery = metricRegistry.timer("timer.spd");
+        this.histogramSimplePublicationDelivery = metricRegistry.histogram("histogram.spd");
+        this.metricRegistry.register("gauge.spd", (Gauge<Double>) () -> computeAverage(simplePublicationDelivery));
+
+        this.counterComplexPublicationDelivery = metricRegistry.counter("counter.cpd");
+        this.meterComplexPublicationDelivery = metricRegistry.meter("meter.cpd");
+        this.timerComplexPublicationDelivery = metricRegistry.timer("timer.cpd");
+        this.histogramComplexPublicationDelivery = metricRegistry.histogram("histogram.cpd");
+        metricRegistry.register("gauge.cpd", (Gauge<Double>) () -> computeAverage(complexPublicationDelivery));
     }
 
     @Override
@@ -116,6 +138,20 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
                     this.meterComplexPublicationFullFlow.mark();
                     this.timerComplexPublicationFullFlow.update((Long) dataPoint.value, TimeUnit.MILLISECONDS);
                     this.histogramComplexPublicationFullFlow.update((Long) dataPoint.value);
+                    break;
+                case METRICS_LATENCY_SIMPLE_PUBLICATION_DELIVERY:
+                    this.simplePublicationDelivery.add((Long) dataPoint.value);
+                    this.counterSimplePublicationDelivery.inc();
+                    this.meterSimplePublicationDelivery.mark();
+                    this.timerSimplePublicationDelivery.update((Long) dataPoint.value, TimeUnit.MILLISECONDS);
+                    this.histogramSimplePublicationDelivery.update((Long) dataPoint.value);
+                    break;
+                case METRICS_LATENCY_COMPLEX_PUBLICATION_DELIVERY:
+                    this.complexPublicationDelivery.add((Long) dataPoint.value);
+                    this.counterComplexPublicationDelivery.inc();
+                    this.meterComplexPublicationDelivery.mark();
+                    this.timerComplexPublicationDelivery.update((Long) dataPoint.value, TimeUnit.MILLISECONDS);
+                    this.histogramComplexPublicationDelivery.update((Long) dataPoint.value);
                     break;
             }
         }
