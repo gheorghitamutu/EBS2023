@@ -39,8 +39,8 @@ public class SimplePublicationAggregatorBolt extends BaseWindowedBolt {
 
         //http://<storm-ui-host>:<ui-port>/api/v1/topology/<topology-id>/component/<component-id>/metric/<metric-name>
         // http://localhost:8080/api/v1/topology/weather-topology-10-1686397266/component/org.project.bolts.firstLevel.SimplePublicationAggregator/metric/latency-generation
-        latencyForGeneration = new AssignableMetric(0);
-        latencyForStorage = new AssignableMetric(0);
+        latencyForGeneration = new AssignableMetric(0L);
+        latencyForStorage = new AssignableMetric(0L);
 
         context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_GENERATION, latencyForGeneration, TIME_BUCKET_SIZE_IN_SECS);
         context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_STORAGE, latencyForStorage, TIME_BUCKET_SIZE_IN_SECS);

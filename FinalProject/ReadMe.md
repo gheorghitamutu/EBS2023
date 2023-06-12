@@ -32,6 +32,8 @@ Table of Contents
     - [(5p) Subscriber nodes (simple \& complex subscriptions)](#5p-subscriber-nodes-simple--complex-subscriptions)
     - [(5p) Binary serialization mechanism](#5p-binary-serialization-mechanism)
     - [(10p) Sistem evaluation (10000 simple subscriptions)](#10p-sistem-evaluation-10000-simple-subscriptions)
+    - [(5p) Simulate and handle failure cases](#5p-simulate-and-handle-failure-cases)
+    - [(5-10p) Implement a message filtering mechanism matching on encrypted subscriptions/publications](#5-10p-implement-a-message-filtering-mechanism-matching-on-encrypted-subscriptionspublications)
   - [References](#references)
 
 
@@ -741,38 +743,112 @@ Google Protobuf (proto3 to be more specific) is used for binary serialization. I
 
 - Publications successfully delivered through the broker network in a continuous 3-minutes feed interval
 
-        TODO:
+`Spouts (All time)`
+
+| Id|Executors|	Tasks	|Emitted	|Transferred	|Complete latency (ms)	|Acked	|Failed|Error Host	|Error Port	|Last error	|Error Time|
+| - | - | - | - | - | - | - | - | - | - | - | - |
+|org.project.spouts.fromAMQP.ComplexPublicationSpout	|2	|2	|106,138	|106,256|6.236	|52,994|	0|				
+|org.project.spouts.fromAMQP.SimplePublicationSpout|	2|	2	|225,738|	225,856|	25.284|	112,775	|0				|
+|org.project.spouts.fromStorm.ComplexSubscriptionSpout|	2	|2|	0|	0|	0.000	|0|	0	|			
+|org.project.spouts.fromStorm.SimplePublicationSpout	|2	|2|	225,978	|451,956	|22519.062	|91,265	|681				|
+|org.project.spouts.fromStorm.SimpleSubscriptionSpout	|2	|2	|21,124	|21,124|	658.003	|9,753	|562|
+
+`Bolts (All time)`
+
+| Id | Executors | Tasks | Emitted | Transferred | Capacity (last 10m) | Execute latency (ms) | Executed | Process latency (ms) | Acked | Failed | Error Host | Error Port | Last error | Error Time |
+| - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
+|__acker	|1|1	|268,098|	268,098|	0.068|	0.001|	9,085,209	|0.001|	9,085,200	|0	|			
+|__metrics_org.apache.storm.metric.LoggingMetricsConsumer	|1	|1	|0	|0|	0.000|	0.089	|471|	0.081|	471|0				|
+|__metrics_org.project.metrics.GraphiteMetricsConsumer	|1	|1|	0|	0|	0.000|	0.100	|471|	0.085	|471|	0		|		
+|org.project.bolts.firstLevel.ComplexPublicationBolt|	2|	2	|1,622,663|	1,675,016	|0.008	|0.037	|52,353|	0.035|	52,353	|0|				
+|org.project.bolts.firstLevel.SimplePublicationBolt|	2	|2	|225,978	|225,978	|0.003	|0.006	|112,989|	0.005|	112,989	|0|				
+|org.project.bolts.toAMQP.AnomalyBolt	|2|	2	|1,415,016	|1,415,016|	0.736	|1.375|129,550	|1.373	|129,550	|0				|
+|org.project.bolts.toAMQP.ComplexPublicationBolt	|2|	2	|1,569,500	|1,569,500	|0.322	|1.485|	52,326|	1.483	|52,326	|0			|	
+|org.project.bolts.toAMQP.PublicationViaSubscriptionBolt	|2	|2	|118|	236|	0.000|	0.000	|0	|0.000|	0	|0				|
+|org.project.bolts.toAMQP.SimplePublicationBolt|	2	|2	|112,802	|112,802|	0.826	|1.771	|112,800	|1.770	|112,800	|0				|
+|org.project.bolts.toSubscribers.FilterComplexSubscriptionBolt	|2	|2	|53,009	|53,009|	0.002|	0.008	|53,009|	0.006|	53,009|	0		|		
+|org.project.bolts.toSubscribers.FilterSimpleSubscriptionBolt	|2	|2|	123,122	|123,122	|0.163	|0.315	|123,122	|0.313	|123,122|	0	|			
+|org.project.bolts.transformers.AnomalyComplexBolt	|2|	2|	1,423,425	|1,423,425	|0.008	|0.041|	45,925	|0.039	|45,925|	0	|			
+|org.project.bolts.transformers.AnomalySimpleBolt	|2|2	|175,364|	175,364	|0.004	|0.010	|87,682	|0.009|	87,682|	0		|		
+|org.project.bolts.transformers.FilterComplexAnomalyBolt	|2	|2	|1,541,792	|1,541,792|	0.009|	0.043|	49,787|	0.042	|49,787	|0	|			
+|org.project.bolts.transformers.FilterSimpleAnomalyBolt|	2|	2|	203,002	|203,002|	0.005|	0.011	|112,115	|0.009	|112,115	|0		|		
+|org.project.bolts.transformers.SimplePublicationAggregatorBolt	|2	|2	|828,238|	828,353|0.011	|0.024	|110,450	|28.222	|772,970	|0|
 
 - The average delivery latency of a publication (the time from sending to receiving) for publications sent within the same interval
 
-        TODO:
+        2023-06-12 15:53:46,111 10015    1686585226	   7f09c1418350:6700	 29:org.project.bolts.transformers.SimplePublicationAggregatorBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,112 10016    1686585226	   7f09c1418350:6700	 29:org.project.bolts.transformers.SimplePublicationAggregatorBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,117 10021    1686585226	   7f09c1418350:6700	 28:org.project.bolts.transformers.SimplePublicationAggregatorBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,117 10021    1686585226	   7f09c1418350:6700	 28:org.project.bolts.transformers.SimplePublicationAggregatorBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,139 10043    1686585226	   7f09c1418350:6700	 33:org.project.spouts.fromAMQP.SimplePublicationSpout	latency_simple_publicat	1992
+        2023-06-12 15:53:46,141 10045    1686585226	   7f09c1418350:6700	 12:org.project.bolts.toAMQP.PublicationViaSubscriptionBolt	latency_simple_publicat	1995
+        2023-06-12 15:53:46,141 10045    1686585226	   7f09c1418350:6700	 12:org.project.bolts.toAMQP.PublicationViaSubscriptionBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,143 10047    1686585226	   7f09c1418350:6700	 13:org.project.bolts.toAMQP.PublicationViaSubscriptionBolt	latency_simple_publicat	1934
+        2023-06-12 15:53:46,143 10047    1686585226	   7f09c1418350:6700	 13:org.project.bolts.toAMQP.PublicationViaSubscriptionBolt	latency_complex_publica	0
+        2023-06-12 15:53:46,143 10047    1686585226	   7f09c1418350:6700	 31:org.project.spouts.fromAMQP.ComplexPublicationSpout	latency_complex_publica	3261
+        2023-06-12 15:53:46,152 10056    1686585226	   7f09c1418350:6700	 32:org.project.spouts.fromAMQP.SimplePublicationSpout	latency_simple_publicat	1933
+        2023-06-12 15:53:46,156 10060    1686585226	   7f09c1418350:6700	 30:org.project.spouts.fromAMQP.ComplexPublicationSpout	latency_complex_publica	3263
+
+For 10 minutes if the topology is running:
+![Full Flow Latency](./docs/lantency_publications_via_subscriptions_last_10_minutes.png)
 
 - The matching rate for the case when the generated subscriptions contain only an equality operator (100%) on one of the fields, compared to the situation where the frequency of the equality operator on that field is approximately one quarter (25%)
 
-        TODO:
+The matching rate can be calculated dividing the number of publications generated by `org.project.spouts.fromAMQP.SimplePublicationSpout` with the numbers of publications enqueued along subscribers on RabbitMQ by `org.project.bolts.toAMQP.PublicationViaSubscriptionBolt`.
+
+    10000 subscriptions between 3 subscribers:
+
+    Field city:
+    25%:  
+        13229 / 13521 = 0.9784039642
+    50%:
+        11297 / 11760 = 0.9606292517
+    100%:
+        14709 / 14896 = 0.9874462943
+
+Doesn't really show anything. 
+Switching to another field an fewer subscriptions:
+
+    10 subscriptions randomly assigned to 3 subscribers:
+
+    Field temperature:
+    25%:
+        4102 / 21792 = 
+    50%:
+        WIP
+
+
+
 
 - Implement an advanced routing mechanism for registering simple subscriptions that should be distributed across the broker network (publications will pass through multiple brokers until reaching the destination, with each broker partially handling the routing, rather than a single broker containing all subscriptions and performing a simple match)
-  
-        TODO:
 
-- Simulate and handle (by providing support in the implementation) cases of failures on broker nodes to ensure that no notifications are lost, including for complex subscriptions
+The routing for this system is as it follows:
+- simple publication generation (spout)
+- windowed (aggregation) of simple publication -> complex publication
+- simple & complex publications => RabbitMQ queues
+- anomaly (filtering) detection on simple & complex publications => RabbitMQ queues of anomalies
+- RabbitMQ spout for simple & complex publication
+- filtering of simple & complex publication
+- push filtered publication on RabbitMQ queue if subscriptions match for at least one subscriber
+
+### (5p) Simulate and handle failure cases
 - - There are multiple requirements here as we are using `Apache Storm` nodes along with `RabbitMQ` queues
 - - For `Apache Storm` we are using `active replication`. There are at least `2 replicas` of each node used by our topologies. This ensures that if one fails, the we still have the other one. In the same time, the entire flow (routing) is being done by `ack` each input received. If we `fail` to ack an input that a bolt receives, that input will be `resent`.
 - - For `RabbitMQ` we are using a built-in `ack` mechanism combined with the `Apache Storm` one. Each `Spout` based with `RabbitMQ` connection `ack` that it received the data and that it send it succesfully.
 - - We also have a `cluster` of 3 instances for main `RabbitMQ` database using Docker.
   ![RabbitMQ Cluster](./docs/RabbitMQ_cluster.jpg)
 
-- (5-10p) Implement a message filtering mechanism that does not allow brokers to access the content of messages (matching on encrypted subscriptions/publications)
-    - Explored but `NOT IMPLEMENTED`. 
-    - If there are multiple users who should receive the same publication and you want to encrypt the publication individually for each user, you can use a `hybrid encryption` approach in which you generate a `symmetric encryption key` for each publication and encrypt the publication with it.
-    - Then, you encrypt the symmetric key with the `individual public keys` of each recipient.
-    - `User-Specific Encryption Keys:` Each user should have a unique encryption key pair consisting of a public key and a private key. The private key should be securely stored and accessible only to the user, while the public key can be shared.
-    - `Message Routing:` Define a message routing mechanism that allows you to route publications to multiple recipients. This can be achieved using routing keys, topics, or other routing mechanisms provided by your messaging system (e.g., RabbitMQ).
-    - `Symmetric Key Generation:` For each publication, generate a random symmetric encryption key. This key will be used to encrypt the publication content.
-    - Publication Encryption: When publishing a message, retrieve the list of intended recipients for that message based on its routing criteria. For each recipient, retrieve their corresponding public key. Encrypt the symmetric encryption key with the recipient's public key. Then, encrypt the publication content with the symmetric encryption key.
-    - `Message Delivery:` Send the encrypted publications over the messaging system. The brokers will handle the routing and delivery of the encrypted publications to the appropriate recipients based on the routing criteria.
-    - `Recipient Decryption:` Within each recipient's application code, retrieve the encrypted publications from the messaging system. For each publication, decrypt the symmetric encryption key using the recipient's private key. Then, decrypt the publication content using the decrypted symmetric encryption key.
-    - By using a `hybrid encryption` approach, you can efficiently encrypt the publication content with a `symmetric encryption key` and protect the symmetric key itself by encrypting it individually for each recipient using their `public key`. This allows multiple users to receive the same publication while ensuring that each recipient can decrypt the publication content using their `private key`.
+### (5-10p) Implement a message filtering mechanism matching on encrypted subscriptions/publications
+- Explored but `NOT IMPLEMENTED`. 
+- If there are multiple users who should receive the same publication and you want to encrypt the publication individually for each user, you can use a `hybrid encryption` approach in which you generate a `symmetric encryption key` for each publication and encrypt the publication with it.
+- Then, you encrypt the symmetric key with the `individual public keys` of each recipient.
+- `User-Specific Encryption Keys:` Each user should have a unique encryption key pair consisting of a public key and a private key. The private key should be securely stored and accessible only to the user, while the public key can be shared.
+- `Message Routing:` Define a message routing mechanism that allows you to route publications to multiple recipients. This can be achieved using routing keys, topics, or other routing mechanisms provided by your messaging system (e.g., RabbitMQ).
+- `Symmetric Key Generation:` For each publication, generate a random symmetric encryption key. This key will be used to encrypt the publication content.
+- Publication Encryption: When publishing a message, retrieve the list of intended recipients for that message based on its routing criteria. For each recipient, retrieve their corresponding public key. Encrypt the symmetric encryption key with the recipient's public key. Then, encrypt the publication content with the symmetric encryption key.
+- `Message Delivery:` Send the encrypted publications over the messaging system. The brokers will handle the routing and delivery of the encrypted publications to the appropriate recipients based on the routing criteria.
+- `Recipient Decryption:` Within each recipient's application code, retrieve the encrypted publications from the messaging system. For each publication, decrypt the symmetric encryption key using the recipient's private key. Then, decrypt the publication content using the decrypted symmetric encryption key.
+- By using a `hybrid encryption` approach, you can efficiently encrypt the publication content with a `symmetric encryption key` and protect the symmetric key itself by encrypting it individually for each recipient using their `public key`. This allows multiple users to receive the same publication while ensuring that each recipient can decrypt the publication content using their `private key`.
 
 ## References
 https://www.tutorialspoint.com/apache_storm/apache_storm_quick_guide.htm
@@ -800,3 +876,6 @@ The code has been modified to suit the needs of this project. The book can be fo
 https://www.rabbitmq.com/tutorials/tutorial-seven-java.html
 
 https://medium.com/@saurabh.singh0829/how-to-create-rabbitmq-cluster-in-docker-aws-linux-4b26a31f90bc
+
+Stream groupings
+https://storm.apache.org/releases/current/Concepts.html

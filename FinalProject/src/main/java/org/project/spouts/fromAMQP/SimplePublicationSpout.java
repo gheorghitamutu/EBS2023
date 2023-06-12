@@ -9,13 +9,10 @@
 
 package org.project.spouts.fromAMQP;
 
-import com.codahale.metrics.Metric;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.rabbitmq.client.*;
 import org.apache.log4j.Logger;
 import org.apache.storm.metric.api.AssignableMetric;
-import org.apache.storm.metric.api.MeanReducer;
-import org.apache.storm.metric.api.ReducedMetric;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichSpout;
@@ -48,6 +45,8 @@ public class SimplePublicationSpout implements IRichSpout {
 
     private AssignableMetric latencyForFullFlow;
 
+    private long publicationsCount = 0;
+
     public SimplePublicationSpout(boolean requeueOnFail, boolean autoAck) {
         this.requeueOnFail = requeueOnFail;
         this.autoAck = autoAck;
@@ -57,7 +56,7 @@ public class SimplePublicationSpout implements IRichSpout {
         this.collector = collector;
         this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
 
-        latencyForFullFlow = new AssignableMetric(0);
+        latencyForFullFlow = new AssignableMetric(0L);
         context.registerMetric(METRICS_LATENCY_SIMPLE_PUBLICATION_FULL_FLOW, latencyForFullFlow, TIME_BUCKET_SIZE_IN_SECS);
 
         Long prefetchCount = (Long) conf.get(CONFIG_PREFETCH_COUNT);
@@ -123,6 +122,9 @@ public class SimplePublicationSpout implements IRichSpout {
             collector.reportError(e);
             e.printStackTrace();
         }
+
+        LOG.info(MessageFormat.format("Published {0} messages", publicationsCount));
+        LOG.info(MessageFormat.format("Closed AMQP channel for {0}", taskName));
     }
 
     public void nextTuple() {
@@ -150,6 +152,7 @@ public class SimplePublicationSpout implements IRichSpout {
                 final long delta = System.currentTimeMillis() - creationTimestamp;
                 // LOG.debug(MessageFormat.format("Emitted message with ID {0} (age: {1} ms)", sp.getUuid(), delta));
                 latencyForFullFlow.setValue(abs(delta));
+                publicationsCount++;
             } else {
                 LOG.debug("Malformed deserialized message, null or zero - length." + deliveryTag);
                 if (!this.autoAck) {

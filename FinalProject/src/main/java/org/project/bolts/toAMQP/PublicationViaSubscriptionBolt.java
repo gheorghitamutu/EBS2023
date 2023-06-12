@@ -5,6 +5,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.apache.log4j.Logger;
 import org.apache.storm.metric.api.AssignableMetric;
+import org.apache.storm.metric.api.CountMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -30,17 +31,17 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
     public static final String ID = PublicationViaSubscriptionBolt.class.getCanonicalName();
     private static final Logger LOG = Logger.getLogger(PublicationViaSubscriptionBolt.class);
     private OutputCollector collector;
-    private int eventsReceived;
     private Channel channelSimplePublication;
     private Channel channelComplexPublication;
 
     private AssignableMetric latencyForDeliverySimplePublication;
     private AssignableMetric latencyForDeliveryComplexPublication;
+    private CountMetric countForDeliverySimplePublication;
+    private long countDeliverySimplePublication = 0;
 
     @Override
     public void prepare(Map<String, Object> map, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        this.eventsReceived = 0;
 
         final ConnectionManager cm = ConnectionManager.getInstance();
         this.channelSimplePublication = cm.GetChannel(
@@ -54,11 +55,14 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
                 COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_QUEUE_NAME,
                 COMPLEX_PUBLICATION_VIA_SUBSCRIPTION_ROUTING_KEY);
 
-        this.latencyForDeliverySimplePublication = new AssignableMetric(0);
-        this.latencyForDeliveryComplexPublication = new AssignableMetric(0);
+        this.latencyForDeliverySimplePublication = new AssignableMetric(0L);
+        this.latencyForDeliveryComplexPublication = new AssignableMetric(0L);
+        this.countForDeliverySimplePublication = new CountMetric();
 
         context.registerMetric(METRICS_LATENCY_SIMPLE_PUBLICATION_DELIVERY, latencyForDeliverySimplePublication, TIME_BUCKET_SIZE_IN_SECS);
         context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_DELIVERY, latencyForDeliveryComplexPublication, TIME_BUCKET_SIZE_IN_SECS);
+
+        context.registerMetric(METRICS_SIMPLE_PUBLICATION_DELIVERY_COUNT, countForDeliverySimplePublication, TIME_BUCKET_SIZE_IN_SECS);
     }
 
     @Override
@@ -117,6 +121,8 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
 
                 var sp = (ProtoSimplePublication.SimplePublication) input.getValueByField(f1);
                 this.latencyForDeliverySimplePublication.setValue((Long)abs(System.currentTimeMillis() - sp.getGenerationTimestamp()));
+                this.countForDeliverySimplePublication.incr();
+                this.countDeliverySimplePublication++;
             } catch (IOException | InterruptedException | TimeoutException e) {
                 // collector.reportError(e);
                 this.collector.fail(input);
@@ -144,7 +150,6 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
         }
 
         this.collector.ack(input);
-        eventsReceived++;
     }
 
     @Override
@@ -154,6 +159,15 @@ public class PublicationViaSubscriptionBolt extends BaseRichBolt {
 
     @Override
     public void cleanup() {
-        LOG.info(MessageFormat.format("Subscribed publication events received: {0}!", this.eventsReceived));
+        try {
+            this.channelSimplePublication.close();
+            this.channelComplexPublication.close();
+        } catch (IOException | TimeoutException e) {
+            LOG.error(e.getMessage());
+        }
+
+        LOG.info(MessageFormat.format("Simple publication count: {0}", this.countForDeliverySimplePublication.getValueAndReset()));
+        LOG.info(MessageFormat.format("Simple publication count: {0}", this.countDeliverySimplePublication));
+        LOG.info(MessageFormat.format("Simple publication count: {0}", this.countDeliverySimplePublication));
     }
 }

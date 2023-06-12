@@ -61,7 +61,7 @@ public class ComplexPublicationSpout implements IRichSpout {
         this.collector = collector;
         this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
 
-        this.latencyForFullFlow = new AssignableMetric(0);
+        this.latencyForFullFlow = new AssignableMetric(0L);
         context.registerMetric(METRICS_LATENCY_COMPLEX_PUBLICATION_FULL_FLOW, latencyForFullFlow, TIME_BUCKET_SIZE_IN_SECS);
 
         Long prefetchCount = (Long) conf.get(CONFIG_PREFETCH_COUNT);

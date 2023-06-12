@@ -50,6 +50,7 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
     Meter meterComplexPublicationDelivery = null;
     Timer timerComplexPublicationDelivery = null;
     Histogram histogramComplexPublicationDelivery = null;
+    Counter counterSimplePublicationDeliveryCount = null;
 
     public Double computeAverage(List<Long> times) {
         return times.stream().mapToDouble(Long::longValue).sum() / times.size();
@@ -104,6 +105,8 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
         this.timerComplexPublicationDelivery = metricRegistry.timer("timer.cpd");
         this.histogramComplexPublicationDelivery = metricRegistry.histogram("histogram.cpd");
         metricRegistry.register("gauge.cpd", (Gauge<Double>) () -> computeAverage(complexPublicationDelivery));
+
+        this.counterSimplePublicationDeliveryCount = metricRegistry.counter("counter.spdc");
     }
 
     @Override
@@ -153,6 +156,9 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
                     this.timerComplexPublicationDelivery.update((Long) dataPoint.value, TimeUnit.MILLISECONDS);
                     this.histogramComplexPublicationDelivery.update((Long) dataPoint.value);
                     break;
+                case METRICS_SIMPLE_PUBLICATION_DELIVERY_COUNT:
+                    this.counterSimplePublicationDeliveryCount.inc((Long) dataPoint.value);
+                    break;
             }
         }
     }
@@ -163,6 +169,9 @@ public class GraphiteMetricsConsumer implements IMetricsConsumer {
         LOG.info(MessageFormat.format("Average latency for complex publication storage: {0}ms", computeAverage(complexPublicationStorage)));
         LOG.info(MessageFormat.format("Average latency for simple publication full flow: {0}ms", computeAverage(simplePublicationFullFlow)));
         LOG.info(MessageFormat.format("Average latency for complex publication full flow: {0}ms", computeAverage(complexPublicationFullFlow)));
+        LOG.info(MessageFormat.format("Average latency for simple publication delivery: {0}ms", computeAverage(simplePublicationDelivery)));
+        LOG.info(MessageFormat.format("Average latency for complex publication delivery: {0}ms", computeAverage(complexPublicationDelivery)));
+        LOG.info(MessageFormat.format("Simple publication delivery count: {0}", this.counterSimplePublicationDeliveryCount.getCount()));
 
         LOG.info("Cleaning up ComplexPublicationCreationMetricConsumer...");
     }

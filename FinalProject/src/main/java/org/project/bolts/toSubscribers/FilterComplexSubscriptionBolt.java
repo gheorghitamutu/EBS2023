@@ -94,5 +94,6 @@ public class FilterComplexSubscriptionBolt extends BaseRichBolt {
         subscriptions.forEach((k, v) -> LOG.info(MessageFormat.format("Subscriber ID: {0} Subscriptions count: {1}!", k, v.size())));
         LOG.info("Publications count: " + publicationsCount);
         LOG.info("Publication matched: " + publicationMatched);
+        LOG.info("Complex subscription bolt cleanup finished");
     }
 }
