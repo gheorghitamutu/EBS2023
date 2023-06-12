@@ -22,6 +22,11 @@ public class GlobalConfiguration {
     public static final long MAX_TIME = 10 * 60 * 1000; // 10 minutes
     public static final int SIMPLE_SUBSCRIPTION_COUNT = 10000;
     public static final int COMPLEX_SUBSCRIPTION_COUNT = 10000;
+    public static final int SIMPLE_SUBSCRIPTION_TIME_INTERVAL = 3; // in minutes
+    public static final double SIMPLE_SUBSCRIPTION_INTERVAL = (SIMPLE_SUBSCRIPTION_TIME_INTERVAL * 60.0) / SIMPLE_SUBSCRIPTION_COUNT;
+    public static final int SUBSCRIPTION_EQUAL_OPERATOR_PERCENTAGE = 1; // just use modulo
+
+    public static boolean GENERATE_COMPLEX_SUBSCRIPTIONS = false;
 
     /* AMQP */
     public static final long CONFIG_PREFETCH_COUNT = 0;

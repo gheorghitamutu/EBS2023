@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.project.cofiguration.GlobalConfiguration.SUBSCRIPTION_EQUAL_OPERATOR_PERCENTAGE;
 import static org.project.data.RawData.CITIES;
 
 public class SubscriptionGenerator {
@@ -20,9 +21,13 @@ public class SubscriptionGenerator {
 
     public static final Random RANDOM = new Random();
 
+    public static int simplePublicationsGenerated = 0;
+    public static int complexPublicationsGenerated = 0;
+
     private static SubscriptionGenerator instance = null;
 
     public ProtoSimpleSubscription.SimpleSubscription generateSimple() {
+        simplePublicationsGenerated++;
         return ProtoSimpleSubscription.SimpleSubscription.newBuilder()
                 .setSubscriberId(subscribers.get(RANDOM.nextInt(subscribers.size())))
                 .setSubscriptionId(randomUUID().toString())
@@ -34,6 +39,12 @@ public class SubscriptionGenerator {
                                                 .setValue(CITIES[RANDOM.nextInt(CITIES.length)])
                                                 .build()
                                 )
+                                .setTemperature(
+                                        ProtoSimpleSubscription.ConditionDouble.newBuilder()
+                                                .setOperatorValue(getRandomOperator().getNumber())
+                                                .setValue(RANDOM.nextDouble() * 50 * (RANDOM.nextDouble() > 0.5 ? 1 : -1))
+                                                .build()
+                                )
                                 .build()
                 )
                 .setTimestamp(System.currentTimeMillis())
@@ -41,6 +52,7 @@ public class SubscriptionGenerator {
     }
 
     public ProtoComplexSubscription.ComplexSubscription generateComplex() {
+        complexPublicationsGenerated++;
         return ProtoComplexSubscription.ComplexSubscription.newBuilder()
                 .setSubscriberId(subscribers.get(RANDOM.nextInt(subscribers.size())))
                 .setSubscriptionId(randomUUID().toString())
@@ -56,6 +68,13 @@ public class SubscriptionGenerator {
                 )
                 .setTimestamp(System.currentTimeMillis())
                 .build();
+    }
+
+    public static ProtoComplexSubscription.Operator getRandomOperator() {
+        if (complexPublicationsGenerated % SUBSCRIPTION_EQUAL_OPERATOR_PERCENTAGE == 0) {
+            return ProtoComplexSubscription.Operator.EQUAL;
+        }
+        return ProtoComplexSubscription.Operator.forNumber(RANDOM.nextInt(ProtoComplexSubscription.Operator.values().length));
     }
 
     public static SubscriptionGenerator getInstance() {

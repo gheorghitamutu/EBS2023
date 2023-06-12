@@ -13,10 +13,7 @@ public class PublicationGenerator {
     public ProtoSimplePublication.SimplePublication generate() {
         final String city = CITIES[RANDOM.nextInt(CITIES.length)];
         final String stationId = STATION_IDS.get(city).get(RANDOM.nextInt(STATION_IDS.get(city).size()));
-        double temperature = RANDOM.nextDouble() * 50;
-        if (RANDOM.nextDouble() > 0.5) {
-            temperature *= -1;
-        }
+        double temperature = RANDOM.nextDouble() * 50 * (RANDOM.nextDouble() > 0.5 ? 1 : -1);
         final double rain = RANDOM.nextDouble() * 0.5;
         final double wind = RANDOM.nextDouble() * 30;
         final String direction = DIRECTIONS[RANDOM.nextInt(DIRECTIONS.length)];

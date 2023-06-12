@@ -31,7 +31,7 @@ Table of Contents
     - [(10p) Network of brokers (2-3), content-based filtering \& publication windows](#10p-network-of-brokers-2-3-content-based-filtering--publication-windows)
     - [(5p) Subscriber nodes (simple \& complex subscriptions)](#5p-subscriber-nodes-simple--complex-subscriptions)
     - [(5p) Binary serialization mechanism](#5p-binary-serialization-mechanism)
-    - [(10p) Sistem evaluation (10 subscriptions)](#10p-sistem-evaluation-10-subscriptions)
+    - [(10p) Sistem evaluation (10000 simple subscriptions)](#10p-sistem-evaluation-10000-simple-subscriptions)
   - [References](#references)
 
 
@@ -625,6 +625,49 @@ The bolt then uses a map reduce operation on the aforementioned list with the co
         this.collector.ack(input);
     }
 
+These might be reduced as it follows:
+
+    public static Predicate<ProtoSimplePublication.SimplePublication> composedFilter(List<Predicate<ProtoSimplePublication.SimplePublication>> predicates) {
+        return predicates.stream().reduce(Predicate::and).orElse(sp -> true);
+    }
+
+We are also passing subscriptions (received in a bolt) to these type of predicates and testing publications matching as it follows:
+
+    ...
+
+    final private Map<String, List<ProtoSimpleSubscription.SimpleSubscription>> subscriptions = new HashMap<>();
+   
+    ...
+
+    var sp = (ProtoSimplePublication.SimplePublication) value;
+
+    List<String> subscribers = new ArrayList<>();
+    subscriptions.forEach(
+            (k, v) -> {
+                var matched = v.stream().anyMatch((ss) -> SimplePublicationFilter.filter(ss).test(sp));
+                if (matched) {
+                    // LOG.info("Simple subscription matched!");
+                    // LOG.info("Subscriber ID: " + k);
+                    // LOG.info("Simple publication:\n " + sp);
+
+                    subscribers.add(k);
+                    if (publicationMatched.containsKey(k)) {
+                         publicationMatched.put(k, publicationMatched.get(k) + 1);
+                    } else {
+                            publicationMatched.put(k, 1);
+                    }
+                }
+            }
+    );
+
+    if (!subscribers.isEmpty()) {
+        collector.emit(input, new Values(subscribers, sp));
+    }
+
+    ...
+
+
+
 ## Brokers
 
 ### RabbitMQ
@@ -644,13 +687,13 @@ We'd also like to develop and connect from the host so we don't specify any netw
 
     docker run -d --hostname EBS-rabbit --name EBS-local-rabbit -p 9081:15672 -p 5673:5672 rabbitmq:3-management
 
-But we'd like a cluster to ensure that if a node crashes/fails, we have several replicas. Based on [this artcile](https://medium.com/@saurabh.singh0829/how-to-create-rabbitmq-cluster-in-docker-aws-linux-4b26a31f90bc) we configured our environment as it follows:
+But we'd like a cluster to ensure that if a node crashes/fails, we have several replicas. Based on [this article](https://medium.com/@saurabh.singh0829/how-to-create-rabbitmq-cluster-in-docker-aws-linux-4b26a31f90bc) we configured our environment as it follows:
 
     docker run -d --hostname EBS-rabbit1 --name EBS-rabbit1 --network=EBS -p 9080:15672 -p 5672:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
 
-    docker run -d --hostname EBS-rabbit2 --name EBS-rabbit2 --network=EBS -p 5674:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+    docker run -d --hostname EBS-rabbit2 --name EBS-rabbit2 --network=EBS -p 5674:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' --link EBS-rabbit1:EBS-rabbit1 rabbitmq:3-management
 
-    docker run -d --hostname EBS-rabbit3 --name EBS-rabbit3 --network=EBS -p 5675:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+    docker run -d --hostname EBS-rabbit3 --name EBS-rabbit3 --network=EBS -p 5675:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' --link EBS-rabbit2:EBS-rabbit2 rabbitmq:3-management
 
 And then we restarted everything in order to create the cluster:
 
@@ -662,12 +705,16 @@ And then we restarted everything in order to create the cluster:
     docker exec -it EBS-rabbit2 bash
     rabbitmqctl stop_app
     rabbitmqctl reset
+    rabbitmqctl join_cluster --ram rabbit@EBS-rabbit1
     rabbitmqctl start_app
 
     docker exec -it EBS-rabbit2 bash
     rabbitmqctl stop_app
     rabbitmqctl reset
+    rabbitmqctl join_cluster --ram rabbit@EBS-rabbit1
     rabbitmqctl start_app
+
+![RabbitMQ Cluster](./docs/RabbitMQ_cluster.jpg)
 
 ## Topology Diagram
 ![Topology](./docs/topology.png)
@@ -690,9 +737,9 @@ The subscribers "nodes" are simulated using an array of 3 UUIDs (in `Subscriptio
 
 Google Protobuf (proto3 to be more specific) is used for binary serialization. It's usage & integration is lengthy explained in this document above.
 
-### (10p) Sistem evaluation (10 subscriptions)
+### (10p) Sistem evaluation (10000 simple subscriptions)
 
-- Publications successfully delivered through the broker network in a continuous 3-minute feed interval
+- Publications successfully delivered through the broker network in a continuous 3-minutes feed interval
 
         TODO:
 
@@ -713,6 +760,7 @@ Google Protobuf (proto3 to be more specific) is used for binary serialization. I
 - - For `Apache Storm` we are using `active replication`. There are at least `2 replicas` of each node used by our topologies. This ensures that if one fails, the we still have the other one. In the same time, the entire flow (routing) is being done by `ack` each input received. If we `fail` to ack an input that a bolt receives, that input will be `resent`.
 - - For `RabbitMQ` we are using a built-in `ack` mechanism combined with the `Apache Storm` one. Each `Spout` based with `RabbitMQ` connection `ack` that it received the data and that it send it succesfully.
 - - We also have a `cluster` of 3 instances for main `RabbitMQ` database using Docker.
+  ![RabbitMQ Cluster](./docs/RabbitMQ_cluster.jpg)
 
 - (5-10p) Implement a message filtering mechanism that does not allow brokers to access the content of messages (matching on encrypted subscriptions/publications)
     - Explored but `NOT IMPLEMENTED`. 
@@ -750,3 +798,5 @@ Initial code for the AMQP Spout has been taken from the book:
 The code has been modified to suit the needs of this project. The book can be found [here](https://subscription.packtpub.com/book/data/9781787281202/6).
 
 https://www.rabbitmq.com/tutorials/tutorial-seven-java.html
+
+https://medium.com/@saurabh.singh0829/how-to-create-rabbitmq-cluster-in-docker-aws-linux-4b26a31f90bc

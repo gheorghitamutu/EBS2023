@@ -14,6 +14,7 @@ import org.project.models.ProtoSimpleSubscription;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.project.cofiguration.GlobalConfiguration.SIMPLE_SUBSCRIPTION_COUNT;
@@ -23,25 +24,26 @@ public class SimpleSubscriptionSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
     private String taskName;
     private Map<String, ProtoSimpleSubscription.SimpleSubscription> unconfirmed;
-    private int simpleSubscriptionCount;
+
+    // we need this one shared between spouts
+    private static final AtomicInteger simpleSubscriptionCount = new AtomicInteger(0);
     private static final Logger LOG = Logger.getLogger(SimpleSubscriptionSpout.class);
     public static final String ID = SimpleSubscriptionSpout.class.getCanonicalName();
 
     @Override
     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;
-        this.simpleSubscriptionCount = 0;
         this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
         this.unconfirmed = new HashMap<>();
     }
 
     @Override
     public void nextTuple() {
-        if (simpleSubscriptionCount >= SIMPLE_SUBSCRIPTION_COUNT) {
+        if (simpleSubscriptionCount.get() >= SIMPLE_SUBSCRIPTION_COUNT) {
             return;
         }
 
-        simpleSubscriptionCount++;
+        simpleSubscriptionCount.set(simpleSubscriptionCount.get() + 1);
 
         var ss = SubscriptionGenerator.getInstance().generateSimple();
         unconfirmed.put(ss.getSubscriptionId(), ss);

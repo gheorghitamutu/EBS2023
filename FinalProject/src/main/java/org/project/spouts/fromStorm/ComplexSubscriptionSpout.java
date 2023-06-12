@@ -13,33 +13,38 @@ import org.project.models.ProtoComplexSubscription;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.project.cofiguration.GlobalConfiguration.COMPLEX_SUBSCRIPTION_COUNT;
+import static org.project.cofiguration.GlobalConfiguration.GENERATE_COMPLEX_SUBSCRIPTIONS;
 
 public class ComplexSubscriptionSpout extends BaseRichSpout {
 
     private SpoutOutputCollector collector;
     private String taskName;
     private Map<String, ProtoComplexSubscription.ComplexSubscription> unconfirmed;
-    private int complexSubscriptionCount;
+    private static final AtomicInteger complexSubscriptionCount = new AtomicInteger(0);
     private static final Logger LOG = Logger.getLogger(ComplexSubscriptionSpout.class);
     public static final String ID = ComplexSubscriptionSpout.class.getCanonicalName();
 
     @Override
     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;
-        this.complexSubscriptionCount = 0;
         this.taskName = MessageFormat.format("<{0} <-> {0}>", context.getThisComponentId(), context.getThisTaskId());
         this.unconfirmed = new HashMap<>();
     }
 
     @Override
     public void nextTuple() {
-        if (complexSubscriptionCount >= COMPLEX_SUBSCRIPTION_COUNT) {
+        if (!GENERATE_COMPLEX_SUBSCRIPTIONS) {
             return;
         }
 
-        complexSubscriptionCount++;
+        if (complexSubscriptionCount.get() >= COMPLEX_SUBSCRIPTION_COUNT) {
+            return;
+        }
+
+        complexSubscriptionCount.incrementAndGet();
 
         var cs = SubscriptionGenerator.getInstance().generateComplex();
         unconfirmed.put(cs.getSubscriptionId(), cs);
