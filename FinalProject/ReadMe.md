@@ -800,24 +800,85 @@ The matching rate can be calculated dividing the number of publications generate
 
     Field city:
     25%:  
-        13229 / 13521 = 0.9784039642
+        13229 / 13521 = 0.9784039642%
     50%:
-        11297 / 11760 = 0.9606292517
+        11297 / 11760 = 0.9606292517%
     100%:
-        14709 / 14896 = 0.9874462943
+        14709 / 14896 = 0.9874462943%
 
 Doesn't really show anything. 
-Switching to another field an fewer subscriptions:
+Switching to another field and fewer subscriptions:
 
     10 subscriptions randomly assigned to 3 subscribers:
 
     Field temperature:
     25%:
-        4102 / 21792 = 
+        4102 / 21792 = 0.18823421439
     50%:
-        WIP
+        6097 / 17736 = 0.34376409562%
+    100%:
+        0 / 16797 = 0%
+    
+    Examples of subscriptions for 0 publications:
+
+        subscriberId: "2530e5bc-8d27-4417-978d-8257ee68b232"
+        subscriptionId: "cfaa93a2-1d69-44fb-bb0a-ceac9444de49"
+        conditions {
+            temperature {
+                operator: EQUAL
+                value: -44.7206659949994
+            }
+        }
+        timestamp: 1686644017852
+
+        -------------------------------------------------------
+
+        subscriberId: "eda97ec0-0bb7-4459-8447-aea9f3b767ee"
+        subscriptionId: "6c915ee4-ec82-434b-b09a-60201ced191b"
+        conditions {
+            temperature {
+                operator: EQUAL
+                value: 3.1049501499059105
+            }
+        }
+        timestamp: 1686644086998
+
+        -------------------------------------------------------
+
+        subscriberId: "1bb6f44e-ff70-4273-9e3e-af6e12388ecb"
+        subscriptionId: "76cc6c34-811f-49de-8dbc-2d6950591916"
+        conditions {
+            temperature {
+                operator: EQUAL
+                value: 33.11922580255032
+            }
+        }
+        timestamp: 1686644140898
 
 
+    With a simple tweak on filters:
+    
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByTemperature(ProtoSimpleSubscription.Operator type, double temperature) {
+        switch (type) {
+            ....
+        return (sp) -> sp.getTemperature() == temperature;
+             ...
+        }
+    }
+
+    changed to:
+    
+    public static Predicate<ProtoSimplePublication.SimplePublication> filterByTemperature(ProtoSimpleSubscription.Operator type, double temperature) {
+        switch (type) {
+            ....
+        return (sp) -> (int) sp.getTemperature() == (int) temperature;
+             ...
+        }
+    }
+
+    We are getting for field Temperature (100% equal, 3 subscribers):
+
+    (626 + 660 + 875) / 22060 = 0.09796010879%
 
 
 - Implement an advanced routing mechanism for registering simple subscriptions that should be distributed across the broker network (publications will pass through multiple brokers until reaching the destination, with each broker partially handling the routing, rather than a single broker containing all subscriptions and performing a simple match)

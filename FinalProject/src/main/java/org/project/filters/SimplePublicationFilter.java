@@ -66,7 +66,7 @@ public class SimplePublicationFilter {
             case EQUAL_OR_LOWER_THAN:
                 return (sp) -> sp.getTemperature() <= temperature;
             case EQUAL:
-                return (sp) -> sp.getTemperature() == temperature;
+                return (sp) -> (int) sp.getTemperature() == (int) temperature;
             case EQUAL_OR_GREATER_THAN:
                 return (sp) -> sp.getTemperature() >= temperature;
             case GREATER_THAN:
